@@ -8,5 +8,5 @@ A subscription tracker for the rest of us.
 ## Installation
 
 ```bash
-go run main.go
+go run bean/cmd/server/main.go
 ```
