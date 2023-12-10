@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	// initiate the marketing service
 	marketing := marketingService.Init()
 
 	server := serverDriver.Init()
