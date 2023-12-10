@@ -5,8 +5,8 @@ It's good for you.
 
 A subscription tracker for the rest of us.
 
-## Installation
+## Usage
 
 ```bash
-go run main.go
+go run bean/cmd/server/main.go
 ```
