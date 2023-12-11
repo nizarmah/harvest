@@ -1,15 +1,15 @@
 package main
 
 import (
-	marketingService "harvest/bean/internal/service/marketing"
+	handler "harvest/bean/internal/adapter/handler"
 
-	serverDriver "harvest/bean/internal/driver/server"
+	server "harvest/bean/internal/driver/server"
 )
 
 func main() {
-	marketing := marketingService.Init()
+	h := handler.Init()
 
-	server := serverDriver.Init()
-	server.Route("/", marketing.Handlers.Landing)
-	server.Listen(":8080")
+	s := server.Init()
+	s.Route("/", h.Landing)
+	s.Listen(":8080")
 }
