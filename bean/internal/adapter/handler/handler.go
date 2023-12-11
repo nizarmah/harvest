@@ -7,7 +7,7 @@ import (
 
 type handler struct{}
 
-func Init() *handler {
+func New() *handler {
 	return &handler{}
 }
 
