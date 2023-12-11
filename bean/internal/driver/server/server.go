@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func Init() *Server {
+func New() *Server {
 	return &Server{
 		mux: http.NewServeMux(),
 	}
