@@ -8,5 +8,7 @@ A subscription tracker for the rest of us.
 ## Usage
 
 ```bash
-go run bean/cmd/server/main.go
+> cd bean
+
+> go run cmd/server/main.go
 ```
