@@ -25,3 +25,30 @@ func (h *handler) Landing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+
+	t, e := template.ParseFiles("./static/template/login.html")
+	if e != nil {
+		fmt.Fprintf(w, "Error: %v", e)
+		return
+	}
+
+	var errmsg string
+	if r.Method == "POST" {
+		errmsg = fmt.Sprintf("Account '%v' not found", username)
+	}
+
+	data := struct {
+		Error string
+	}{
+		Error: errmsg,
+	}
+
+	e = t.Execute(w, data)
+	if e != nil {
+		fmt.Fprintf(w, "Error: %v", e)
+		return
+	}
+}
