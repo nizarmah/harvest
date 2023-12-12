@@ -1,12 +1,46 @@
 package main
 
 import (
+	"fmt"
+
+	envAdapter "harvest/bean/internal/adapter/env"
 	"harvest/bean/internal/adapter/handler"
 
+	"harvest/bean/internal/driver/datasource"
+	envDriver "harvest/bean/internal/driver/env"
 	"harvest/bean/internal/driver/server"
 )
 
 func main() {
+	err := envDriver.Load(".env")
+	if err != nil {
+		panic(
+			fmt.Errorf("error loading env: %v", err),
+		)
+	}
+
+	e, err := envAdapter.New()
+	if err != nil {
+		panic(
+			fmt.Errorf("error reading env: %v", err),
+		)
+	}
+
+	ds, err := datasource.New(&datasource.DsnBuilder{
+		Host:        e.DB.Host,
+		Name:        e.DB.Name,
+		Username:    e.DB.Username,
+		Password:    e.DB.Password,
+		Tls:         true,
+		Interpolate: true,
+	})
+	if err != nil {
+		panic(
+			fmt.Errorf("error connecting db: %v", err),
+		)
+	}
+	defer ds.Close()
+
 	h := handler.New()
 
 	s := server.New()
