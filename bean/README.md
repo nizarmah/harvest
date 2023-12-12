@@ -10,5 +10,7 @@ A subscription tracker for the rest of us.
 ```bash
 > cd bean
 
+> cp .env.example .env
+
 > go run cmd/server/main.go
 ```
