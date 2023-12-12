@@ -1,0 +1,15 @@
+x-common: &common
+  tty: true
+  stdin_open: true
+
+services:
+  bean:
+    <<: *common
+    build:
+      context: .
+      dockerfile: ./bean/Dockerfile
+    env_file:
+      - ./bean/config/.env.example
+      - ./bean/config/.env
+    ports:
+      - "8080:8080"
