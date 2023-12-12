@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"path/filepath"
 )
 
 type handler struct{}
@@ -13,13 +14,7 @@ func New() *handler {
 }
 
 func (h *handler) Landing(w http.ResponseWriter, r *http.Request) {
-	t, e := template.ParseFiles("./static/template/landing.html")
-	if e != nil {
-		fmt.Fprintf(w, "Error: %v", e)
-		return
-	}
-
-	e = t.Execute(w, nil)
+	e := render(w, "landing.html", nil)
 	if e != nil {
 		fmt.Fprintf(w, "Error: %v", e)
 		return
@@ -27,28 +22,35 @@ func (h *handler) Landing(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
-	username := r.FormValue("username")
-
-	t, e := template.ParseFiles("./static/template/login.html")
-	if e != nil {
-		fmt.Fprintf(w, "Error: %v", e)
-		return
-	}
+	username := r.PostFormValue("username")
 
 	var errmsg string
 	if r.Method == "POST" {
 		errmsg = fmt.Sprintf("Account '%v' not found", username)
 	}
 
-	data := struct {
-		Error string
-	}{
-		Error: errmsg,
-	}
-
-	e = t.Execute(w, data)
+	e := render(w, "login.html", map[string]string{
+		"Error": errmsg,
+	})
 	if e != nil {
 		fmt.Fprintf(w, "Error: %v", e)
 		return
 	}
+}
+
+func render(w http.ResponseWriter, t string, data interface{}) error {
+	lp := filepath.Join("./static/template", "_layout.html")
+	tp := filepath.Join("./static/template", t)
+
+	tmpl, e := template.ParseFiles(lp, tp)
+	if e != nil {
+		return e
+	}
+
+	e = tmpl.Execute(w, data)
+	if e != nil {
+		return e
+	}
+
+	return nil
 }
