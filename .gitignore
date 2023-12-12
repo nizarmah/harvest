@@ -19,6 +19,9 @@
 
 !**/.env.example
 
+!docker-compose.yml
+!**/Dockerfile
+
 # !Makefile
 
 # ...even if they are in subdirectories
