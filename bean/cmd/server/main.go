@@ -3,23 +3,15 @@ package main
 import (
 	"fmt"
 
-	envAdapter "harvest/bean/internal/adapter/env"
+	"harvest/bean/internal/adapter/env"
 	"harvest/bean/internal/adapter/handler"
 
 	"harvest/bean/internal/driver/datasource"
-	envDriver "harvest/bean/internal/driver/env"
 	"harvest/bean/internal/driver/server"
 )
 
 func main() {
-	err := envDriver.Load(".env")
-	if err != nil {
-		panic(
-			fmt.Errorf("error loading env: %v", err),
-		)
-	}
-
-	e, err := envAdapter.New()
+	e, err := env.New()
 	if err != nil {
 		panic(
 			fmt.Errorf("error reading env: %v", err),
@@ -44,7 +36,10 @@ func main() {
 	h := handler.New()
 
 	s := server.New()
+
 	s.Route("/login", h.Login)
 	s.Route("/", h.Landing)
+
+	fmt.Println("server started on :8080")
 	s.Listen(":8080")
 }
