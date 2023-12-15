@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"path/filepath"
+
+	// FIXME: wrong direction of dependency
+	templateDriver "harvest/bean/internal/driver/template"
 )
 
 type handler struct{}
@@ -39,10 +41,7 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func render(w http.ResponseWriter, t string, data interface{}) error {
-	lp := filepath.Join("./static/template", "_layout.html")
-	tp := filepath.Join("./static/template", t)
-
-	tmpl, e := template.ParseFiles(lp, tp)
+	tmpl, e := template.ParseFS(templateDriver.FS, "_layout.html", t)
 	if e != nil {
 		return e
 	}

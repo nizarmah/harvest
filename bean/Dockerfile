@@ -20,9 +20,6 @@ FROM alpine:latest as runner
 # runner: working directory
 WORKDIR /bean
 
-# runner: copy static files
-COPY --from=builder /go/src/app/bean/static/ ./static/
-
 # runner: copy built server
 COPY --from=builder /go/src/app/bean/server .
 
