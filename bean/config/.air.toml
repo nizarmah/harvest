@@ -1,0 +1,30 @@
+# Config file for [Air](https://github.com/cosmtrek/air) in TOML format
+
+root = "./bean"
+tmp_dir = "/tmp"
+
+[build]
+cmd = "CGO_ENABLED=0 GOOS=linux go build -o /tmp/server ./bean/cmd/server/main.go"
+bin = "/tmp/server"
+full_bin = "/tmp/server"
+include_ext = ["go", "html"]
+exclude_regex = ["_test\\.go"]
+exclude_unchanged = true
+log = "air.log"
+poll = false
+delay = 1000 # ms
+stop_on_error = true
+kill_delay = 500 # nanosecond
+rerun = false
+rerun_delay = 500 # nanosecond
+
+[log]
+time = true
+main_only = true
+
+[misc]
+clean_on_exit = true
+
+[screen]
+clear_on_rebuild = true
+keep_scroll = true

@@ -28,3 +28,6 @@
 # docker files
 !/docker-compose.yml
 !*/Dockerfile
+
+# air live reload files
+!*/config/.air.toml
