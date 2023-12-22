@@ -1,27 +1,20 @@
-# builder: official Go image
-FROM golang:1.21.5 as builder
+# use official go image
+FROM golang:1.21.5-alpine
 
-# builder: working directory
-WORKDIR /go/src/app
+# set working dir
+WORKDIR /go/src
 
-# builder: copy source code
+# copy monorepo deps
 COPY go.mod go.sum ./
+
+# copy bean code
 COPY bean/ ./bean/
 
-# builder: download dependencies
+# get deps
 RUN go mod download
 
-# builder: build server
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./bean/server ./bean/cmd/server/main.go
+# get air for live reload
+RUN go install github.com/cosmtrek/air@latest
 
-# runner: small Alpine image
-FROM alpine:latest as runner
-
-# runner: working directory
-WORKDIR /bean
-
-# runner: copy built server
-COPY --from=builder /go/src/app/bean/server .
-
-# runner: run server
-ENTRYPOINT [ "./server" ]
+# run bean using air
+CMD air -c ./bean/config/.air.toml

@@ -13,3 +13,5 @@ services:
       - ./bean/config/.env
     ports:
       - "8080:8080"
+    volumes:
+      - ./bean:/go/src/bean
