@@ -1,10 +1,10 @@
-package datasource
+package database
 
 import (
 	"fmt"
 )
 
-func dsn(builder *DsnBuilder) string {
+func dsn(builder *DSNBuilder) string {
 	dsn := fmt.Sprintf(
 		"%v:%v@tcp(%v)/%v?tls=%v&interpolateParams=%v",
 		builder.Username,
