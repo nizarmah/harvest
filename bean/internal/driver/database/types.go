@@ -11,6 +11,7 @@ type DSNBuilder struct {
 	Password    string
 	Tls         bool
 	Interpolate bool
+	ParseTime   bool
 }
 
 type DB struct {
