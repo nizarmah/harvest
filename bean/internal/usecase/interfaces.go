@@ -1,4 +1,4 @@
-package user
+package usecase
 
 import (
 	"harvest/bean/internal/entity"
@@ -14,13 +14,11 @@ type SubscriptionRepository interface {
 	Delete(subscription *entity.Subscription) (*entity.Subscription, error)
 }
 
-type UserRepository interface {
+type UserDataSource interface {
 	Create(user *entity.User) (*entity.User, error)
 
-	FindById(id string) (*entity.User, error)
+	FindById(id int) (*entity.User, error)
 	FindByEmail(email string) (*entity.User, error)
-
-	Delete(user *entity.User) (*entity.User, error)
 }
 
 type TokenRepository interface {

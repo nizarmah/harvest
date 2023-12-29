@@ -6,7 +6,7 @@ import (
 
 type Subscription struct {
 	ID     string
-	UserID string
+	UserID int
 
 	Amount        int
 	Frequency     int
@@ -17,7 +17,7 @@ type Subscription struct {
 }
 
 type User struct {
-	ID string
+	ID int
 
 	Email string
 
@@ -27,7 +27,7 @@ type User struct {
 
 type Token struct {
 	ID     string
-	UserID string
+	UserID int
 
 	AccessToken string
 
