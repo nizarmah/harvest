@@ -17,7 +17,7 @@ type SubscriptionRepository interface {
 type UserDataSource interface {
 	Create(user *entity.User) (*entity.User, error)
 
-	FindById(id string) (*entity.User, error)
+	FindById(id int) (*entity.User, error)
 	FindByEmail(email string) (*entity.User, error)
 }
 

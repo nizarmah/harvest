@@ -43,7 +43,7 @@ func (ds *dataSource) Create(inputUser *entity.User) (*entity.User, error) {
 	return user, nil
 }
 
-func (ds *dataSource) FindById(id string) (*entity.User, error) {
+func (ds *dataSource) FindById(id int) (*entity.User, error) {
 	user := &entity.User{}
 
 	err := ds.db.Pool.
