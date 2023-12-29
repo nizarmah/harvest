@@ -6,7 +6,7 @@ import (
 	"harvest/bean/internal/adapter/env"
 	"harvest/bean/internal/adapter/handler"
 
-	"harvest/bean/internal/driver/datasource"
+	"harvest/bean/internal/driver/database"
 	"harvest/bean/internal/driver/server"
 )
 
@@ -18,7 +18,7 @@ func main() {
 		)
 	}
 
-	ds, err := datasource.New(&datasource.DsnBuilder{
+	db, err := database.New(&database.DSNBuilder{
 		Host:        e.DB.Host,
 		Name:        e.DB.Name,
 		Username:    e.DB.Username,
@@ -31,7 +31,7 @@ func main() {
 			fmt.Errorf("error connecting db: %v", err),
 		)
 	}
-	defer ds.Close()
+	defer db.Close()
 
 	h := handler.New()
 

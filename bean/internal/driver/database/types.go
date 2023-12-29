@@ -1,10 +1,10 @@
-package datasource
+package database
 
 import (
 	"database/sql"
 )
 
-type DsnBuilder struct {
+type DSNBuilder struct {
 	Host        string
 	Name        string
 	Username    string
@@ -13,6 +13,6 @@ type DsnBuilder struct {
 	Interpolate bool
 }
 
-type DataSource struct {
-	db *sql.DB
+type DB struct {
+	Pool *sql.DB
 }
