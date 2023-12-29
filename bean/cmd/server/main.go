@@ -25,6 +25,7 @@ func main() {
 		Password:    e.DB.Password,
 		Tls:         true,
 		Interpolate: true,
+		ParseTime:   true,
 	})
 	if err != nil {
 		panic(
