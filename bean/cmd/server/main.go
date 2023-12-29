@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 
-	envAdapter "harvest/bean/internal/adapter/env"
 	"harvest/bean/internal/entity"
+
+	envAdapter "harvest/bean/internal/adapter/env"
 
 	"harvest/bean/internal/driver/database"
 	userDS "harvest/bean/internal/driver/datasource/user"
