@@ -26,10 +26,10 @@ type User struct {
 }
 
 type Token struct {
-	ID     string
+	ID     int
 	UserID int
 
-	AccessToken string
+	HashedToken string
 
 	CreatedAt time.Time
 	ExpiresAt time.Time
