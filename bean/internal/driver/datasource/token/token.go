@@ -24,7 +24,7 @@ func (ds *dataSource) Create(inputToken *entity.LoginToken) (*entity.LoginToken,
 	return nil, errors.New("not implemented")
 }
 
-func (ds *dataSource) FindByEmail(userId int) (*entity.LoginToken, error) {
+func (ds *dataSource) Find(inputToken *entity.LoginToken) (*entity.LoginToken, error) {
 	return nil, errors.New("not implemented")
 }
 

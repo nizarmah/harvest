@@ -24,7 +24,7 @@ type UserDataSource interface {
 type LoginTokenDataSource interface {
 	Create(token *entity.LoginToken) (*entity.LoginToken, error)
 
-	FindByEmail(userId int) (*entity.LoginToken, error)
+	Find(token *entity.LoginToken) (*entity.LoginToken, error)
 
 	Delete(token *entity.LoginToken) (*entity.LoginToken, error)
 }
