@@ -25,11 +25,11 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-type Token struct {
-	ID     string
-	UserID int
+type LoginToken struct {
+	ID int
 
-	AccessToken string
+	Email       string
+	HashedToken string
 
 	CreatedAt time.Time
 	ExpiresAt time.Time
