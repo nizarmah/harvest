@@ -25,10 +25,10 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-type Token struct {
-	ID     int
-	UserID int
+type LoginToken struct {
+	ID int
 
+	Email       string
 	HashedToken string
 
 	CreatedAt time.Time

@@ -21,11 +21,10 @@ type UserDataSource interface {
 	FindByEmail(email string) (*entity.User, error)
 }
 
-type TokenDataSource interface {
-	Create(token *entity.Token) (*entity.Token, error)
+type LoginTokenDataSource interface {
+	Create(token *entity.LoginToken) (*entity.LoginToken, error)
 
-	FindByUserId(userId int) (*entity.Token, error)
-	FindByHashedToken(hashedToken string) (*entity.Token, error)
+	FindByEmail(userId int) (*entity.LoginToken, error)
 
-	Delete(token *entity.Token) (*entity.Token, error)
+	Delete(token *entity.LoginToken) (*entity.LoginToken, error)
 }
