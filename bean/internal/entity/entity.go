@@ -29,7 +29,7 @@ type LoginToken struct {
 	ID int
 
 	Email       string
-	HashedToken string
+	HashedToken [60]byte
 
 	CreatedAt time.Time
 	ExpiresAt time.Time
