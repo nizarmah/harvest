@@ -4,14 +4,14 @@ import (
 	"harvest/bean/internal/entity"
 )
 
-type SubscriptionRepository interface {
+type SubscriptionDataSource interface {
 	Create(subscription *entity.Subscription) (*entity.Subscription, error)
 
-	FindByUserId(userId string) (*entity.Subscription, error)
+	FindByUserId(userId string) ([]*entity.Subscription, error)
 
 	Update(subscription *entity.Subscription) (*entity.Subscription, error)
 
-	Delete(subscription *entity.Subscription) (*entity.Subscription, error)
+	Delete(subscription *entity.Subscription) error
 }
 
 type UserDataSource interface {
