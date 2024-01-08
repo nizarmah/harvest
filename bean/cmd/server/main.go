@@ -7,6 +7,7 @@ import (
 
 	envAdapter "harvest/bean/internal/adapter/env"
 
+	"harvest/bean/internal/driver/crypto"
 	"harvest/bean/internal/driver/database"
 	tokenDS "harvest/bean/internal/driver/datasource/token"
 	userDS "harvest/bean/internal/driver/datasource/user"
@@ -74,31 +75,41 @@ func createUserIfNotExists(db *database.DB) *entity.User {
 
 func testLoginTokens(db *database.DB, u *entity.User) {
 	tokens := tokenDS.New(db)
+	hasher := crypto.New()
 
-	t1 := [60]byte{[]byte("123")[0], []byte("123")[1], []byte("123")[2]}
-	t2 := [60]byte{[]byte("456")[0], []byte("456")[1], []byte("456")[2]}
+	hash1, err := hasher.Hash("123")
+	if err != nil {
+		fmt.Println("error hashing token 1: ", err)
+		return
+	}
 
-	err := tokens.Create(&entity.LoginToken{Email: u.Email, HashedToken: t1})
+	hash2, err := hasher.Hash("456")
+	if err != nil {
+		fmt.Println("error hashing token 2: ", err)
+		return
+	}
+
+	err = tokens.Create(&entity.LoginToken{Email: u.Email, HashedToken: hash1})
 	if err != nil {
 		fmt.Println("error creating token: ", err)
 		return
 	}
 
-	t, err := tokens.FindUnexpired(&entity.LoginToken{Email: u.Email, HashedToken: t1})
+	t, err := tokens.FindUnexpired(&entity.LoginToken{Email: u.Email, HashedToken: hash1})
 	if t != nil {
-		fmt.Println("token found: ", t.ID, t.Email, string(t.HashedToken[:]), t.CreatedAt, t.ExpiresAt)
+		fmt.Println("token found: ", t.ID, t.Email, string(t.HashedToken), t.CreatedAt, t.ExpiresAt)
 	} else {
 		fmt.Println("token not found: ", err)
 	}
 
-	err = tokens.Create(&entity.LoginToken{Email: u.Email, HashedToken: t2})
+	err = tokens.Create(&entity.LoginToken{Email: u.Email, HashedToken: hash2})
 	if err != nil {
 		fmt.Println("error overwriting token: ", err)
 	}
 
-	t, err = tokens.FindUnexpired(&entity.LoginToken{Email: u.Email, HashedToken: t2})
+	t, err = tokens.FindUnexpired(&entity.LoginToken{Email: u.Email, HashedToken: hash2})
 	if t != nil {
-		fmt.Println("token found: ", t.ID, t.Email, string(t.HashedToken[:]), t.CreatedAt, t.ExpiresAt)
+		fmt.Println("token found: ", t.ID, t.Email, string(t.HashedToken), t.CreatedAt, t.ExpiresAt)
 	} else {
 		fmt.Println("token not found: ", err)
 		return

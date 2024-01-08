@@ -21,11 +21,15 @@ func New(db *database.DB) usecase.LoginTokenDataSource {
 }
 
 func (ds *dataSource) Create(inputToken *entity.LoginToken) error {
+	if len(inputToken.HashedToken) > 60 {
+		return errors.New("token is too long")
+	}
+
 	_, err := ds.db.Pool.Exec(
 		("INSERT INTO login_tokens (email, hashed_token, expires_at) " +
 			"VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE)) " +
 			"ON DUPLICATE KEY UPDATE hashed_token = ?, created_at = NOW(), expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE)"),
-		inputToken.Email, inputToken.HashedToken[:], inputToken.HashedToken[:],
+		inputToken.Email, inputToken.HashedToken, inputToken.HashedToken,
 	)
 	if err != nil {
 		return errors.New("error creating login token")
@@ -36,20 +40,17 @@ func (ds *dataSource) Create(inputToken *entity.LoginToken) error {
 
 func (ds *dataSource) FindUnexpired(token *entity.LoginToken) (*entity.LoginToken, error) {
 	t := &entity.LoginToken{}
-	hashedTokenSlice := []byte{}
 
 	err := ds.db.Pool.
 		QueryRow(
 			"SELECT * FROM login_tokens WHERE email = ? AND BINARY hashed_token = ? AND expires_at > NOW()",
-			token.Email, token.HashedToken[:],
+			token.Email, token.HashedToken,
 		).
-		Scan(&t.ID, &t.Email, &hashedTokenSlice, &t.CreatedAt, &t.ExpiresAt)
+		Scan(&t.ID, &t.Email, &t.HashedToken, &t.CreatedAt, &t.ExpiresAt)
 
 	if err != nil {
 		return nil, errors.New("error finding unexpired login token")
 	}
-
-	copy(t.HashedToken[:], hashedTokenSlice)
 
 	return t, nil
 }
