@@ -5,16 +5,21 @@ import (
 )
 
 type Subscription struct {
-	ID     string
-	UserID int
+	ID int
 
-	Amount        int
-	Frequency     int
-	PaymentMethod string
+	UserID          int
+	PaymentMethodID int
+
+	Amount int
+
+	FreqVal  int
+	FreqUnit string
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type PaymentMethod struct{}
 
 type User struct {
 	ID int
