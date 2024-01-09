@@ -7,9 +7,7 @@ import (
 type SubscriptionDataSource interface {
 	Create(subscription *entity.Subscription) (*entity.Subscription, error)
 
-	FindByUserId(userId string) ([]*entity.Subscription, error)
-
-	Update(subscription *entity.Subscription) (*entity.Subscription, error)
+	FindByUserId(userId int) ([]*entity.Subscription, error)
 
 	Delete(subscription *entity.Subscription) error
 }
