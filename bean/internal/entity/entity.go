@@ -19,7 +19,22 @@ type Subscription struct {
 	UpdatedAt time.Time
 }
 
-type PaymentMethod struct{}
+type PaymentMethod struct {
+	ID int
+
+	UserID int
+
+	Label    string
+	Last4    string
+	Brand    string
+	ExpMonth int
+	ExpYear  int
+
+	IsDefault bool
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
 
 type User struct {
 	ID int
