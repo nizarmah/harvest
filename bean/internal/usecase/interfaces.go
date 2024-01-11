@@ -12,6 +12,14 @@ type SubscriptionDataSource interface {
 	Delete(subscription *entity.Subscription) error
 }
 
+type PaymentMethodDataSource interface {
+	Create(paymentMethod *entity.PaymentMethod) (*entity.PaymentMethod, error)
+
+	FindByUserId(userId int) ([]*entity.PaymentMethod, error)
+
+	Delete(paymentMethod *entity.PaymentMethod) error
+}
+
 type UserDataSource interface {
 	Create(user *entity.User) (*entity.User, error)
 
