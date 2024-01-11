@@ -21,10 +21,6 @@ func New(db *database.DB) usecase.SubscriptionDataSource {
 }
 
 func (ds *dataSource) Create(input *entity.Subscription) (*entity.Subscription, error) {
-	if !isValidFreqUnit(input.FreqUnit) {
-		return nil, errors.New("invalid frequency unit")
-	}
-
 	res, err := ds.db.Pool.Exec(
 		"INSERT INTO subscriptions (user_id, payment_method_id, amount, freq_val, freq_unit) VALUES (?, ?, ?, ?, ?)",
 		input.UserID,
