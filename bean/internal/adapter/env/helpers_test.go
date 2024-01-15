@@ -9,7 +9,7 @@ func TestLookup(t *testing.T) {
 	t.Run("returns value", func(t *testing.T) {
 		os.Setenv("key", "value")
 
-		if v, _ := lookup("var"); v != "value" {
+		if v, _ := lookup("key"); v != "value" {
 			t.Errorf("expected: %s, got: %s", "value", v)
 		}
 	})
