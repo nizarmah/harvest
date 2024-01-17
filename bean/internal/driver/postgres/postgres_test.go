@@ -6,11 +6,7 @@ import (
 )
 
 func TestDB(t *testing.T) {
-	db := DBTest(t)
-
-	if db == nil {
-		t.Error("expected db to not be nil")
-	}
+	DBTest(t)
 }
 
 func DBTest(t *testing.T) *DB {

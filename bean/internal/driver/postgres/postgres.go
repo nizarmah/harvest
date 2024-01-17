@@ -19,7 +19,7 @@ func New(builder *DSNBuilder) (*DB, error) {
 
 	err = pool.Ping(context.Background())
 	if err != nil {
-		return nil, errors.New("error pinging pool: " + err.Error())
+		return nil, errors.New("error pinging pool")
 	}
 
 	return &DB{
