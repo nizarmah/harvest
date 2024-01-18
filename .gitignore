@@ -25,9 +25,15 @@
 # html files
 !**/*.html
 
+# sql files
+!**/*.sql
+
 # docker files
 !/docker-compose.yml
 !*/Dockerfile
+
+# tern migration files
+!*/config/.tern.conf
 
 # air live reload files
 !*/config/.air.toml
