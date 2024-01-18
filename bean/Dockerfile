@@ -13,6 +13,9 @@ COPY bean/ ./bean/
 # get deps
 RUN go mod download
 
+# get tern for migrations
+RUN go install github.com/jackc/tern/v2@latest
+
 # get air for live reload
 RUN go install github.com/cosmtrek/air@latest
 
