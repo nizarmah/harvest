@@ -46,10 +46,10 @@ type User struct {
 }
 
 type LoginToken struct {
-	ID int
+	ID string
 
 	Email       string
-	HashedToken []byte
+	HashedToken string
 
 	CreatedAt time.Time
 	ExpiresAt time.Time

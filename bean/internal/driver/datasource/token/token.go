@@ -1,62 +1,77 @@
 package token
 
 import (
+	"context"
 	"errors"
 
 	"harvest/bean/internal/entity"
 
 	"harvest/bean/internal/usecase"
 
-	"harvest/bean/internal/driver/database"
+	"harvest/bean/internal/driver/postgres"
 )
 
 type dataSource struct {
-	db *database.DB
+	db *postgres.DB
 }
 
-func New(db *database.DB) usecase.LoginTokenDataSource {
+func New(db *postgres.DB) usecase.LoginTokenDataSource {
 	return &dataSource{
 		db: db,
 	}
 }
 
-func (ds *dataSource) Create(inputToken *entity.LoginToken) error {
-	if len(inputToken.HashedToken) > 60 {
-		return errors.New("token is too long")
-	}
-
-	_, err := ds.db.Pool.Exec(
-		("INSERT INTO login_tokens (email, hashed_token, expires_at) " +
-			"VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE)) " +
-			"ON DUPLICATE KEY UPDATE hashed_token = ?, created_at = NOW(), expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE)"),
-		inputToken.Email, inputToken.HashedToken, inputToken.HashedToken,
-	)
-	if err != nil {
-		return errors.New("error creating login token")
-	}
-
-	return nil
-}
-
-func (ds *dataSource) FindUnexpired(token *entity.LoginToken) (*entity.LoginToken, error) {
-	t := &entity.LoginToken{}
+func (ds *dataSource) Create(email string, hashedToken string) (*entity.LoginToken, error) {
+	token := &entity.LoginToken{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			"SELECT * FROM login_tokens WHERE email = ? AND BINARY hashed_token = ? AND expires_at > NOW()",
-			token.Email, token.HashedToken,
+			context.Background(),
+			("INSERT INTO login_tokens (email, hashed_token)"+
+				" VALUES ($1, $2)"+
+				" ON CONFLICT (email) DO UPDATE"+
+				" SET hashed_token = $2"+
+				" RETURNING *"),
+			email, hashedToken,
 		).
-		Scan(&t.ID, &t.Email, &t.HashedToken, &t.CreatedAt, &t.ExpiresAt)
+		Scan(&token.ID, &token.Email, &token.HashedToken, &token.CreatedAt, &token.ExpiresAt)
+
+	if err != nil {
+		return nil, errors.New("error creating login token: " + err.Error())
+	}
+
+	return token, nil
+}
+
+func (ds *dataSource) FindUnexpired(id string) (*entity.LoginToken, error) {
+	token := &entity.LoginToken{}
+
+	err := ds.db.Pool.
+		QueryRow(
+			context.Background(),
+			("SELECT * FROM login_tokens"+
+				" WHERE id = $1 AND expires_at > NOW()"),
+			id,
+		).
+		Scan(&token.ID, &token.Email, &token.HashedToken, &token.CreatedAt, &token.ExpiresAt)
 
 	if err != nil {
 		return nil, errors.New("error finding unexpired login token")
 	}
 
-	return t, nil
+	return token, nil
 }
 
-func (ds *dataSource) Delete(token *entity.LoginToken) error {
-	_, err := ds.db.Pool.Exec("DELETE FROM login_tokens WHERE id = ?", token.ID)
+func (ds *dataSource) Delete(id string) error {
+	_, err := ds.db.Pool.
+		Exec(
+			context.Background(),
+			("DELETE FROM login_tokens" +
+				" WHERE id = $1" +
+				" RETURNING *"),
+			id,
+		)
+
 	if err != nil {
 		return errors.New("error deleting login token")
 	}

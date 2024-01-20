@@ -28,9 +28,9 @@ type UserDataSource interface {
 }
 
 type LoginTokenDataSource interface {
-	Create(token *entity.LoginToken) error
+	Create(email string, hashedToken string) (*entity.LoginToken, error)
 
-	FindUnexpired(token *entity.LoginToken) (*entity.LoginToken, error)
+	FindUnexpired(id string) (*entity.LoginToken, error)
 
-	Delete(token *entity.LoginToken) error
+	Delete(id string) error
 }
