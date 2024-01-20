@@ -36,8 +36,7 @@ func create(t *testing.T, ds usecase.LoginTokenDataSource) {
 			t.Errorf("expected 10 minute expiry, got: %v", expiry)
 		}
 
-		_, err = ds.Delete(token.ID)
-		if err != nil {
+		if err = ds.Delete(token.ID); err != nil {
 			t.Fatalf("failed to cleanup token: %s", err)
 		}
 	})
@@ -69,8 +68,7 @@ func create(t *testing.T, ds usecase.LoginTokenDataSource) {
 			t.Errorf("expected new hashed token, got: %s", old.HashedToken)
 		}
 
-		_, err = ds.Delete(new.ID)
-		if err != nil {
+		if err = ds.Delete(new.ID); err != nil {
 			t.Fatalf("failed to cleanup token: %s", err)
 		}
 	})
@@ -88,8 +86,7 @@ func findUnexpired(t *testing.T, ds usecase.LoginTokenDataSource) {
 			t.Fatalf("failed to find token: %s", err)
 		}
 
-		_, err = ds.Delete(token.ID)
-		if err != nil {
+		if err = ds.Delete(token.ID); err != nil {
 			t.Fatalf("failed to cleanup token: %s", err)
 		}
 	})
@@ -108,8 +105,7 @@ func delete(t *testing.T, ds usecase.LoginTokenDataSource) {
 		t.Fatalf("failed to create token: %s", err)
 	}
 
-	_, err = ds.Delete(token.ID)
-	if err != nil {
+	if err = ds.Delete(token.ID); err != nil {
 		t.Fatalf("failed to delete token: %s", err)
 	}
 }

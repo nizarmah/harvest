@@ -62,22 +62,19 @@ func (ds *dataSource) FindUnexpired(id string) (*entity.LoginToken, error) {
 	return token, nil
 }
 
-func (ds *dataSource) Delete(id string) (*entity.LoginToken, error) {
-	token := &entity.LoginToken{}
-
-	err := ds.db.Pool.
-		QueryRow(
+func (ds *dataSource) Delete(id string) error {
+	_, err := ds.db.Pool.
+		Exec(
 			context.Background(),
-			("DELETE FROM login_tokens"+
-				" WHERE id = $1"+
+			("DELETE FROM login_tokens" +
+				" WHERE id = $1" +
 				" RETURNING *"),
 			id,
-		).
-		Scan(&token.ID, &token.Email, &token.HashedToken, &token.CreatedAt, &token.ExpiresAt)
+		)
 
 	if err != nil {
-		return nil, errors.New("error deleting login token")
+		return errors.New("error deleting login token")
 	}
 
-	return token, nil
+	return nil
 }

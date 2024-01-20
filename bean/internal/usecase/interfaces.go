@@ -32,5 +32,5 @@ type LoginTokenDataSource interface {
 
 	FindUnexpired(id string) (*entity.LoginToken, error)
 
-	Delete(id string) (*entity.LoginToken, error)
+	Delete(id string) error
 }
