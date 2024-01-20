@@ -1,4 +1,4 @@
-package database
+package postgres
 
 import (
 	"os"
@@ -17,7 +17,7 @@ func DBTest(t *testing.T) *DB {
 	}
 
 	db, err := New(&DSNBuilder{
-		Host:     "localhost",
+		Host:     "postgres",
 		Port:     "5432",
 		Name:     "bean_test",
 		Username: "postgres",
