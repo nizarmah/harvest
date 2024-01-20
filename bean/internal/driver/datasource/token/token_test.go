@@ -6,11 +6,13 @@ import (
 
 	"harvest/bean/internal/usecase"
 
-	"harvest/bean/internal/driver/datasource/token/tokentest"
+	"harvest/bean/internal/driver/datasource/token"
+	"harvest/bean/internal/driver/postgres/postgrestest"
 )
 
 func TestDataSource(t *testing.T) {
-	ds := tokentest.TestTokenDS(t)
+	db := postgrestest.DBTest(t)
+	ds := token.New(db)
 
 	t.Run("create", func(t *testing.T) {
 		create(t, ds)
