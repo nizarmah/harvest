@@ -7,11 +7,9 @@ import (
 
 	envAdapter "harvest/bean/internal/adapter/env"
 
-	"harvest/bean/internal/driver/crypto"
 	"harvest/bean/internal/driver/database"
 	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
 	subscriptionDS "harvest/bean/internal/driver/datasource/subscription"
-	tokenDS "harvest/bean/internal/driver/datasource/token"
 	userDS "harvest/bean/internal/driver/datasource/user"
 )
 
@@ -45,7 +43,6 @@ func main() {
 		return
 	}
 
-	testLoginTokens(db, u)
 	testPaymentMethods(db, u)
 	testSubscriptions(db, u)
 }
@@ -75,54 +72,6 @@ func createUserIfNotExists(db *database.DB) *entity.User {
 	}
 
 	return u
-}
-
-func testLoginTokens(db *database.DB, u *entity.User) {
-	tokens := tokenDS.New(db)
-	hasher := crypto.New()
-
-	hash1, err := hasher.Hash("123")
-	if err != nil {
-		fmt.Println("error hashing token 1: ", err)
-		return
-	}
-
-	hash2, err := hasher.Hash("456")
-	if err != nil {
-		fmt.Println("error hashing token 2: ", err)
-		return
-	}
-
-	err = tokens.Create(&entity.LoginToken{Email: u.Email, HashedToken: hash1})
-	if err != nil {
-		fmt.Println("error creating token: ", err)
-		return
-	}
-
-	t, err := tokens.FindUnexpired(&entity.LoginToken{Email: u.Email, HashedToken: hash1})
-	if t != nil {
-		fmt.Println("token found: ", t.ID, t.Email, string(t.HashedToken), t.CreatedAt, t.ExpiresAt)
-	} else {
-		fmt.Println("token not found: ", err)
-	}
-
-	err = tokens.Create(&entity.LoginToken{Email: u.Email, HashedToken: hash2})
-	if err != nil {
-		fmt.Println("error overwriting token: ", err)
-	}
-
-	t, err = tokens.FindUnexpired(&entity.LoginToken{Email: u.Email, HashedToken: hash2})
-	if t != nil {
-		fmt.Println("token found: ", t.ID, t.Email, string(t.HashedToken), t.CreatedAt, t.ExpiresAt)
-	} else {
-		fmt.Println("token not found: ", err)
-		return
-	}
-
-	err = tokens.Delete(t)
-	if err != nil {
-		fmt.Println("error deleting token: ", err)
-	}
 }
 
 func testPaymentMethods(db *database.DB, u *entity.User) {

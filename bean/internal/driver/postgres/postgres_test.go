@@ -1,37 +1,17 @@
-package postgres
+package postgres_test
 
 import (
-	"os"
+	"context"
 	"testing"
+
+	"harvest/bean/internal/driver/postgres/postgrestest"
 )
 
 func TestDB(t *testing.T) {
-	DBTest(t)
-}
+	db := postgrestest.DBTest(t)
 
-func DBTest(t *testing.T) *DB {
-	t.Helper()
-
-	if os.Getenv("INTEGRATION_DB") == "" {
-		t.Skip("skipping integration test, set env var INTEGRATION_DB=1")
-	}
-
-	db, err := New(&DSNBuilder{
-		Host:     "postgres",
-		Port:     "5432",
-		Name:     "bean_test",
-		Username: "postgres",
-		Password: "postgres",
-		SSLMode:  "disable",
-	})
-
+	err := db.Pool.Ping(context.TODO())
 	if err != nil {
 		t.Fatalf("db error: %s", err)
 	}
-
-	t.Cleanup(func() {
-		db.Close()
-	})
-
-	return db
 }
