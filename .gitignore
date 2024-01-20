@@ -28,12 +28,15 @@
 # sql files
 !**/*.sql
 
+# sh files
+!**/*.sh
+
 # docker files
 !/docker-compose.yml
 !*/Dockerfile
 
 # tern migration files
-!*/config/.tern.conf
+!*/config/*.tern.conf
 
 # air live reload files
 !*/config/.air.toml
