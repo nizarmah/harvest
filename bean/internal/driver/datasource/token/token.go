@@ -2,7 +2,7 @@ package token
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"harvest/bean/internal/entity"
 
@@ -37,7 +37,7 @@ func (ds *dataSource) Create(email string, hashedToken string) (*entity.LoginTok
 		Scan(&token.ID, &token.Email, &token.HashedToken, &token.CreatedAt, &token.ExpiresAt)
 
 	if err != nil {
-		return nil, errors.New("error creating login token: " + err.Error())
+		return nil, fmt.Errorf("failed to create token: %w", err)
 	}
 
 	return token, nil
@@ -56,7 +56,7 @@ func (ds *dataSource) FindUnexpired(id string) (*entity.LoginToken, error) {
 		Scan(&token.ID, &token.Email, &token.HashedToken, &token.CreatedAt, &token.ExpiresAt)
 
 	if err != nil {
-		return nil, errors.New("error finding unexpired login token")
+		return nil, fmt.Errorf("failed to find unexpired token: %w", err)
 	}
 
 	return token, nil
@@ -73,7 +73,7 @@ func (ds *dataSource) Delete(id string) error {
 		)
 
 	if err != nil {
-		return errors.New("error deleting login token")
+		return fmt.Errorf("failed to delete token: %w", err)
 	}
 
 	return nil
