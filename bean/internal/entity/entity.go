@@ -7,7 +7,7 @@ import (
 type Subscription struct {
 	ID int
 
-	UserID          int
+	UserID          string
 	PaymentMethodID int
 
 	Amount int
@@ -22,7 +22,7 @@ type Subscription struct {
 type PaymentMethod struct {
 	ID int
 
-	UserID int
+	UserID string
 
 	Label    string
 	Last4    string
@@ -37,7 +37,7 @@ type PaymentMethod struct {
 }
 
 type User struct {
-	ID int
+	ID string
 
 	Email string
 

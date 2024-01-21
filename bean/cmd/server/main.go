@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"harvest/bean/internal/entity"
 
@@ -10,7 +11,6 @@ import (
 	"harvest/bean/internal/driver/database"
 	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
 	subscriptionDS "harvest/bean/internal/driver/datasource/subscription"
-	userDS "harvest/bean/internal/driver/datasource/user"
 )
 
 func main() {
@@ -37,41 +37,15 @@ func main() {
 	}
 	defer db.Close()
 
-	u := createUserIfNotExists(db)
-	if u == nil {
-		fmt.Println("user not found")
-		return
+	u := &entity.User{
+		ID:        "test-user",
+		Email:     "test-user@email.com",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	testPaymentMethods(db, u)
 	testSubscriptions(db, u)
-}
-
-func createUserIfNotExists(db *database.DB) *entity.User {
-	users := userDS.New(db)
-
-	u, _ := users.FindByEmail("test@gmail.com")
-	if u != nil {
-		fmt.Println("user found by email: ", u.ID, u.Email, u.CreatedAt, u.UpdatedAt)
-		return u
-	}
-
-	u, err := users.Create(&entity.User{Email: "test@gmail.com"})
-	if u != nil {
-		fmt.Println("user created: ", u.ID, u.Email, u.CreatedAt, u.UpdatedAt)
-	} else {
-		fmt.Println("user not created: ", err)
-		return nil
-	}
-
-	u, err = users.FindById(u.ID)
-	if u != nil {
-		fmt.Println("user found by id: ", u.ID, u.Email, u.CreatedAt, u.UpdatedAt)
-	} else {
-		fmt.Println("user not found by id: ", err)
-	}
-
-	return u
 }
 
 func testPaymentMethods(db *database.DB, u *entity.User) {

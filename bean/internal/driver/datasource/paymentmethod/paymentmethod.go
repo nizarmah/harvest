@@ -55,7 +55,7 @@ func (ds *dataSource) Create(input *entity.PaymentMethod) (*entity.PaymentMethod
 	return method, nil
 }
 
-func (ds *dataSource) FindByUserId(userId int) ([]*entity.PaymentMethod, error) {
+func (ds *dataSource) FindByUserId(userId string) ([]*entity.PaymentMethod, error) {
 	rows, err := ds.db.Pool.Query("SELECT * FROM payment_methods WHERE user_id = ?", userId)
 	if err != nil {
 		return nil, errors.New("error getting payment methods")
