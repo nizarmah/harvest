@@ -47,6 +47,11 @@ func create(t *testing.T, ds usecase.UserDataSource) {
 		if user.CreatedAt.IsZero() {
 			t.Error("expected creation time, got zero time")
 		}
+
+		err = ds.Delete(user.ID)
+		if err != nil {
+			t.Fatalf("failed to cleanup user: %s", err)
+		}
 	})
 
 	t.Run("existing_user", func(t *testing.T) {

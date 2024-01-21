@@ -98,15 +98,36 @@ func findUnexpired(t *testing.T, ds usecase.LoginTokenDataSource) {
 			t.Errorf("expected nil token, got: %v", token)
 		}
 	})
+
+	t.Run("nonexistent_token", func(t *testing.T) {
+		_, err := ds.FindUnexpired("nonexistent")
+		if err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
 }
 
 func delete(t *testing.T, ds usecase.LoginTokenDataSource) {
-	token, err := ds.Create("action-delete", "hashed-token")
-	if err != nil {
-		t.Fatalf("failed to create token: %s", err)
-	}
+	t.Run("existing_token", func(t *testing.T) {
+		token, err := ds.Create("action-delete", "hashed-token")
+		if err != nil {
+			t.Fatalf("failed to create token: %s", err)
+		}
 
-	if err = ds.Delete(token.ID); err != nil {
-		t.Fatalf("failed to delete token: %s", err)
-	}
+		if err = ds.Delete(token.ID); err != nil {
+			t.Fatalf("failed to delete token: %s", err)
+		}
+
+		_, err = ds.FindUnexpired(token.ID)
+		if err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
+
+	t.Run("nonexistent_token", func(t *testing.T) {
+		err := ds.Delete("nonexistent")
+		if err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
 }
