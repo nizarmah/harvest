@@ -66,9 +66,7 @@ func (ds *dataSource) Delete(id string) error {
 	_, err := ds.db.Pool.
 		Exec(
 			context.Background(),
-			("DELETE FROM login_tokens" +
-				" WHERE id = $1" +
-				" RETURNING *"),
+			"DELETE FROM login_tokens WHERE id = $1",
 			id,
 		)
 

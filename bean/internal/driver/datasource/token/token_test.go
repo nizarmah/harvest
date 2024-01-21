@@ -9,6 +9,10 @@ import (
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
 
+var (
+	expiredId = "00000000-0000-0000-0000-000000000001"
+)
+
 func TestDataSource(t *testing.T) {
 	db := postgrestest.DBTest(t)
 	ds := New(db)
@@ -92,7 +96,7 @@ func findUnexpired(t *testing.T, ds usecase.LoginTokenDataSource) {
 	})
 
 	t.Run("expired_token", func(t *testing.T) {
-		token, _ := ds.FindUnexpired("00000000-0000-0000-0000-000000000001")
+		token, _ := ds.FindUnexpired(expiredId)
 		if token != nil && token.ExpiresAt.Before(time.Now()) {
 			t.Errorf("expected nil token, got: %v", token)
 		}

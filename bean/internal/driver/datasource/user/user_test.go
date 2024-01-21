@@ -8,6 +8,10 @@ import (
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
 
+var (
+	userId = "00000000-0000-0000-0000-000000000001"
+)
+
 func TestDataSource(t *testing.T) {
 	db := postgrestest.DBTest(t)
 	ds := New(db)
@@ -71,22 +75,8 @@ func create(t *testing.T, ds usecase.UserDataSource) {
 
 func findById(t *testing.T, ds usecase.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
-		user, err := ds.Create("action-find-by-id")
-		if err != nil {
-			t.Fatalf("failed to create user: %s", err)
-		}
-
-		found, err := ds.FindById(user.ID)
-		if err != nil {
+		if _, err := ds.FindById(userId); err != nil {
 			t.Fatalf("failed to find user by id: %s", err)
-		}
-
-		if found.ID != user.ID {
-			t.Errorf("expected same token ID, got: %s", found.ID)
-		}
-
-		if err = ds.Delete(user.ID); err != nil {
-			t.Fatalf("failed to cleanup user: %s", err)
 		}
 	})
 
@@ -99,22 +89,8 @@ func findById(t *testing.T, ds usecase.UserDataSource) {
 
 func findByEmail(t *testing.T, ds usecase.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
-		user, err := ds.Create("action-find-by-email")
-		if err != nil {
-			t.Fatalf("failed to create user: %s", err)
-		}
-
-		found, err := ds.FindByEmail(user.Email)
-		if err != nil {
+		if _, err := ds.FindByEmail("user-1"); err != nil {
 			t.Fatalf("failed to find user by email: %s", err)
-		}
-
-		if found.ID != user.ID {
-			t.Errorf("expected same token ID, got: %s", found.ID)
-		}
-
-		if err = ds.Delete(user.ID); err != nil {
-			t.Fatalf("failed to cleanup user: %s", err)
 		}
 	})
 

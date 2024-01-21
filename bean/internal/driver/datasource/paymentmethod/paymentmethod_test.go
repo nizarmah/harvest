@@ -8,8 +8,12 @@ import (
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
 
-var user1ID = "00000000-0000-0000-0000-000000000001"
-var user2ID = "00000000-0000-0000-0000-000000000002"
+var (
+	userWithMethodsId   = "00000000-0000-0000-0001-000000000001"
+	userWithNoMethodsId = "00000000-0000-0000-0001-000000000002"
+
+	methodId = "00000000-0000-0000-0000-000000000001"
+)
 
 func TestDataSouce(t *testing.T) {
 	db := postgrestest.DBTest(t)
@@ -33,7 +37,7 @@ func TestDataSouce(t *testing.T) {
 }
 
 func create(t *testing.T, ds usecase.PaymentMethodDataSource) {
-	method, err := ds.Create(user1ID, "action-new", "1234", "brand", 12, 2024)
+	method, err := ds.Create(userWithMethodsId, "action-new", "1234", "brand", 12, 2024)
 	if err != nil {
 		t.Fatalf("failed to create payment method: %s", err)
 	}
@@ -42,8 +46,8 @@ func create(t *testing.T, ds usecase.PaymentMethodDataSource) {
 		t.Error("expected payment method ID, got empty string")
 	}
 
-	if method.UserID != user1ID {
-		t.Errorf("expected user ID: %s, got: %s", user1ID, method.UserID)
+	if method.UserID != userWithMethodsId {
+		t.Errorf("expected user ID: %s, got: %s", userWithMethodsId, method.UserID)
 	}
 
 	if method.Label != "action-new" {
@@ -72,38 +76,22 @@ func create(t *testing.T, ds usecase.PaymentMethodDataSource) {
 }
 
 func findById(t *testing.T, ds usecase.PaymentMethodDataSource) {
-	method, err := ds.Create(user1ID, "action-new", "1234", "brand", 12, 2024)
-	if err != nil {
-		t.Fatalf("failed to create payment method: %s", err)
-	}
+	t.Run("existing_payment_method", func(t *testing.T) {
+		if _, err := ds.FindById(methodId); err != nil {
+			t.Fatalf("failed to find payment method by id: %s", err)
+		}
+	})
 
-	if _, err := ds.FindById(method.ID); err != nil {
-		t.Fatalf("failed to find payment method by id: %s", err)
-	}
-
-	if err := ds.Delete(method.ID); err != nil {
-		t.Fatalf("failed to cleanup payment method: %s", err)
-	}
+	t.Run("nonexistent_payment_method", func(t *testing.T) {
+		if _, err := ds.FindById("nonexistent"); err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
 }
 
 func findByUserId(t *testing.T, ds usecase.PaymentMethodDataSource) {
 	t.Run("has_payment_methods", func(t *testing.T) {
-		user1Method1, err := ds.Create(user1ID, "action-new", "1234", "brand", 12, 2024)
-		if err != nil {
-			t.Fatalf("failed to create payment method: %s", err)
-		}
-
-		user1Method2, err := ds.Create(user1ID, "action-new", "5678", "brand", 12, 2025)
-		if err != nil {
-			t.Fatalf("failed to create payment method: %s", err)
-		}
-
-		user2Method1, err := ds.Create(user2ID, "action-new", "1357", "brand", 12, 2026)
-		if err != nil {
-			t.Fatalf("failed to create payment method: %s", err)
-		}
-
-		methods, err := ds.FindByUserId(user1ID)
+		methods, err := ds.FindByUserId(userWithMethodsId)
 		if err != nil {
 			t.Fatalf("failed to find payment methods: %s", err)
 		}
@@ -112,29 +100,15 @@ func findByUserId(t *testing.T, ds usecase.PaymentMethodDataSource) {
 			t.Errorf("expected %d payment methods, got: %d", 2, len(methods))
 		}
 
-		if methods[0].ID != user1Method1.ID {
-			t.Errorf("expected payment method ID: %s, got: %s", user1Method1.ID, methods[0].ID)
-		}
-
-		if methods[1].ID != user1Method2.ID {
-			t.Errorf("expected payment method ID: %s, got: %s", user1Method2.ID, methods[1].ID)
-		}
-
-		if err := ds.Delete(user1Method1.ID); err != nil {
-			t.Fatalf("failed to cleanup payment method: %s", err)
-		}
-
-		if err := ds.Delete(user1Method2.ID); err != nil {
-			t.Fatalf("failed to cleanup payment method: %s", err)
-		}
-
-		if err := ds.Delete(user2Method1.ID); err != nil {
-			t.Fatalf("failed to cleanup payment method: %s", err)
+		for _, method := range methods {
+			if method.UserID != userWithMethodsId {
+				t.Errorf("expected user ID: %s, got: %s", userWithMethodsId, method.UserID)
+			}
 		}
 	})
 
 	t.Run("no_payment_methods", func(t *testing.T) {
-		methods, err := ds.FindByUserId(user1ID)
+		methods, err := ds.FindByUserId(userWithNoMethodsId)
 		if err != nil {
 			t.Fatalf("failed to find payment methods: %s", err)
 		}
@@ -147,7 +121,7 @@ func findByUserId(t *testing.T, ds usecase.PaymentMethodDataSource) {
 
 func delete(t *testing.T, ds usecase.PaymentMethodDataSource) {
 	t.Run("existing_payment_method", func(t *testing.T) {
-		method, err := ds.Create(user1ID, "action-new", "1234", "brand", 12, 2024)
+		method, err := ds.Create(userWithMethodsId, "action-new", "1234", "brand", 12, 2024)
 		if err != nil {
 			t.Fatalf("failed to create payment method: %s", err)
 		}

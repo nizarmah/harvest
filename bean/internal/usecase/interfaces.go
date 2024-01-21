@@ -5,11 +5,18 @@ import (
 )
 
 type SubscriptionDataSource interface {
-	Create(subscription *entity.Subscription) (*entity.Subscription, error)
+	Create(
+		userID string,
+		paymentMethodID string,
+		amount int,
+		freqVal int,
+		freqUnit string,
+	) (*entity.Subscription, error)
 
+	FindById(id string) (*entity.Subscription, error)
 	FindByUserId(userId string) ([]*entity.Subscription, error)
 
-	Delete(subscription *entity.Subscription) error
+	Delete(id string) error
 }
 
 type PaymentMethodDataSource interface {

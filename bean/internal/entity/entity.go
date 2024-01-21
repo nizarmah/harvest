@@ -5,13 +5,11 @@ import (
 )
 
 type Subscription struct {
-	ID int
-
+	ID              string
 	UserID          string
-	PaymentMethodID int
+	PaymentMethodID string
 
-	Amount int
-
+	Amount   int
 	FreqVal  int
 	FreqUnit string
 

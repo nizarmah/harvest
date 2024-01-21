@@ -1,95 +1,122 @@
 package subscription
 
 import (
-	"errors"
+	"context"
+	"fmt"
 
 	"harvest/bean/internal/entity"
 
 	"harvest/bean/internal/usecase"
 
-	"harvest/bean/internal/driver/database"
+	"harvest/bean/internal/driver/postgres"
 )
 
 type dataSource struct {
-	db *database.DB
+	db *postgres.DB
 }
 
-func New(db *database.DB) usecase.SubscriptionDataSource {
+func New(db *postgres.DB) usecase.SubscriptionDataSource {
 	return &dataSource{
 		db: db,
 	}
 }
 
-func (ds *dataSource) Create(input *entity.Subscription) (*entity.Subscription, error) {
-	res, err := ds.db.Pool.Exec(
-		"INSERT INTO subscriptions (user_id, payment_method_id, amount, freq_val, freq_unit) VALUES (?, ?, ?, ?, ?)",
-		input.UserID,
-		input.PaymentMethodID,
-		input.Amount,
-		input.FreqVal,
-		input.FreqUnit,
-	)
-	if err != nil {
-		return nil, errors.New("error inserting subscription")
-	}
-
-	id, err := res.LastInsertId()
-	if err != nil {
-		return nil, errors.New("error getting last insert id")
-	}
-
+func (ds *dataSource) Create(
+	userID string,
+	paymentMethodID string,
+	amount int,
+	freqVal int,
+	freqUnit string,
+) (*entity.Subscription, error) {
 	sub := &entity.Subscription{}
 
-	err = ds.db.Pool.
-		QueryRow("SELECT * FROM subscriptions WHERE id = ?", id).
+	err := ds.db.Pool.
+		QueryRow(
+			context.Background(),
+			("INSERT INTO subscriptions (user_id, payment_method_id, amount, freq_val, freq_unit)"+
+				" VALUES ($1, $2, $3, $4, $5)"+
+				" RETURNING *"),
+			userID, paymentMethodID, amount, freqVal, freqUnit,
+		).
 		Scan(
 			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
 			&sub.Amount, &sub.FreqVal, &sub.FreqUnit,
 			&sub.CreatedAt, &sub.UpdatedAt,
 		)
+
 	if err != nil {
-		return nil, errors.New("error getting inserted subscription")
+		return nil, fmt.Errorf("failed to create subscription: %w", err)
+	}
+
+	return sub, nil
+}
+
+func (ds *dataSource) FindById(id string) (*entity.Subscription, error) {
+	sub := &entity.Subscription{}
+
+	err := ds.db.Pool.
+		QueryRow(
+			context.Background(),
+			"SELECT * FROM subscriptions WHERE id = $1",
+			id,
+		).
+		Scan(
+			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
+			&sub.Amount, &sub.FreqVal, &sub.FreqUnit,
+			&sub.CreatedAt, &sub.UpdatedAt,
+		)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find subscription: %w", err)
 	}
 
 	return sub, nil
 }
 
 func (ds *dataSource) FindByUserId(userId string) ([]*entity.Subscription, error) {
-	subs := []*entity.Subscription{}
+	rows, err := ds.db.Pool.
+		Query(
+			context.Background(),
+			"SELECT * FROM subscriptions WHERE user_id = $1",
+			userId,
+		)
 
-	rows, err := ds.db.Pool.Query("SELECT * FROM subscriptions WHERE user_id = ?", userId)
 	if err != nil {
-		return nil, errors.New("error getting subscriptions")
+		return nil, fmt.Errorf("failed to find subscriptions: %w", err)
 	}
+
 	defer rows.Close()
 
+	subs := []*entity.Subscription{}
 	for rows.Next() {
-		s := &entity.Subscription{}
+		sub := &entity.Subscription{}
 
-		err = rows.Scan(
-			&s.ID, &s.UserID, &s.PaymentMethodID,
-			&s.Amount, &s.FreqVal, &s.FreqUnit,
-			&s.CreatedAt, &s.UpdatedAt,
+		err := rows.Scan(
+			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
+			&sub.Amount, &sub.FreqVal, &sub.FreqUnit,
+			&sub.CreatedAt, &sub.UpdatedAt,
 		)
 
 		if err != nil {
-			return nil, errors.New("error scanning subscription")
+			return nil, fmt.Errorf("failed to scan subscription: %w", err)
 		}
 
-		subs = append(subs, s)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, errors.New("error iterating over subscriptions")
+		subs = append(subs, sub)
 	}
 
 	return subs, nil
 }
 
-func (ds *dataSource) Delete(sub *entity.Subscription) error {
-	_, err := ds.db.Pool.Exec("DELETE FROM subscriptions WHERE id = ?", sub.ID)
+func (ds *dataSource) Delete(id string) error {
+	_, err := ds.db.Pool.
+		Exec(
+			context.Background(),
+			"DELETE FROM subscriptions WHERE id = $1",
+			id,
+		)
+
 	if err != nil {
-		return errors.New("error deleting subscription")
+		return fmt.Errorf("failed to delete subscription: %w", err)
 	}
 
 	return nil
