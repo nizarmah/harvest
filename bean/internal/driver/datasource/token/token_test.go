@@ -82,8 +82,7 @@ func findUnexpired(t *testing.T, ds usecase.LoginTokenDataSource) {
 			t.Fatalf("failed to create token: %s", err)
 		}
 
-		_, err = ds.FindUnexpired(token.ID)
-		if err != nil {
+		if _, err = ds.FindUnexpired(token.ID); err != nil {
 			t.Fatalf("failed to find token: %s", err)
 		}
 
@@ -100,8 +99,7 @@ func findUnexpired(t *testing.T, ds usecase.LoginTokenDataSource) {
 	})
 
 	t.Run("nonexistent_token", func(t *testing.T) {
-		_, err := ds.FindUnexpired("nonexistent")
-		if err == nil {
+		if _, err := ds.FindUnexpired("nonexistent"); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
@@ -118,15 +116,13 @@ func delete(t *testing.T, ds usecase.LoginTokenDataSource) {
 			t.Fatalf("failed to delete token: %s", err)
 		}
 
-		_, err = ds.FindUnexpired(token.ID)
-		if err == nil {
+		if _, err = ds.FindUnexpired(token.ID); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
 
 	t.Run("nonexistent_token", func(t *testing.T) {
-		err := ds.Delete("nonexistent")
-		if err == nil {
+		if err := ds.Delete("nonexistent"); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
