@@ -54,7 +54,7 @@ func (ds *dataSource) Create(input *entity.Subscription) (*entity.Subscription, 
 	return sub, nil
 }
 
-func (ds *dataSource) FindByUserId(userId int) ([]*entity.Subscription, error) {
+func (ds *dataSource) FindByUserId(userId string) ([]*entity.Subscription, error) {
 	subs := []*entity.Subscription{}
 
 	rows, err := ds.db.Pool.Query("SELECT * FROM subscriptions WHERE user_id = ?", userId)
