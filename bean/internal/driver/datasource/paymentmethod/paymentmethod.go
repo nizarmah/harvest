@@ -2,7 +2,6 @@ package paymentmethod
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"harvest/bean/internal/entity"
@@ -82,7 +81,7 @@ func (ds *dataSource) FindByUserId(userId string) ([]*entity.PaymentMethod, erro
 		)
 
 	if err != nil {
-		return nil, errors.New("error getting payment methods")
+		return nil, fmt.Errorf("failed to find payment methods: %w", err)
 	}
 
 	defer rows.Close()
