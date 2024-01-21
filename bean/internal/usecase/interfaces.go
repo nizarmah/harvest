@@ -13,11 +13,19 @@ type SubscriptionDataSource interface {
 }
 
 type PaymentMethodDataSource interface {
-	Create(paymentMethod *entity.PaymentMethod) (*entity.PaymentMethod, error)
+	Create(
+		userID string,
+		label string,
+		last4 string,
+		brand string,
+		expMonth int,
+		expYear int,
+	) (*entity.PaymentMethod, error)
 
+	FindById(id string) (*entity.PaymentMethod, error)
 	FindByUserId(userId string) ([]*entity.PaymentMethod, error)
 
-	Delete(paymentMethod *entity.PaymentMethod) error
+	Delete(id string) error
 }
 
 type UserDataSource interface {
