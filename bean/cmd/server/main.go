@@ -9,7 +9,6 @@ import (
 	envAdapter "harvest/bean/internal/adapter/env"
 
 	"harvest/bean/internal/driver/database"
-	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
 	subscriptionDS "harvest/bean/internal/driver/datasource/subscription"
 )
 
@@ -44,62 +43,7 @@ func main() {
 		UpdatedAt: time.Now(),
 	}
 
-	testPaymentMethods(db, u)
 	testSubscriptions(db, u)
-}
-
-func testPaymentMethods(db *database.DB, u *entity.User) {
-	methods := paymentMethodDS.New(db)
-
-	_, err := methods.Create(&entity.PaymentMethod{
-		UserID:    u.ID,
-		Label:     "test",
-		Last4:     "1234",
-		Brand:     "visa",
-		ExpMonth:  7,
-		ExpYear:   2028,
-		IsDefault: true,
-	})
-	if err != nil {
-		fmt.Println("error creating payment method 1: ", err)
-		return
-	}
-
-	_, err = methods.Create(&entity.PaymentMethod{
-		UserID:    u.ID,
-		Label:     "test",
-		Last4:     "5678",
-		Brand:     "visa",
-		ExpMonth:  7,
-		ExpYear:   2028,
-		IsDefault: false,
-	})
-	if err != nil {
-		fmt.Println("error creating payment method 2: ", err)
-		return
-	}
-
-	slice, err := methods.FindByUserId(u.ID)
-	if err != nil {
-		fmt.Println("error finding payment methods: ", err)
-		return
-	}
-
-	for _, m := range slice {
-		fmt.Println(
-			"payment method found: ",
-			m.ID, m.UserID,
-			m.Label, m.Last4, m.Brand, m.ExpMonth, m.ExpYear,
-			m.IsDefault,
-			m.CreatedAt, m.UpdatedAt,
-		)
-
-		err = methods.Delete(m)
-		if err != nil {
-			fmt.Println("error deleting payment method: ", err)
-			return
-		}
-	}
 }
 
 func testSubscriptions(db *database.DB, u *entity.User) {

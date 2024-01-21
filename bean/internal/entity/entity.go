@@ -20,8 +20,7 @@ type Subscription struct {
 }
 
 type PaymentMethod struct {
-	ID int
-
+	ID     string
 	UserID string
 
 	Label    string
@@ -29,8 +28,6 @@ type PaymentMethod struct {
 	Brand    string
 	ExpMonth int
 	ExpYear  int
-
-	IsDefault bool
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
