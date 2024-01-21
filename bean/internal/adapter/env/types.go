@@ -7,6 +7,7 @@ type Env struct {
 type DB struct {
 	Name     string
 	Host     string
+	Port     string
 	Username string
 	Password string
 }

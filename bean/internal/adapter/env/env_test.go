@@ -8,6 +8,7 @@ import (
 func TestEnv(t *testing.T) {
 	os.Setenv("DB_NAME", "db_name")
 	os.Setenv("DB_HOST", "db_host")
+	os.Setenv("DB_PORT", "db_port")
 	os.Setenv("DB_USERNAME", "db_username")
 	os.Setenv("DB_PASSWORD", "db_password")
 
@@ -23,6 +24,10 @@ func TestEnv(t *testing.T) {
 
 	if env.DB.Host != "db_host" {
 		t.Errorf("expected: %s, got: %s", "db_host", env.DB.Host)
+	}
+
+	if env.DB.Port != "db_port" {
+		t.Errorf("expected: %s, got: %s", "db_port", env.DB.Port)
 	}
 
 	if env.DB.Username != "db_username" {

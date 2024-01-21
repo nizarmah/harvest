@@ -11,6 +11,11 @@ func New() (*Env, error) {
 		return nil, err
 	}
 
+	dbPort, err := lookup("DB_PORT")
+	if err != nil {
+		return nil, err
+	}
+
 	dbUsername, err := lookup("DB_USERNAME")
 	if err != nil {
 		return nil, err
@@ -25,6 +30,7 @@ func New() (*Env, error) {
 		DB: &DB{
 			Name:     dbName,
 			Host:     dbHost,
+			Port:     dbPort,
 			Username: dbUsername,
 			Password: dbPassword,
 		},
