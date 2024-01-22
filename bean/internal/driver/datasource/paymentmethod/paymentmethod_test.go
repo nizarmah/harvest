@@ -37,7 +37,7 @@ func TestDataSouce(t *testing.T) {
 }
 
 func create(t *testing.T, ds usecase.PaymentMethodDataSource) {
-	method, err := ds.Create(userWithMethodsId, "action-new", "1234", "brand", 12, 2024)
+	method, err := ds.Create(userWithMethodsId, "action-create", "1234", "brand", 12, 2024)
 	if err != nil {
 		t.Fatalf("failed to create payment method: %s", err)
 	}
@@ -50,8 +50,8 @@ func create(t *testing.T, ds usecase.PaymentMethodDataSource) {
 		t.Errorf("expected user ID: %s, got: %s", userWithMethodsId, method.UserID)
 	}
 
-	if method.Label != "action-new" {
-		t.Errorf("expected label: %s, got: %s", "action-new", method.Label)
+	if method.Label != "action-create" {
+		t.Errorf("expected label: %s, got: %s", "action-create", method.Label)
 	}
 
 	if method.Last4 != "1234" {
@@ -121,7 +121,7 @@ func findByUserId(t *testing.T, ds usecase.PaymentMethodDataSource) {
 
 func delete(t *testing.T, ds usecase.PaymentMethodDataSource) {
 	t.Run("existing_payment_method", func(t *testing.T) {
-		method, err := ds.Create(userWithMethodsId, "action-new", "1234", "brand", 12, 2024)
+		method, err := ds.Create(userWithMethodsId, "action-delete", "1234", "brand", 12, 2024)
 		if err != nil {
 			t.Fatalf("failed to create payment method: %s", err)
 		}

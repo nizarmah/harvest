@@ -24,23 +24,27 @@ func New(db *postgres.DB) usecase.SubscriptionDataSource {
 func (ds *dataSource) Create(
 	userID string,
 	paymentMethodID string,
+	label string,
+	provider string,
 	amount int,
-	freqVal int,
-	freqUnit string,
+	interval int,
+	period string,
 ) (*entity.Subscription, error) {
 	sub := &entity.Subscription{}
 
 	err := ds.db.Pool.
 		QueryRow(
 			context.Background(),
-			("INSERT INTO subscriptions (user_id, payment_method_id, amount, freq_val, freq_unit)"+
-				" VALUES ($1, $2, $3, $4, $5)"+
+			("INSERT INTO subscriptions"+
+				" (user_id, payment_method_id, label, provider, amount, interval, period)"+
+				" VALUES ($1, $2, $3, $4, $5, $6, $7)"+
 				" RETURNING *"),
-			userID, paymentMethodID, amount, freqVal, freqUnit,
+			userID, paymentMethodID, label, provider, amount, interval, period,
 		).
 		Scan(
 			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
-			&sub.Amount, &sub.FreqVal, &sub.FreqUnit,
+			&sub.Label, &sub.Provider,
+			&sub.Amount, &sub.Interval, &sub.Period,
 			&sub.CreatedAt, &sub.UpdatedAt,
 		)
 
@@ -62,7 +66,8 @@ func (ds *dataSource) FindById(id string) (*entity.Subscription, error) {
 		).
 		Scan(
 			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
-			&sub.Amount, &sub.FreqVal, &sub.FreqUnit,
+			&sub.Label, &sub.Provider,
+			&sub.Amount, &sub.Interval, &sub.Period,
 			&sub.CreatedAt, &sub.UpdatedAt,
 		)
 
@@ -93,7 +98,8 @@ func (ds *dataSource) FindByUserId(userId string) ([]*entity.Subscription, error
 
 		err := rows.Scan(
 			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
-			&sub.Amount, &sub.FreqVal, &sub.FreqUnit,
+			&sub.Label, &sub.Provider,
+			&sub.Amount, &sub.Interval, &sub.Period,
 			&sub.CreatedAt, &sub.UpdatedAt,
 		)
 

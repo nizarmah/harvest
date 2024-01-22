@@ -32,7 +32,7 @@ func TestDataSource(t *testing.T) {
 
 func create(t *testing.T, ds usecase.LoginTokenDataSource) {
 	t.Run("new_token", func(t *testing.T) {
-		token, err := ds.Create("action-new", "hashed-token")
+		token, err := ds.Create("action-create", "hashed-token")
 		if err != nil {
 			t.Fatalf("failed to create token: %s", err)
 		}

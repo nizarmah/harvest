@@ -8,9 +8,11 @@ type SubscriptionDataSource interface {
 	Create(
 		userID string,
 		paymentMethodID string,
+		label string,
+		provider string,
 		amount int,
-		freqVal int,
-		freqUnit string,
+		interval int,
+		period string,
 	) (*entity.Subscription, error)
 
 	FindById(id string) (*entity.Subscription, error)
