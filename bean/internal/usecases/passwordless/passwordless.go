@@ -19,12 +19,13 @@ type UseCase struct {
 }
 
 func (u *UseCase) SendEmail(email string) error {
-	password, err := uuid.NewRandom()
+	rand, err := uuid.NewRandom()
 	if err != nil {
 		return fmt.Errorf("failed to generate password: %w", err)
 	}
 
-	hash, err := u.hasher.Hash(password.String())
+	password := rand.String()
+	hash, err := u.hasher.Hash(password)
 	if err != nil {
 		return fmt.Errorf("failed to hash password: %w", err)
 	}
@@ -37,7 +38,11 @@ func (u *UseCase) SendEmail(email string) error {
 	if err = u.emailer.Send(
 		email,
 		"Login to Bean",
-		fmt.Sprintf("Your login token is: %s", token),
+		fmt.Sprintf(
+			("Use the following link to login to Bean:\n"+
+				"https://localhost:8080/login?i=%s&p=%s"),
+			token.ID, password,
+		),
 	); err != nil {
 		return fmt.Errorf("failed to send email: %w", err)
 	}
