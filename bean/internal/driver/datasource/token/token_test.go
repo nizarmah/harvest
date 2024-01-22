@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"harvest/bean/internal/usecase"
+	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
@@ -30,7 +30,7 @@ func TestDataSource(t *testing.T) {
 	})
 }
 
-func create(t *testing.T, ds usecase.LoginTokenDataSource) {
+func create(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	t.Run("new_token", func(t *testing.T) {
 		token, err := ds.Create("action-create", "hashed-token")
 		if err != nil {
@@ -79,7 +79,7 @@ func create(t *testing.T, ds usecase.LoginTokenDataSource) {
 	})
 }
 
-func findUnexpired(t *testing.T, ds usecase.LoginTokenDataSource) {
+func findUnexpired(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	t.Run("valid_token", func(t *testing.T) {
 		token, err := ds.Create("action-find", "hashed-token")
 		if err != nil {
@@ -109,7 +109,7 @@ func findUnexpired(t *testing.T, ds usecase.LoginTokenDataSource) {
 	})
 }
 
-func delete(t *testing.T, ds usecase.LoginTokenDataSource) {
+func delete(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	t.Run("existing_token", func(t *testing.T) {
 		token, err := ds.Create("action-delete", "hashed-token")
 		if err != nil {

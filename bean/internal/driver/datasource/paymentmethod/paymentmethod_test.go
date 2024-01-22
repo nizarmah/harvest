@@ -3,7 +3,7 @@ package paymentmethod
 import (
 	"testing"
 
-	"harvest/bean/internal/usecase"
+	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
@@ -36,7 +36,7 @@ func TestDataSouce(t *testing.T) {
 	})
 }
 
-func create(t *testing.T, ds usecase.PaymentMethodDataSource) {
+func create(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	method, err := ds.Create(userWithMethodsId, "action-create", "1234", "brand", 12, 2024)
 	if err != nil {
 		t.Fatalf("failed to create payment method: %s", err)
@@ -75,7 +75,7 @@ func create(t *testing.T, ds usecase.PaymentMethodDataSource) {
 	}
 }
 
-func findById(t *testing.T, ds usecase.PaymentMethodDataSource) {
+func findById(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	t.Run("existing_payment_method", func(t *testing.T) {
 		if _, err := ds.FindById(methodId); err != nil {
 			t.Fatalf("failed to find payment method by id: %s", err)
@@ -89,7 +89,7 @@ func findById(t *testing.T, ds usecase.PaymentMethodDataSource) {
 	})
 }
 
-func findByUserId(t *testing.T, ds usecase.PaymentMethodDataSource) {
+func findByUserId(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	t.Run("has_payment_methods", func(t *testing.T) {
 		methods, err := ds.FindByUserId(userWithMethodsId)
 		if err != nil {
@@ -119,7 +119,7 @@ func findByUserId(t *testing.T, ds usecase.PaymentMethodDataSource) {
 	})
 }
 
-func delete(t *testing.T, ds usecase.PaymentMethodDataSource) {
+func delete(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	t.Run("existing_payment_method", func(t *testing.T) {
 		method, err := ds.Create(userWithMethodsId, "action-delete", "1234", "brand", 12, 2024)
 		if err != nil {

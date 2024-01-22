@@ -6,7 +6,7 @@ import (
 
 	"harvest/bean/internal/entity"
 
-	"harvest/bean/internal/usecase"
+	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres"
 )
@@ -15,7 +15,7 @@ type dataSource struct {
 	db *postgres.DB
 }
 
-func New(db *postgres.DB) usecase.LoginTokenDataSource {
+func New(db *postgres.DB) interfaces.LoginTokenDataSource {
 	return &dataSource{
 		db: db,
 	}
