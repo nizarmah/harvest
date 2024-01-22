@@ -4,6 +4,8 @@ import (
 	"harvest/bean/internal/entity"
 )
 
+// --- Data Sources ---
+
 type SubscriptionDataSource interface {
 	Create(
 		userID string,
@@ -52,4 +54,15 @@ type LoginTokenDataSource interface {
 	FindUnexpired(id string) (*entity.LoginToken, error)
 
 	Delete(id string) error
+}
+
+// --- Misc ---
+
+type Hasher interface {
+	Hash(string) (string, error)
+	Compare(string, string) error
+}
+
+type Emailer interface {
+	Send(email string, subject string, body string) error
 }
