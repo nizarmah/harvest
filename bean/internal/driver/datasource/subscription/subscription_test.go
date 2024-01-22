@@ -3,7 +3,7 @@ package subscription
 import (
 	"testing"
 
-	"harvest/bean/internal/usecase"
+	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
@@ -38,7 +38,7 @@ func TestDataSouce(t *testing.T) {
 	})
 }
 
-func create(t *testing.T, ds usecase.SubscriptionDataSource) {
+func create(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	sub, err := ds.Create(userWithSubsId, methodId, "action-create", "bean", 1000, 1, "month")
 	if err != nil {
 		t.Fatalf("failed to create subscription: %s", err)
@@ -81,7 +81,7 @@ func create(t *testing.T, ds usecase.SubscriptionDataSource) {
 	}
 }
 
-func findById(t *testing.T, ds usecase.SubscriptionDataSource) {
+func findById(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("existing_subscription", func(t *testing.T) {
 		if _, err := ds.FindById(subId); err != nil {
 			t.Fatalf("failed to find subscription by id: %s", err)
@@ -95,7 +95,7 @@ func findById(t *testing.T, ds usecase.SubscriptionDataSource) {
 	})
 }
 
-func findByUserId(t *testing.T, ds usecase.SubscriptionDataSource) {
+func findByUserId(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("has_subscriptions", func(t *testing.T) {
 		subs, err := ds.FindByUserId(userWithSubsId)
 		if err != nil {
@@ -125,7 +125,7 @@ func findByUserId(t *testing.T, ds usecase.SubscriptionDataSource) {
 	})
 }
 
-func delete(t *testing.T, ds usecase.SubscriptionDataSource) {
+func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("existing_subscription", func(t *testing.T) {
 		sub, err := ds.Create(userWithSubsId, methodId, "action-delete", "bean", 1000, 1, "month")
 		if err != nil {

@@ -1,4 +1,4 @@
-package usecase
+package interfaces
 
 import (
 	"harvest/bean/internal/entity"

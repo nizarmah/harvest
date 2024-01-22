@@ -3,7 +3,7 @@ package user
 import (
 	"testing"
 
-	"harvest/bean/internal/usecase"
+	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
@@ -33,7 +33,7 @@ func TestDataSource(t *testing.T) {
 	})
 }
 
-func create(t *testing.T, ds usecase.UserDataSource) {
+func create(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("new_user", func(t *testing.T) {
 		user, err := ds.Create("action-create")
 		if err != nil {
@@ -73,7 +73,7 @@ func create(t *testing.T, ds usecase.UserDataSource) {
 	})
 }
 
-func findById(t *testing.T, ds usecase.UserDataSource) {
+func findById(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
 		if _, err := ds.FindById(userId); err != nil {
 			t.Fatalf("failed to find user by id: %s", err)
@@ -87,7 +87,7 @@ func findById(t *testing.T, ds usecase.UserDataSource) {
 	})
 }
 
-func findByEmail(t *testing.T, ds usecase.UserDataSource) {
+func findByEmail(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
 		if _, err := ds.FindByEmail("user-1"); err != nil {
 			t.Fatalf("failed to find user by email: %s", err)
@@ -101,7 +101,7 @@ func findByEmail(t *testing.T, ds usecase.UserDataSource) {
 	})
 }
 
-func delete(t *testing.T, ds usecase.UserDataSource) {
+func delete(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
 		user, err := ds.Create("action-delete")
 		if err != nil {
