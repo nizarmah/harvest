@@ -35,7 +35,7 @@ func TestDataSource(t *testing.T) {
 
 func create(t *testing.T, ds usecase.UserDataSource) {
 	t.Run("new_user", func(t *testing.T) {
-		user, err := ds.Create("action-new")
+		user, err := ds.Create("action-create")
 		if err != nil {
 			t.Fatalf("failed to create user: %s", err)
 		}
@@ -44,8 +44,8 @@ func create(t *testing.T, ds usecase.UserDataSource) {
 			t.Error("expected user ID, got empty string")
 		}
 
-		if user.Email != "action-new" {
-			t.Errorf("expected email 'action-new', got: %s", user.Email)
+		if user.Email != "action-create" {
+			t.Errorf("expected email: %s, got: %s", "action-create", user.Email)
 		}
 
 		if user.CreatedAt.IsZero() {

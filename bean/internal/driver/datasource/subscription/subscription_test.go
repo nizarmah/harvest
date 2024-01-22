@@ -39,7 +39,7 @@ func TestDataSouce(t *testing.T) {
 }
 
 func create(t *testing.T, ds usecase.SubscriptionDataSource) {
-	sub, err := ds.Create(userWithSubsId, methodId, 1000, 1, "month")
+	sub, err := ds.Create(userWithSubsId, methodId, "action-create", "bean", 1000, 1, "month")
 	if err != nil {
 		t.Fatalf("failed to create subscription: %s", err)
 	}
@@ -56,16 +56,24 @@ func create(t *testing.T, ds usecase.SubscriptionDataSource) {
 		t.Errorf("expected payment method ID: %s, got: %s", methodId, sub.PaymentMethodID)
 	}
 
+	if sub.Label != "action-create" {
+		t.Errorf("expected label: %s, got: %s", "action-create", sub.Label)
+	}
+
+	if sub.Provider != "bean" {
+		t.Errorf("expected provider: %s, got: %s", "bean", sub.Provider)
+	}
+
 	if sub.Amount != 1000 {
 		t.Errorf("expected amount: %d, got: %d", 1000, sub.Amount)
 	}
 
-	if sub.FreqVal != 1 {
-		t.Errorf("expected freq: %d, got: %d", 1, sub.FreqVal)
+	if sub.Interval != 1 {
+		t.Errorf("expected interval: %d, got: %d", 1, sub.Interval)
 	}
 
-	if sub.FreqUnit != "month" {
-		t.Errorf("expected freqUnit: %s, got: %s", "month", sub.FreqUnit)
+	if sub.Period != "month" {
+		t.Errorf("expected period: %s, got: %s", "month", sub.Period)
 	}
 
 	if err := ds.Delete(sub.ID); err != nil {
@@ -119,7 +127,7 @@ func findByUserId(t *testing.T, ds usecase.SubscriptionDataSource) {
 
 func delete(t *testing.T, ds usecase.SubscriptionDataSource) {
 	t.Run("existing_subscription", func(t *testing.T) {
-		sub, err := ds.Create(userWithSubsId, methodId, 1000, 1, "month")
+		sub, err := ds.Create(userWithSubsId, methodId, "action-delete", "bean", 1000, 1, "month")
 		if err != nil {
 			t.Fatalf("failed to create subscription: %s", err)
 		}

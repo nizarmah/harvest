@@ -9,9 +9,11 @@ type Subscription struct {
 	UserID          string
 	PaymentMethodID string
 
+	Label    string
+	Provider string
 	Amount   int
-	FreqVal  int
-	FreqUnit string
+	Interval int
+	Period   string
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
