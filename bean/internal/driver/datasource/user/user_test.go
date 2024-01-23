@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	userID        = "00000000-0000-0000-0000-000000000001"
-	nonexistentID = "11111111-1111-1111-1111-111111111111"
+	userID    = "00000000-0000-0000-0000-000000000001"
+	missingID = "11111111-1111-1111-1111-111111111111"
 )
 
 func TestDataSource(t *testing.T) {
@@ -76,28 +76,48 @@ func create(t *testing.T, ds interfaces.UserDataSource) {
 
 func findById(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
-		if _, err := ds.FindById(userID); err != nil {
-			t.Fatalf("failed to find user by id: %s", err)
+		user, err := ds.FindById(userID)
+		if err != nil {
+			t.Errorf("expected nil error, got: %s", err)
+		}
+
+		if user == nil {
+			t.Errorf("expected user, got nil")
 		}
 	})
 
-	t.Run("nonexistent_user", func(t *testing.T) {
-		if _, err := ds.FindById(nonexistentID); err == nil {
-			t.Error("expected error, got nil")
+	t.Run("missing_user", func(t *testing.T) {
+		user, err := ds.FindById(missingID)
+		if err != nil {
+			t.Errorf("expected nil error, got: %s", err)
+		}
+
+		if user != nil {
+			t.Errorf("expected nil user, got: %v", user)
 		}
 	})
 }
 
 func findByEmail(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
-		if _, err := ds.FindByEmail("user-1"); err != nil {
-			t.Fatalf("failed to find user by email: %s", err)
+		user, err := ds.FindByEmail("user-1")
+		if err != nil {
+			t.Errorf("expected nil error, got: %s", err)
+		}
+
+		if user == nil {
+			t.Errorf("expected user, got nil")
 		}
 	})
 
-	t.Run("nonexistent_user", func(t *testing.T) {
-		if _, err := ds.FindByEmail("nonexistent"); err == nil {
-			t.Error("expected error, got nil")
+	t.Run("missing_user", func(t *testing.T) {
+		user, err := ds.FindByEmail("missing")
+		if err != nil {
+			t.Errorf("expected nil error, got: %s", err)
+		}
+
+		if user != nil {
+			t.Errorf("expected nil user, got: %v", user)
 		}
 	})
 }
@@ -113,13 +133,18 @@ func delete(t *testing.T, ds interfaces.UserDataSource) {
 			t.Fatalf("failed to delete user: %s", err)
 		}
 
-		if _, err = ds.FindById(user.ID); err == nil {
-			t.Error("expected error, got nil")
+		user, err = ds.FindById(user.ID)
+		if err != nil {
+			t.Fatalf("failed to find user: %s", err)
+		}
+
+		if user != nil {
+			t.Errorf("expected nil user, got: %v", user)
 		}
 	})
 
-	t.Run("nonexistent_user", func(t *testing.T) {
-		if err := ds.Delete(nonexistentID); err != nil {
+	t.Run("missing_user", func(t *testing.T) {
+		if err := ds.Delete(missingID); err != nil {
 			t.Fatalf("failed to delete user: %s", err)
 		}
 	})

@@ -9,6 +9,8 @@ import (
 	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type dataSource struct {
@@ -70,6 +72,10 @@ func (ds *dataSource) FindById(id string) (*entity.Subscription, error) {
 			&sub.Amount, &sub.Interval, &sub.Period,
 			&sub.CreatedAt, &sub.UpdatedAt,
 		)
+
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to find subscription: %w", err)
