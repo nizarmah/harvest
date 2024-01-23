@@ -78,7 +78,7 @@ func findById(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
 		user, err := ds.FindById(userID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if user == nil {
@@ -89,7 +89,7 @@ func findById(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("missing_user", func(t *testing.T) {
 		user, err := ds.FindById(missingID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if user != nil {
@@ -102,7 +102,7 @@ func findByEmail(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
 		user, err := ds.FindByEmail("user-1")
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if user == nil {
@@ -113,7 +113,7 @@ func findByEmail(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("missing_user", func(t *testing.T) {
 		user, err := ds.FindByEmail("missing")
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if user != nil {

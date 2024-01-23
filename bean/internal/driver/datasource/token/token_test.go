@@ -89,7 +89,7 @@ func findUnexpired(t *testing.T, ds interfaces.LoginTokenDataSource) {
 
 		token, err = ds.FindUnexpired(token.ID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if token == nil {
@@ -104,7 +104,7 @@ func findUnexpired(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	t.Run("expired_token", func(t *testing.T) {
 		token, err := ds.FindUnexpired(expiredID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if token != nil && token.ExpiresAt.Before(time.Now()) {
@@ -115,7 +115,7 @@ func findUnexpired(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	t.Run("missing_token", func(t *testing.T) {
 		token, err := ds.FindUnexpired(missingID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if token != nil {
@@ -141,7 +141,7 @@ func delete(t *testing.T, ds interfaces.LoginTokenDataSource) {
 		}
 
 		if token != nil {
-			t.Fatalf("expected nil token, got: %v", token)
+			t.Errorf("expected nil token, got: %v", token)
 		}
 	})
 

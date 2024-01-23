@@ -91,7 +91,7 @@ func findByID(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	t.Run("not_own_payment_method", func(t *testing.T) {
 		method, err := ds.FindByID(userWithNoMethodsID, methodID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if method != nil {
@@ -102,7 +102,7 @@ func findByID(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	t.Run("missing_payment_method", func(t *testing.T) {
 		method, err := ds.FindByID(userWithMethodsID, missingID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if method != nil {
@@ -158,7 +158,7 @@ func delete(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 		}
 
 		if method != nil {
-			t.Fatalf("expected nil payment method, got: %v", method)
+			t.Errorf("expected nil payment method, got: %v", method)
 		}
 	})
 
@@ -173,7 +173,7 @@ func delete(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 		}
 
 		if method == nil {
-			t.Fatalf("expected payment method, got nil")
+			t.Errorf("expected payment method, got nil")
 		}
 	})
 

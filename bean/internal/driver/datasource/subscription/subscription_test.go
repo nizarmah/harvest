@@ -86,7 +86,7 @@ func findById(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("existing_subscription", func(t *testing.T) {
 		sub, err := ds.FindById(subID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if sub == nil {
@@ -97,7 +97,7 @@ func findById(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("missing_subscription", func(t *testing.T) {
 		sub, err := ds.FindById(missingID)
 		if err != nil {
-			t.Errorf("expected nil error, got: %s", err)
+			t.Fatalf("expected nil error, got: %s", err)
 		}
 
 		if sub != nil {
@@ -153,13 +153,13 @@ func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		}
 
 		if sub != nil {
-			t.Fatalf("expected nil subscription, got: %v", sub)
+			t.Errorf("expected nil subscription, got: %v", sub)
 		}
 	})
 
 	t.Run("missing_subscription", func(t *testing.T) {
 		if err := ds.Delete(missingID); err != nil {
-			t.Fatalf("failed to delete subscription: %s", err)
+			t.Errorf("failed to delete subscription: %s", err)
 		}
 	})
 }
