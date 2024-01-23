@@ -33,10 +33,10 @@ type PaymentMethodDataSource interface {
 		expYear int,
 	) (*entity.PaymentMethod, error)
 
-	FindById(id string) (*entity.PaymentMethod, error)
-	FindByUserId(userId string) ([]*entity.PaymentMethod, error)
+	FindByID(userID string, id string) (*entity.PaymentMethod, error)
+	FindByUserID(userID string) ([]*entity.PaymentMethod, error)
 
-	Delete(id string) error
+	Delete(userID string, id string) error
 }
 
 type UserDataSource interface {

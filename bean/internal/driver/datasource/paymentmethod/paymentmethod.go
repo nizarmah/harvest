@@ -50,14 +50,14 @@ func (ds *dataSource) Create(
 	return method, nil
 }
 
-func (ds *dataSource) FindById(id string) (*entity.PaymentMethod, error) {
+func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethod, error) {
 	method := &entity.PaymentMethod{}
 
 	err := ds.db.Pool.
 		QueryRow(
 			context.Background(),
-			"SELECT * FROM payment_methods WHERE id = $1",
-			id,
+			"SELECT * FROM payment_methods WHERE user_id = $1 AND id = $2",
+			userID, id,
 		).
 		Scan(
 			&method.ID, &method.UserID,
@@ -72,12 +72,12 @@ func (ds *dataSource) FindById(id string) (*entity.PaymentMethod, error) {
 	return method, nil
 }
 
-func (ds *dataSource) FindByUserId(userId string) ([]*entity.PaymentMethod, error) {
+func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethod, error) {
 	rows, err := ds.db.Pool.
 		Query(
 			context.Background(),
 			"SELECT * FROM payment_methods WHERE user_id = $1",
-			userId,
+			userID,
 		)
 
 	if err != nil {
@@ -106,12 +106,12 @@ func (ds *dataSource) FindByUserId(userId string) ([]*entity.PaymentMethod, erro
 	return methods, nil
 }
 
-func (ds *dataSource) Delete(id string) error {
+func (ds *dataSource) Delete(userID string, id string) error {
 	_, err := ds.db.Pool.
 		Exec(
 			context.Background(),
-			"DELETE FROM payment_methods WHERE id = $1",
-			id,
+			"DELETE FROM payment_methods WHERE user_id = $1 AND id = $2",
+			userID, id,
 		)
 
 	if err != nil {
