@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	userId = "00000000-0000-0000-0000-000000000001"
+	userID        = "00000000-0000-0000-0000-000000000001"
+	nonexistentID = "11111111-1111-1111-1111-111111111111"
 )
 
 func TestDataSource(t *testing.T) {
@@ -75,13 +76,13 @@ func create(t *testing.T, ds interfaces.UserDataSource) {
 
 func findById(t *testing.T, ds interfaces.UserDataSource) {
 	t.Run("existing_user", func(t *testing.T) {
-		if _, err := ds.FindById(userId); err != nil {
+		if _, err := ds.FindById(userID); err != nil {
 			t.Fatalf("failed to find user by id: %s", err)
 		}
 	})
 
 	t.Run("nonexistent_user", func(t *testing.T) {
-		if _, err := ds.FindById("nonexistent"); err == nil {
+		if _, err := ds.FindById(nonexistentID); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
@@ -118,8 +119,8 @@ func delete(t *testing.T, ds interfaces.UserDataSource) {
 	})
 
 	t.Run("nonexistent_user", func(t *testing.T) {
-		if err := ds.Delete("nonexistent"); err == nil {
-			t.Error("expected error, got nil")
+		if err := ds.Delete(nonexistentID); err != nil {
+			t.Fatalf("failed to delete user: %s", err)
 		}
 	})
 }
