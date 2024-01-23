@@ -12,8 +12,8 @@ var (
 	userWithMethodsID   = "00000000-0000-0000-0001-000000000001"
 	userWithNoMethodsID = "00000000-0000-0000-0001-000000000002"
 
-	methodID      = "00000000-0000-0000-0000-000000000001"
-	nonexistentID = "11111111-1111-1111-1111-111111111111"
+	methodID  = "00000000-0000-0000-0000-000000000001"
+	missingID = "11111111-1111-1111-1111-111111111111"
 )
 
 func TestDataSouce(t *testing.T) {
@@ -78,20 +78,35 @@ func create(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 
 func findByID(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	t.Run("existing_payment_method", func(t *testing.T) {
-		if _, err := ds.FindByID(userWithMethodsID, methodID); err != nil {
+		method, err := ds.FindByID(userWithMethodsID, methodID)
+		if err != nil {
 			t.Fatalf("failed to find payment method by id: %s", err)
+		}
+
+		if method == nil {
+			t.Error("expected payment method, got nil")
 		}
 	})
 
 	t.Run("not_own_payment_method", func(t *testing.T) {
-		if _, err := ds.FindByID(userWithNoMethodsID, methodID); err == nil {
-			t.Error("expected error, got nil")
+		method, err := ds.FindByID(userWithNoMethodsID, methodID)
+		if err != nil {
+			t.Fatalf("expected nil error, got: %s", err)
+		}
+
+		if method != nil {
+			t.Errorf("expected nil payment method, got: %v", method)
 		}
 	})
 
-	t.Run("nonexistent_payment_method", func(t *testing.T) {
-		if _, err := ds.FindByID(userWithMethodsID, nonexistentID); err == nil {
-			t.Error("expected error, got nil")
+	t.Run("missing_payment_method", func(t *testing.T) {
+		method, err := ds.FindByID(userWithMethodsID, missingID)
+		if err != nil {
+			t.Fatalf("expected nil error, got: %s", err)
+		}
+
+		if method != nil {
+			t.Errorf("expected nil payment method, got: %v", method)
 		}
 	})
 }
@@ -137,8 +152,13 @@ func delete(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 			t.Fatalf("failed to delete payment method: %s", err)
 		}
 
-		if _, err = ds.FindByID(userWithMethodsID, method.ID); err == nil {
-			t.Error("expected error, got nil")
+		method, err = ds.FindByID(userWithMethodsID, method.ID)
+		if err != nil {
+			t.Fatalf("failed to find payment method: %s", err)
+		}
+
+		if method != nil {
+			t.Errorf("expected nil payment method, got: %v", method)
 		}
 	})
 
@@ -147,13 +167,18 @@ func delete(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 			t.Fatalf("failed to delete payment method: %s", err)
 		}
 
-		if method, _ := ds.FindByID(userWithMethodsID, methodID); method == nil {
-			t.Error("expected payment method, got nil")
+		method, err := ds.FindByID(userWithMethodsID, methodID)
+		if err != nil {
+			t.Fatalf("failed to find payment method: %s", err)
+		}
+
+		if method == nil {
+			t.Errorf("expected payment method, got nil")
 		}
 	})
 
-	t.Run("nonexistent_payment_method", func(t *testing.T) {
-		if err := ds.Delete(userWithMethodsID, nonexistentID); err != nil {
+	t.Run("missing_payment_method", func(t *testing.T) {
+		if err := ds.Delete(userWithMethodsID, missingID); err != nil {
 			t.Fatalf("failed to delete payment method: %s", err)
 		}
 	})

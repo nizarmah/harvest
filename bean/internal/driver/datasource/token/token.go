@@ -9,6 +9,8 @@ import (
 	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type dataSource struct {
@@ -54,6 +56,10 @@ func (ds *dataSource) FindUnexpired(id string) (*entity.LoginToken, error) {
 			id,
 		).
 		Scan(&token.ID, &token.Email, &token.HashedToken, &token.CreatedAt, &token.ExpiresAt)
+
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to find unexpired token: %w", err)

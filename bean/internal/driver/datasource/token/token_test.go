@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	expiredID     = "00000000-0000-0000-0000-000000000001"
-	nonexistentID = "11111111-1111-1111-1111-111111111111"
+	expiredID = "00000000-0000-0000-0000-000000000001"
+	missingID = "11111111-1111-1111-1111-111111111111"
 )
 
 func TestDataSource(t *testing.T) {
@@ -87,8 +87,13 @@ func findUnexpired(t *testing.T, ds interfaces.LoginTokenDataSource) {
 			t.Fatalf("failed to create token: %s", err)
 		}
 
-		if _, err = ds.FindUnexpired(token.ID); err != nil {
-			t.Fatalf("failed to find token: %s", err)
+		token, err = ds.FindUnexpired(token.ID)
+		if err != nil {
+			t.Fatalf("expected nil error, got: %s", err)
+		}
+
+		if token == nil {
+			t.Fatalf("expected token, got nil")
 		}
 
 		if err = ds.Delete(token.ID); err != nil {
@@ -97,15 +102,24 @@ func findUnexpired(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	})
 
 	t.Run("expired_token", func(t *testing.T) {
-		token, _ := ds.FindUnexpired(expiredID)
+		token, err := ds.FindUnexpired(expiredID)
+		if err != nil {
+			t.Fatalf("expected nil error, got: %s", err)
+		}
+
 		if token != nil && token.ExpiresAt.Before(time.Now()) {
 			t.Errorf("expected nil token, got: %v", token)
 		}
 	})
 
-	t.Run("nonexistent_token", func(t *testing.T) {
-		if _, err := ds.FindUnexpired(nonexistentID); err == nil {
-			t.Error("expected error, got nil")
+	t.Run("missing_token", func(t *testing.T) {
+		token, err := ds.FindUnexpired(missingID)
+		if err != nil {
+			t.Fatalf("expected nil error, got: %s", err)
+		}
+
+		if token != nil {
+			t.Errorf("expected nil token, got: %v", token)
 		}
 	})
 }
@@ -121,13 +135,18 @@ func delete(t *testing.T, ds interfaces.LoginTokenDataSource) {
 			t.Fatalf("failed to delete token: %s", err)
 		}
 
-		if _, err = ds.FindUnexpired(token.ID); err == nil {
-			t.Error("expected error, got nil")
+		token, err = ds.FindUnexpired(token.ID)
+		if err != nil {
+			t.Fatalf("failed to find token: %s", err)
+		}
+
+		if token != nil {
+			t.Errorf("expected nil token, got: %v", token)
 		}
 	})
 
-	t.Run("nonexistent_token", func(t *testing.T) {
-		if err := ds.Delete(nonexistentID); err != nil {
+	t.Run("missing_token", func(t *testing.T) {
+		if err := ds.Delete(missingID); err != nil {
 			t.Fatalf("failed to delete token: %s", err)
 		}
 	})

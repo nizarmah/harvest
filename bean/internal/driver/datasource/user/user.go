@@ -9,6 +9,8 @@ import (
 	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type dataSource struct {
@@ -52,6 +54,10 @@ func (ds *dataSource) FindById(id string) (*entity.User, error) {
 		).
 		Scan(&user.ID, &user.Email, &user.CreatedAt, &user.UpdatedAt)
 
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by id: %w", err)
 	}
@@ -69,6 +75,10 @@ func (ds *dataSource) FindByEmail(email string) (*entity.User, error) {
 			email,
 		).
 		Scan(&user.ID, &user.Email, &user.CreatedAt, &user.UpdatedAt)
+
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by email: %w", err)
