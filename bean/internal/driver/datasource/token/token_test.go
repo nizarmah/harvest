@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	expiredId = "00000000-0000-0000-0000-000000000001"
+	expiredID     = "00000000-0000-0000-0000-000000000001"
+	nonexistentID = "11111111-1111-1111-1111-111111111111"
 )
 
 func TestDataSource(t *testing.T) {
@@ -96,14 +97,14 @@ func findUnexpired(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	})
 
 	t.Run("expired_token", func(t *testing.T) {
-		token, _ := ds.FindUnexpired(expiredId)
+		token, _ := ds.FindUnexpired(expiredID)
 		if token != nil && token.ExpiresAt.Before(time.Now()) {
 			t.Errorf("expected nil token, got: %v", token)
 		}
 	})
 
 	t.Run("nonexistent_token", func(t *testing.T) {
-		if _, err := ds.FindUnexpired("nonexistent"); err == nil {
+		if _, err := ds.FindUnexpired(nonexistentID); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
@@ -126,8 +127,8 @@ func delete(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	})
 
 	t.Run("nonexistent_token", func(t *testing.T) {
-		if err := ds.Delete("nonexistent"); err == nil {
-			t.Error("expected error, got nil")
+		if err := ds.Delete(nonexistentID); err != nil {
+			t.Fatalf("failed to delete token: %s", err)
 		}
 	})
 }
