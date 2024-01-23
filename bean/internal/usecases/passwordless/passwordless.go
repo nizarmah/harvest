@@ -19,6 +19,10 @@ type UseCase struct {
 }
 
 func (u *UseCase) SendEmail(email string) error {
+	if err := validateEmail(email); err != nil {
+		return fmt.Errorf("failed to validate email: %w", err)
+	}
+
 	rand, err := uuid.NewRandom()
 	if err != nil {
 		return fmt.Errorf("failed to generate password: %w", err)
