@@ -65,9 +65,18 @@ func (u *UseCase) Login(id string, password string) (*entity.User, error) {
 		return nil, fmt.Errorf("failed to compare password: %w", err)
 	}
 
+	user, err := u.findOrCreateUser(token.Email)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find or create user: %w", err)
+	}
+
 	u.tokens.Delete(token.ID)
 
-	user, err := u.users.FindByEmail(token.Email)
+	return user, nil
+}
+
+func (u *UseCase) findOrCreateUser(email string) (*entity.User, error) {
+	user, err := u.users.FindByEmail(email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
@@ -76,7 +85,7 @@ func (u *UseCase) Login(id string, password string) (*entity.User, error) {
 		return user, nil
 	}
 
-	user, err = u.users.Create(token.Email)
+	user, err = u.users.Create(email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
