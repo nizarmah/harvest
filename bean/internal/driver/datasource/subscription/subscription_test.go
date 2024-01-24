@@ -3,6 +3,7 @@ package subscription
 import (
 	"testing"
 
+	"harvest/bean/internal/entity"
 	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres/postgrestest"
@@ -40,7 +41,7 @@ func TestDataSouce(t *testing.T) {
 }
 
 func create(t *testing.T, ds interfaces.SubscriptionDataSource) {
-	sub, err := ds.Create(userWithSubsID, methodID, "action-create", "bean", 1000, 1, "month")
+	sub, err := ds.Create(userWithSubsID, methodID, "action-create", "bean", 1000, 1, entity.SubscriptionPeriodMonthly)
 	if err != nil {
 		t.Fatalf("failed to create subscription: %s", err)
 	}
@@ -73,8 +74,8 @@ func create(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		t.Errorf("expected interval: %d, got: %d", 1, sub.Interval)
 	}
 
-	if sub.Period != "month" {
-		t.Errorf("expected period: %s, got: %s", "month", sub.Period)
+	if sub.Period != entity.SubscriptionPeriodMonthly {
+		t.Errorf("expected period: %s, got: %s", entity.SubscriptionPeriodMonthly, sub.Period)
 	}
 
 	if err := ds.Delete(userWithSubsID, sub.ID); err != nil {
@@ -149,7 +150,7 @@ func findByUserID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 
 func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("existing_subscription", func(t *testing.T) {
-		sub, err := ds.Create(userWithSubsID, methodID, "action-delete", "bean", 1000, 1, "month")
+		sub, err := ds.Create(userWithSubsID, methodID, "action-delete", "bean", 1000, 1, entity.SubscriptionPeriodMonthly)
 		if err != nil {
 			t.Fatalf("failed to create subscription: %s", err)
 		}

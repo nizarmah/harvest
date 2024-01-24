@@ -4,6 +4,17 @@ import (
 	"time"
 )
 
+// --- Database ---
+
+type SubscriptionPeriod string
+
+const (
+	SubscriptionPeriodDaily   SubscriptionPeriod = "day"
+	SubscriptionPeriodWeekly  SubscriptionPeriod = "week"
+	SubscriptionPeriodMonthly SubscriptionPeriod = "month"
+	SubscriptionPeriodYearly  SubscriptionPeriod = "year"
+)
+
 type Subscription struct {
 	ID              string
 	UserID          string
@@ -13,7 +24,7 @@ type Subscription struct {
 	Provider string
 	Amount   int
 	Interval int
-	Period   string
+	Period   SubscriptionPeriod
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -50,4 +61,13 @@ type LoginToken struct {
 
 	CreatedAt time.Time
 	ExpiresAt time.Time
+}
+
+// --- Misc ---
+
+type Estimates struct {
+	Daily   int
+	Weekly  int
+	Monthly int
+	Yearly  int
 }

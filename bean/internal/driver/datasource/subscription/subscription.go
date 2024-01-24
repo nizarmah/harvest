@@ -30,7 +30,7 @@ func (ds *dataSource) Create(
 	provider string,
 	amount int,
 	interval int,
-	period string,
+	period entity.SubscriptionPeriod,
 ) (*entity.Subscription, error) {
 	sub := &entity.Subscription{}
 

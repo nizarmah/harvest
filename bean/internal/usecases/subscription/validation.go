@@ -2,6 +2,8 @@ package subscription
 
 import (
 	"fmt"
+
+	"harvest/bean/internal/entity"
 )
 
 func validateLabel(label string) error {
@@ -36,9 +38,12 @@ func validateInterval(interval int) error {
 	return nil
 }
 
-func validatePeriod(period string) error {
+func validatePeriod(period entity.SubscriptionPeriod) error {
 	switch period {
-	case "day", "week", "month", "year":
+	case entity.SubscriptionPeriodDaily,
+		entity.SubscriptionPeriodWeekly,
+		entity.SubscriptionPeriodMonthly,
+		entity.SubscriptionPeriodYearly:
 		return nil
 	default:
 		return fmt.Errorf("period must be day, week, month or year")
