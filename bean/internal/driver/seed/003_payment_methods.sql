@@ -7,3 +7,7 @@ VALUES
 -- subscriptions related
 ('00000000-0000-0000-0001-000000000001', '00000000-0000-0000-0002-000000000001', 'valid', '4242', 'visa', 12, 2028)
 ;
+
+---- create above / drop below ----
+
+DELETE FROM payment_methods;

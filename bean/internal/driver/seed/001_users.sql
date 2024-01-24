@@ -11,3 +11,7 @@ VALUES
 ('00000000-0000-0000-0002-000000000001', 'subscriptions'),
 ('00000000-0000-0000-0002-000000000002', 'no-subscriptions')
 ;
+
+---- create above / drop below ----
+
+DELETE FROM users;
