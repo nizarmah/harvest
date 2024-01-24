@@ -12,6 +12,9 @@
 # read me
 !**/README.md
 
+# license
+!**/LICENSE
+
 # module files
 !/go.sum
 !/go.mod
