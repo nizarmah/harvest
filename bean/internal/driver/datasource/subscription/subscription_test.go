@@ -27,11 +27,11 @@ func TestDataSouce(t *testing.T) {
 	})
 
 	t.Run("find_by_id", func(t *testing.T) {
-		findById(t, ds)
+		findByID(t, ds)
 	})
 
 	t.Run("find_by_user_id", func(t *testing.T) {
-		findByUserId(t, ds)
+		findByUserID(t, ds)
 	})
 
 	t.Run("delete", func(t *testing.T) {
@@ -77,14 +77,14 @@ func create(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		t.Errorf("expected period: %s, got: %s", "month", sub.Period)
 	}
 
-	if err := ds.Delete(sub.ID); err != nil {
+	if err := ds.Delete(userWithSubsID, sub.ID); err != nil {
 		t.Fatalf("failed to cleanup subscription: %s", err)
 	}
 }
 
-func findById(t *testing.T, ds interfaces.SubscriptionDataSource) {
+func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("existing_subscription", func(t *testing.T) {
-		sub, err := ds.FindById(subID)
+		sub, err := ds.FindByID(userWithSubsID, subID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -94,8 +94,19 @@ func findById(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		}
 	})
 
+	t.Run("not_owned_subscription", func(t *testing.T) {
+		sub, err := ds.FindByID(userWithNoSubsID, subID)
+		if err != nil {
+			t.Fatalf("expected nil error, got: %s", err)
+		}
+
+		if sub != nil {
+			t.Errorf("expected nil subscription, got: %v", sub)
+		}
+	})
+
 	t.Run("missing_subscription", func(t *testing.T) {
-		sub, err := ds.FindById(missingID)
+		sub, err := ds.FindByID(userWithSubsID, missingID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -106,9 +117,9 @@ func findById(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	})
 }
 
-func findByUserId(t *testing.T, ds interfaces.SubscriptionDataSource) {
+func findByUserID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("has_subscriptions", func(t *testing.T) {
-		subs, err := ds.FindByUserId(userWithSubsID)
+		subs, err := ds.FindByUserID(userWithSubsID)
 		if err != nil {
 			t.Fatalf("failed to find subscriptions by user id: %s", err)
 		}
@@ -125,7 +136,7 @@ func findByUserId(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	})
 
 	t.Run("no_subscriptions", func(t *testing.T) {
-		subs, err := ds.FindByUserId(userWithNoSubsID)
+		subs, err := ds.FindByUserID(userWithNoSubsID)
 		if err != nil {
 			t.Fatalf("failed to find subscriptions by user id: %s", err)
 		}
@@ -143,11 +154,11 @@ func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 			t.Fatalf("failed to create subscription: %s", err)
 		}
 
-		if err = ds.Delete(sub.ID); err != nil {
+		if err = ds.Delete(userWithSubsID, sub.ID); err != nil {
 			t.Fatalf("failed to delete subscription: %s", err)
 		}
 
-		sub, err = ds.FindById(sub.ID)
+		sub, err = ds.FindByID(userWithSubsID, sub.ID)
 		if err != nil {
 			t.Fatalf("failed to find subscription: %s", err)
 		}
@@ -157,8 +168,23 @@ func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		}
 	})
 
+	t.Run("not_owned_subscription", func(t *testing.T) {
+		if err := ds.Delete(userWithNoSubsID, subID); err != nil {
+			t.Errorf("failed to delete subscription: %s", err)
+		}
+
+		sub, err := ds.FindByID(userWithSubsID, subID)
+		if err != nil {
+			t.Fatalf("failed to find subscription: %s", err)
+		}
+
+		if sub == nil {
+			t.Error("expected subscription, got nil")
+		}
+	})
+
 	t.Run("missing_subscription", func(t *testing.T) {
-		if err := ds.Delete(missingID); err != nil {
+		if err := ds.Delete(userWithSubsID, missingID); err != nil {
 			t.Errorf("failed to delete subscription: %s", err)
 		}
 	})

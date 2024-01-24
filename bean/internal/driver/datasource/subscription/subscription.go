@@ -57,14 +57,14 @@ func (ds *dataSource) Create(
 	return sub, nil
 }
 
-func (ds *dataSource) FindById(id string) (*entity.Subscription, error) {
+func (ds *dataSource) FindByID(userID string, id string) (*entity.Subscription, error) {
 	sub := &entity.Subscription{}
 
 	err := ds.db.Pool.
 		QueryRow(
 			context.Background(),
-			"SELECT * FROM subscriptions WHERE id = $1",
-			id,
+			"SELECT * FROM subscriptions WHERE user_id = $1 AND id = $2",
+			userID, id,
 		).
 		Scan(
 			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
@@ -84,12 +84,12 @@ func (ds *dataSource) FindById(id string) (*entity.Subscription, error) {
 	return sub, nil
 }
 
-func (ds *dataSource) FindByUserId(userId string) ([]*entity.Subscription, error) {
+func (ds *dataSource) FindByUserID(userID string) ([]*entity.Subscription, error) {
 	rows, err := ds.db.Pool.
 		Query(
 			context.Background(),
 			"SELECT * FROM subscriptions WHERE user_id = $1",
-			userId,
+			userID,
 		)
 
 	if err != nil {
@@ -119,12 +119,12 @@ func (ds *dataSource) FindByUserId(userId string) ([]*entity.Subscription, error
 	return subs, nil
 }
 
-func (ds *dataSource) Delete(id string) error {
+func (ds *dataSource) Delete(userID string, id string) error {
 	_, err := ds.db.Pool.
 		Exec(
 			context.Background(),
-			"DELETE FROM subscriptions WHERE id = $1",
-			id,
+			"DELETE FROM subscriptions WHERE user_id = $1 AND id = $2",
+			userID, id,
 		)
 
 	if err != nil {

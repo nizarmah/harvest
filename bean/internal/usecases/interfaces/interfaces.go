@@ -17,10 +17,10 @@ type SubscriptionDataSource interface {
 		period string,
 	) (*entity.Subscription, error)
 
-	FindById(id string) (*entity.Subscription, error)
-	FindByUserId(userId string) ([]*entity.Subscription, error)
+	FindByID(userID string, id string) (*entity.Subscription, error)
+	FindByUserID(userID string) ([]*entity.Subscription, error)
 
-	Delete(id string) error
+	Delete(userID string, id string) error
 }
 
 type PaymentMethodDataSource interface {
