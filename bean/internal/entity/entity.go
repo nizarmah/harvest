@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+// --- Database ---
+
 type SubscriptionPeriod string
 
 const (
@@ -59,4 +61,13 @@ type LoginToken struct {
 
 	CreatedAt time.Time
 	ExpiresAt time.Time
+}
+
+// --- Misc ---
+
+type Estimates struct {
+	Daily   int
+	Weekly  int
+	Monthly int
+	Yearly  int
 }

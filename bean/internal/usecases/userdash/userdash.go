@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"harvest/bean/internal/entity"
+
 	"harvest/bean/internal/usecases/interfaces"
 )
 
@@ -11,48 +12,27 @@ type UseCase struct {
 	subscriptions interfaces.SubscriptionDataSource
 }
 
-func (u *UseCase) GetMonthlyApproxTotal(userID string) (int, error) {
-	subscriptions, err := u.subscriptions.FindByUserID(userID)
+func (u *UseCase) GetEstimates(userID string) (*entity.Estimates, error) {
+	subs, err := u.subscriptions.FindByUserID(userID)
 	if err != nil {
-		return -1, fmt.Errorf("failed to get subscriptions: %w", err)
+		return nil, fmt.Errorf("failed to get subscriptions: %w", err)
 	}
 
-	amount := 0
-	for _, subscription := range subscriptions {
-		switch subscription.Period {
-		case entity.SubscriptionPeriodDaily:
-			amount += subscription.Amount * 30
-		case entity.SubscriptionPeriodWeekly:
-			amount += subscription.Amount * 4
-		case entity.SubscriptionPeriodMonthly:
-			amount += subscription.Amount
-		case entity.SubscriptionPeriodYearly:
-			amount += subscription.Amount / 12
-		}
+	estimates := &entity.Estimates{
+		Daily:   0,
+		Weekly:  0,
+		Monthly: 0,
+		Yearly:  0,
 	}
 
-	return amount, nil
-}
+	for _, sub := range subs {
+		e := getSubscriptionEstimates(sub)
 
-func (u *UseCase) GetYearlyApproxTotal(userID string) (int, error) {
-	subscriptions, err := u.subscriptions.FindByUserID(userID)
-	if err != nil {
-		return -1, fmt.Errorf("failed to get subscriptions: %w", err)
+		estimates.Daily += e.Daily
+		estimates.Weekly += e.Weekly
+		estimates.Monthly += e.Monthly
+		estimates.Yearly += e.Yearly
 	}
 
-	amount := 0
-	for _, subscription := range subscriptions {
-		switch subscription.Period {
-		case entity.SubscriptionPeriodDaily:
-			amount += subscription.Amount * 365
-		case entity.SubscriptionPeriodWeekly:
-			amount += subscription.Amount * 52
-		case entity.SubscriptionPeriodMonthly:
-			amount += subscription.Amount * 12
-		case entity.SubscriptionPeriodYearly:
-			amount += subscription.Amount
-		}
-	}
-
-	return amount, nil
+	return estimates, nil
 }
