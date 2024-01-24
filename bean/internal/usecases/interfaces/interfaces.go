@@ -14,7 +14,7 @@ type SubscriptionDataSource interface {
 		provider string,
 		amount int,
 		interval int,
-		period string,
+		period entity.SubscriptionPeriod,
 	) (*entity.Subscription, error)
 
 	FindByID(userID string, id string) (*entity.Subscription, error)

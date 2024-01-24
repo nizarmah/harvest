@@ -20,7 +20,7 @@ func (u *UseCase) Create(
 	provider string,
 	amount int,
 	interval int,
-	period string,
+	period entity.SubscriptionPeriod,
 ) (*entity.Subscription, error) {
 	if err := validateLabel(label); err != nil {
 		return nil, fmt.Errorf("invalid label: %w", err)

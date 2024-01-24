@@ -4,6 +4,15 @@ import (
 	"time"
 )
 
+type SubscriptionPeriod string
+
+const (
+	SubscriptionPeriodDaily   SubscriptionPeriod = "day"
+	SubscriptionPeriodWeekly  SubscriptionPeriod = "week"
+	SubscriptionPeriodMonthly SubscriptionPeriod = "month"
+	SubscriptionPeriodYearly  SubscriptionPeriod = "year"
+)
+
 type Subscription struct {
 	ID              string
 	UserID          string
@@ -13,7 +22,7 @@ type Subscription struct {
 	Provider string
 	Amount   int
 	Interval int
-	Period   string
+	Period   SubscriptionPeriod
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

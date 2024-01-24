@@ -3,6 +3,8 @@ package subscription
 import (
 	"strings"
 	"testing"
+
+	"harvest/bean/internal/entity"
 )
 
 func TestValidateLabel(t *testing.T) {
@@ -67,7 +69,12 @@ func TestValidateInterval(t *testing.T) {
 
 func TestValidatePeriod(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
-		tests := []string{"day", "week", "month", "year"}
+		tests := []entity.SubscriptionPeriod{
+			entity.SubscriptionPeriodDaily,
+			entity.SubscriptionPeriodWeekly,
+			entity.SubscriptionPeriodMonthly,
+			entity.SubscriptionPeriodYearly,
+		}
 
 		for _, test := range tests {
 			if err := validatePeriod(test); err != nil {
