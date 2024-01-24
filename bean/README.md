@@ -5,8 +5,20 @@ It's good for you.
 
 A subscription tracker for the rest of us.
 
-## Usage
+## Run
 
 ```bash
 > docker compose up bean
+```
+
+## Test
+
+```bash
+> docker compose exec -e INTEGRATION=1 bean go test ./... -v
+```
+
+## Migrate
+
+```
+> docker compose exec bean tern migrate --destination -+1
 ```

@@ -10,8 +10,8 @@ import (
 func DBTest(t *testing.T) *postgres.DB {
 	t.Helper()
 
-	if os.Getenv("INTEGRATION_DB") == "" {
-		t.Skip("skipping integration test, set env var INTEGRATION_DB=1")
+	if os.Getenv("INTEGRATION") == "" {
+		t.Skip("skipping integration test, set env var INTEGRATION=1")
 	}
 
 	db, err := postgres.New(&postgres.DSNBuilder{
