@@ -3,6 +3,8 @@ package paymentmethod
 import (
 	"testing"
 
+	"harvest/bean/internal/entity"
+
 	"harvest/bean/internal/usecases/interfaces"
 
 	"harvest/bean/internal/driver/postgres/postgrestest"
@@ -38,7 +40,7 @@ func TestDataSouce(t *testing.T) {
 }
 
 func create(t *testing.T, ds interfaces.PaymentMethodDataSource) {
-	method, err := ds.Create(userWithMethodsID, "action-create", "1234", "brand", 12, 2024)
+	method, err := ds.Create(userWithMethodsID, "action-create", "1234", entity.PaymentMethodBrandAmex, 12, 2024)
 	if err != nil {
 		t.Fatalf("failed to create payment method: %s", err)
 	}
@@ -59,8 +61,8 @@ func create(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 		t.Errorf("expected last4: %s, got: %s", "1234", method.Last4)
 	}
 
-	if method.Brand != "brand" {
-		t.Errorf("expected brand: %s, got: %s", "brand", method.Brand)
+	if method.Brand != entity.PaymentMethodBrandAmex {
+		t.Errorf("expected brand: %s, got: %s", entity.PaymentMethodBrandAmex, method.Brand)
 	}
 
 	if method.ExpMonth != 12 {
@@ -143,7 +145,7 @@ func findByUserID(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 
 func delete(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 	t.Run("existing_payment_method", func(t *testing.T) {
-		method, err := ds.Create(userWithMethodsID, "action-delete", "1234", "brand", 12, 2024)
+		method, err := ds.Create(userWithMethodsID, "action-delete", "1234", entity.PaymentMethodBrandAmex, 12, 2024)
 		if err != nil {
 			t.Fatalf("failed to create payment method: %s", err)
 		}

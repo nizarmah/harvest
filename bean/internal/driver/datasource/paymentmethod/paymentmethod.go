@@ -25,7 +25,7 @@ func (ds *dataSource) Create(
 	userID string,
 	label string,
 	last4 string,
-	brand string,
+	brand entity.PaymentMethodBrand,
 	expMonth int,
 	expYear int,
 ) (*entity.PaymentMethod, error) {

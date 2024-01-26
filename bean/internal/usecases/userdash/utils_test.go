@@ -71,8 +71,6 @@ func TestGetEstimatesFromYearly(t *testing.T) {
 	amount := 100000
 	estimates := getEstimatesFromYearly(amount)
 
-	t.Log(estimates)
-
 	if estimates.Daily != amount/365 {
 		t.Errorf("daily estimate should be %d, got %d", amount/365, estimates.Daily)
 	}
