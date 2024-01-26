@@ -10,8 +10,14 @@ COPY go.mod go.sum ./
 # copy bean code
 COPY bean/ ./bean/
 
-# get deps
+# get deps : go.mod
 RUN go mod download
+
+# get deps : tern (migration, seed)
+RUN go install github.com/jackc/tern/v2@latest
+
+# get deps : air (hot reload)
+RUN go install github.com/cosmtrek/air@latest
 
 # run boot script
 CMD ["bean/bin/boot.sh"]
