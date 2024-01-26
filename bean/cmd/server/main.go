@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	envAdapter "harvest/bean/internal/adapter/env"
 
 	"harvest/bean/internal/driver/postgres"
+	"harvest/bean/internal/driver/server"
 )
 
 func main() {
@@ -31,5 +33,11 @@ func main() {
 	}
 	defer db.Close()
 
-	fmt.Println("Hello, Bean!")
+	s := server.New()
+
+	s.Route("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello, Bean!")
+	})
+
+	s.Listen(":8080")
 }
