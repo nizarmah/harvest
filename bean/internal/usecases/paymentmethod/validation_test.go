@@ -3,6 +3,8 @@ package paymentmethod
 import (
 	"strings"
 	"testing"
+
+	"harvest/bean/internal/entity"
 )
 
 func TestValidateLabel(t *testing.T) {
@@ -41,7 +43,11 @@ func TestValidateLast4(t *testing.T) {
 
 func TestValidateBrand(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
-		tests := []string{"visa", "mastercard", "amex"}
+		tests := []entity.PaymentMethodBrand{
+			entity.PaymentMethodBrandAmex,
+			entity.PaymentMethodBrandMastercard,
+			entity.PaymentMethodBrandVisa,
+		}
 
 		for _, test := range tests {
 			if err := validateBrand(test); err != nil {

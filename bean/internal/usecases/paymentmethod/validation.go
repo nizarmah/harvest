@@ -3,6 +3,8 @@ package paymentmethod
 import (
 	"fmt"
 	"regexp"
+
+	"harvest/bean/internal/entity"
 )
 
 func validateLabel(label string) error {
@@ -26,12 +28,19 @@ func validateLast4(last4 string) error {
 	return nil
 }
 
-func validateBrand(brand string) error {
+func validateBrand(brand entity.PaymentMethodBrand) error {
 	switch brand {
-	case "visa", "mastercard", "amex":
+	case entity.PaymentMethodBrandAmex,
+		entity.PaymentMethodBrandMastercard,
+		entity.PaymentMethodBrandVisa:
 		return nil
 	default:
-		return fmt.Errorf("brand must be visa, mastercard, or amex")
+		return fmt.Errorf(
+			"brand must be: %s, %s, %s",
+			entity.PaymentMethodBrandAmex,
+			entity.PaymentMethodBrandMastercard,
+			entity.PaymentMethodBrandVisa,
+		)
 	}
 }
 

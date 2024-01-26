@@ -46,6 +46,12 @@ func validatePeriod(period entity.SubscriptionPeriod) error {
 		entity.SubscriptionPeriodYearly:
 		return nil
 	default:
-		return fmt.Errorf("period must be day, week, month or year")
+		return fmt.Errorf(
+			"period must be: %s, %s, %s, %s",
+			entity.SubscriptionPeriodDaily,
+			entity.SubscriptionPeriodWeekly,
+			entity.SubscriptionPeriodMonthly,
+			entity.SubscriptionPeriodYearly,
+		)
 	}
 }

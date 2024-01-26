@@ -30,13 +30,21 @@ type Subscription struct {
 	UpdatedAt time.Time
 }
 
+type PaymentMethodBrand string
+
+const (
+	PaymentMethodBrandAmex       PaymentMethodBrand = "amex"
+	PaymentMethodBrandMastercard PaymentMethodBrand = "mastercard"
+	PaymentMethodBrandVisa       PaymentMethodBrand = "visa"
+)
+
 type PaymentMethod struct {
 	ID     string
 	UserID string
 
 	Label    string
 	Last4    string
-	Brand    string
+	Brand    PaymentMethodBrand
 	ExpMonth int
 	ExpYear  int
 
