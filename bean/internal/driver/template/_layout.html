@@ -1,11 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <meta charset="utf-8" />
+
+    <meta
+      name="keywords"
+      content="bean, subscriptions, tracker, subscription tracker, track subscription"
+    />
+
+    <meta
+      property="og:title"
+      content="A subscription tracker for the rest of us."
+    />
+    <meta property="og:url" content="https://whatisbean.com/" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="A subscription tracker for the rest of us."
+    />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Bean</title>
+
+    <style>
+      html {
+        font-size: clamp(1.3rem, 1.9vw, 1.7rem);
+        font-family: sans-serif;
+
+        color: #141414;
+        background-color: #fcf4f2;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      a {
+        color: #141414;
+        text-decoration: none;
+      }
+
+      .container {
+        max-width: min(100%, 80rem);
+        margin: 0 auto;
+      }
+
+      .container .section {
+        padding: 2rem 3rem;
+      }
+
+      .header {
+        font-size: 2rem;
+        letter-spacing: 0.2rem;
+      }
+
+      .header h1 {
+        font-size: 2em;
+        margin: 0;
+      }
+
+      .navigation {
+        font-size: 0.7em;
+        font-weight: bold;
+        letter-spacing: normal;
+
+        padding-top: 1em;
+
+        opacity: 0.8;
+      }
+
+      .content {
+        font-size: 1.5rem;
+      }
+
+      .content p {
+        line-height: 1.5em;
+        margin: 0;
+      }
+    </style>
   </head>
   <body>
-    {{ template "body" . }}
+    <div class="container">
+      <div class="section header">
+        <h1>bean</h1>
+
+        <div class="navigation">
+          <a href="/login">Login</a>
+        </div>
+      </div>
+
+      {{ template "body" . }}
+    </div>
   </body>
 </html>
