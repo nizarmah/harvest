@@ -106,7 +106,6 @@
         margin: 0;
       }
     </style>
-    {{ template "styles" . }}
   </head>
   <body>
     <div class="container">
@@ -114,14 +113,16 @@
         <h1>bean</h1>
         <h6>/biːn/</h6>
       </div>
-      <div class="section content">
-        {{ template "content" . }}
-      </div>
+      <div class="section content">{{ template "content" . }}</div>
       <div class="section footer">
         <p>
           <a target="_blank" href="https://whatis277.com">277</a>
           &nbsp;·&nbsp;
-          <a target="_blank" href="https://github.com/whatis277/harvest/tree/main/bean">GitHub</a>
+          <a
+            target="_blank"
+            href="https://github.com/whatis277/harvest/tree/main/bean"
+            >GitHub</a
+          >
         </p>
       </div>
     </div>
