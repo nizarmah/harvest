@@ -26,58 +26,83 @@
 
     <style>
       html {
-        font-size: clamp(1.3rem, 1.9vw, 1.7rem);
-        font-family: sans-serif;
+        font-size: clamp(1.1rem, 1.2vw, 1.2rem);
+        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 
-        color: #141414;
-        background-color: #fcf4f2;
+        color: #021213;
+        background-color: #fefefe;
       }
 
       body {
+        font-size: 1.1rem;
+        line-height: 1.4;
+        word-spacing: -0.04em;
+
         margin: 0;
         padding: 0;
       }
 
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        line-height: 1.2;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+      h2 {
+        font-size: 2rem;
+      }
+      h3 {
+        font-size: 1.5rem;
+      }
+      h4 {
+        font-size: 1.25rem;
+      }
+      h5 {
+        font-size: 1.1rem;
+      }
+      h6 {
+        font-size: 1rem;
+      }
+
       a {
-        color: #141414;
+        color: inherit;
         text-decoration: none;
       }
 
       .container {
-        max-width: min(100%, 80rem);
+        max-width: min(100%, 36em);
         margin: 0 auto;
+
+        padding-top: 8rem;
+        padding-bottom: 10rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
       }
 
-      .container .section {
-        padding: 2rem 3rem;
+      .container .section:not(:last-child) {
+        margin-bottom: 8rem;
       }
 
-      .header {
-        font-size: 2rem;
-        letter-spacing: 0.2rem;
+      .header h6 {
+        font-weight: normal;
       }
 
-      .header h1 {
-        font-size: 2em;
-        margin: 0;
-      }
-
-      .navigation {
-        font-size: 0.7em;
+      .footer {
+        font-size: 0.9rem;
         font-weight: bold;
-        letter-spacing: normal;
 
-        padding-top: 1em;
-
-        opacity: 0.8;
+        color: #063437;
       }
 
-      .content {
-        font-size: 1.5rem;
-      }
-
-      .content p {
-        line-height: 1.5em;
+      .header h1,
+      .header h6,
+      .footer p {
         margin: 0;
       }
     </style>
@@ -86,13 +111,20 @@
     <div class="container">
       <div class="section header">
         <h1>bean</h1>
-
-        <div class="navigation">
-          <a href="/login">Login</a>
-        </div>
+        <h6>/biːn/</h6>
       </div>
-
-      {{ template "body" . }}
+      <div class="section content">{{ template "content" . }}</div>
+      <div class="section footer">
+        <p>
+          <a target="_blank" href="https://whatis277.com">277</a>
+          &nbsp;·&nbsp;
+          <a
+            target="_blank"
+            href="https://github.com/whatis277/harvest/tree/main/bean"
+            >GitHub</a
+          >
+        </p>
+      </div>
     </div>
   </body>
 </html>
