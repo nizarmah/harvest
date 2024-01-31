@@ -19,6 +19,16 @@ services:
       postgres:
         condition: service_healthy
 
+  pear:
+    <<: *common
+    build:
+      context: .
+      dockerfile: ./pear/Dockerfile
+    ports:
+      - "8081:80"
+    volumes:
+      - ./pear:/go/src/pear
+
   postgres:
     <<: *common
     image: postgres:16.1
