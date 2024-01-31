@@ -21,9 +21,7 @@ services:
 
   pear:
     <<: *common
-    build:
-      context: .
-      dockerfile: ./pear/Dockerfile
+    image: nginx:alpine
     ports:
       - "8081:80"
     volumes:
