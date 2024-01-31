@@ -43,3 +43,6 @@
 
 # air live reload files
 !*/config/.air.toml
+
+# nginx config files
+!*/config/nginx.conf
