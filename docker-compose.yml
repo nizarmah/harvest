@@ -27,7 +27,7 @@ services:
     ports:
       - "8081:80"
     volumes:
-      - ./pear:/go/src/pear
+      - ./pear/html:/usr/share/nginx/html
 
   postgres:
     <<: *common
