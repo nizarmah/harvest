@@ -38,6 +38,7 @@ func main() {
 	s := server.New()
 
 	s.Route("/", h.Landing)
+	s.Route("/get-started", h.Login)
 
 	s.Listen(":8080")
 }

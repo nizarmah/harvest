@@ -1,10 +1,23 @@
-{{ define "body" }}
-  <form name="login" method="post">
-    <input type="text" name="username" placeholder="Username" />
-    <input type="password" name="password" placeholder="Password" />
-    <input type="submit" value="Login" />
-  </form>
-  {{ if .Error }}
-    <p>{{ .Error }}</p>
-  {{ end }}
+{{ define "navbar" }}
+<a href="/">Home</a>
+&nbsp;·&nbsp;
+<a>Get started</a>
+{{ end }}
+
+{{ define "content" }}
+<div class="section">
+  <div class="subsection">
+    <p>Enter your email and we'll send you a link to log in.</p>
+    <p>If you don't have an account, we'll create one for you.</p>
+  </div>
+
+  <div class="subsection">
+    <form name="login" method="post">
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" />
+      <br />
+      <input type="submit" value="Login" />
+    </form>
+  </div>
+</div>
 {{ end }}
