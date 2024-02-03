@@ -70,8 +70,61 @@
         font-size: 1rem;
       }
 
-      a {
+      a,
+      label,
+      input {
         color: inherit;
+        font-family: inherit;
+      }
+
+      a[href=""],
+      a:not([href]) {
+        opacity: 0.7;
+        text-decoration: none;
+      }
+
+      label {
+        font-size: 0.9em;
+
+        display: block;
+      }
+
+      input {
+        font-size: 0.9em;
+        line-height: 1.6;
+
+        border: none;
+
+        display: block;
+      }
+
+      input:not(:last-child) {
+        margin-bottom: 1em;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        background-color: #e8e9eb;
+        border-radius: 4px;
+
+        width: min(18em, calc(100% - 1.2em));
+        padding: 0.3em 0.6em;
+      }
+
+      label + input[type="text"],
+      label + input[type="email"],
+      label + input[type="password"] {
+        margin-top: 0.6em;
+      }
+
+      input[type="submit"] {
+        background-color: transparent;
+        text-decoration: underline;
+
+        cursor: pointer;
+
+        padding: 0;
       }
 
       .container {
@@ -84,12 +137,21 @@
         padding-right: 2rem;
       }
 
-      .container .section:not(:last-child) {
+      .section:not(:last-child) {
         margin-bottom: 8rem;
+      }
+
+      .subsection:not(:last-child) {
+        margin-bottom: 5rem;
       }
 
       .header h6 {
         font-weight: normal;
+      }
+
+      .navbar {
+        font-size: 0.9em;
+        font-weight: bold;
       }
 
       .footer {
@@ -109,8 +171,12 @@
   <body>
     <div class="container">
       <div class="section header">
-        <h1>bean</h1>
-        <h6>/biːn/</h6>
+        <div class="subsection">
+          <h1>bean</h1>
+          <h6>/biːn/</h6>
+        </div>
+
+        <div class="subsection navbar">{{ template "navbar" . }}</div>
       </div>
       <div class="section content">{{ template "content" . }}</div>
       <div class="section footer">

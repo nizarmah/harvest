@@ -24,16 +24,7 @@ func (h *handler) Landing(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
-	username := r.PostFormValue("username")
-
-	var errmsg string
-	if r.Method == "POST" {
-		errmsg = fmt.Sprintf("Account '%v' not found", username)
-	}
-
-	e := render(w, "login.html", map[string]string{
-		"Error": errmsg,
-	})
+	e := render(w, "login.html", nil)
 	if e != nil {
 		fmt.Fprintf(w, "Error: %v", e)
 		return
