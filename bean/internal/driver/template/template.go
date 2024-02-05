@@ -4,5 +4,21 @@ import (
 	"embed"
 )
 
-//go:embed *.html
+//go:embed layout/*.html *.html
 var FS embed.FS
+
+const (
+	baseTemplate = "layout/base.html"
+)
+
+var (
+	LandingTemplate = []string{
+		baseTemplate,
+		"landing.html",
+	}
+
+	LoginTemplate = []string{
+		baseTemplate,
+		"login.html",
+	}
+)

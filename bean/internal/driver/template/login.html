@@ -7,8 +7,13 @@
 {{ define "content" }}
 <div class="section">
   <div class="subsection">
+  {{ if .Email }}
+    <p>We sent a login link to <strong>{{ .Email }}</strong>.</p>
+    <p>Use it to login soon. It expires in 10 minutes.</p>
+  {{ else }}
     <p>Enter your email and we'll send you a link to log in.</p>
     <p>If you don't have an account, we'll create one for you.</p>
+  {{ end }}
   </div>
 
   <div class="subsection">
