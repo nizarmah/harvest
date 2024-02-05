@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"harvest/bean/internal/adapter/interfaces"
 	"harvest/bean/internal/entity"
+
+	"harvest/bean/internal/adapter/interfaces"
 )
 
 type handler struct {
