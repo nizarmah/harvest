@@ -8,6 +8,9 @@ import (
 
 	"harvest/bean/internal/driver/postgres"
 	"harvest/bean/internal/driver/server"
+	"harvest/bean/internal/driver/template"
+	"harvest/bean/internal/driver/view/landing"
+	"harvest/bean/internal/driver/view/login"
 )
 
 func main() {
@@ -33,7 +36,21 @@ func main() {
 	}
 	defer db.Close()
 
-	h := handler.New()
+	landingView, err := landing.New(template.FS, template.LandingTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating landing view: %v", err),
+		)
+	}
+
+	loginView, err := login.New(template.FS, template.LoginTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating login view: %v", err),
+		)
+	}
+
+	h := handler.New(landingView, loginView)
 
 	s := server.New()
 

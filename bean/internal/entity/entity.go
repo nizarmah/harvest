@@ -71,6 +71,19 @@ type LoginToken struct {
 	ExpiresAt time.Time
 }
 
+// --- View Data ---
+
+type LandingViewData struct{}
+
+type LoginViewData struct {
+	Email string
+}
+
+type ViewData interface{}
+
+var _ ViewData = LandingViewData{}
+var _ ViewData = LoginViewData{}
+
 // --- Misc ---
 
 type Estimates struct {
