@@ -4,13 +4,14 @@ import (
 	"fmt"
 
 	envAdapter "harvest/bean/internal/adapter/env"
-	"harvest/bean/internal/adapter/handler"
+	landingHandler "harvest/bean/internal/adapter/handler/landing"
+	loginHandler "harvest/bean/internal/adapter/handler/login"
 
 	"harvest/bean/internal/driver/postgres"
 	"harvest/bean/internal/driver/server"
 	"harvest/bean/internal/driver/template"
-	"harvest/bean/internal/driver/view/landing"
-	"harvest/bean/internal/driver/view/login"
+	landingViewDriver "harvest/bean/internal/driver/view/landing"
+	loginViewDriver "harvest/bean/internal/driver/view/login"
 )
 
 func main() {
@@ -36,26 +37,24 @@ func main() {
 	}
 	defer db.Close()
 
-	landingView, err := landing.New(template.FS, template.LandingTemplate)
+	landingView, err := landingViewDriver.New(template.FS, template.LandingTemplate)
 	if err != nil {
 		panic(
 			fmt.Errorf("error creating landing view: %v", err),
 		)
 	}
 
-	loginView, err := login.New(template.FS, template.LoginTemplate)
+	loginView, err := loginViewDriver.New(template.FS, template.LoginTemplate)
 	if err != nil {
 		panic(
 			fmt.Errorf("error creating login view: %v", err),
 		)
 	}
 
-	h := handler.New(landingView, loginView)
-
 	s := server.New()
 
-	s.Route("/", h.Landing)
-	s.Route("/get-started", h.Login)
+	s.Route("/", landingHandler.New(landingView))
+	s.Route("/get-started", loginHandler.New(loginView))
 
 	s.Listen(":8080")
 }

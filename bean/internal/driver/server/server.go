@@ -10,7 +10,7 @@ func New() *Server {
 	}
 }
 
-func (s *Server) Route(path string, handler HandlerFunc) {
+func (s *Server) Route(path string, handler http.Handler) {
 	s.mux.Handle(path, handler)
 }
 
