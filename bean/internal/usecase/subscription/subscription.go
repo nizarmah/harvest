@@ -5,7 +5,7 @@ import (
 
 	"harvest/bean/internal/entity"
 
-	"harvest/bean/internal/usecases/interfaces"
+	"harvest/bean/internal/usecase/interfaces"
 )
 
 type UseCase struct {
