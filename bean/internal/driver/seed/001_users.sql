@@ -9,7 +9,10 @@ VALUES
 ('00000000-0000-0000-0001-000000000002', 'no-payment-methods'),
 -- subscriptions related
 ('00000000-0000-0000-0002-000000000001', 'subscriptions'),
-('00000000-0000-0000-0002-000000000002', 'no-subscriptions')
+('00000000-0000-0000-0002-000000000002', 'no-subscriptions'),
+
+-- filler data
+('10000000-0000-0000-0000-000000000001', '277@hey.com')
 ;
 
 ---- create above / drop below ----

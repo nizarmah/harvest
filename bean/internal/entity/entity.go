@@ -79,10 +79,15 @@ type LoginViewData struct {
 	Email string
 }
 
+type SubscriptionsViewData struct {
+	Subscriptions []*Subscription
+}
+
 type ViewData interface{}
 
 var _ ViewData = LandingViewData{}
 var _ ViewData = LoginViewData{}
+var _ ViewData = SubscriptionsViewData{}
 
 // --- Misc ---
 

@@ -21,4 +21,9 @@ var (
 		baseTemplate,
 		"login.html",
 	}
+
+	SubscriptionsTemplate = []string{
+		baseTemplate,
+		"subscriptions.html",
+	}
 )

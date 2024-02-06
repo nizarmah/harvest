@@ -1,0 +1,25 @@
+{{ define "navbar" }}
+<a href="/">Home</a>
+&nbsp;·&nbsp;
+<a>Subscription</a>
+&nbsp;·&nbsp;
+<a href="/cards">Cards</a>
+&nbsp;·&nbsp;
+<a href="/logout">Logout</a>
+{{ end }}
+
+{{ define "content" }}
+<div class="section">
+  {{ range .Subscriptions }}
+  <div class="subsection">
+    <p>Payment method id: {{ .PaymentMethodID }}</p>
+    <p>Label: {{ .Label }}</p>
+    <p>Provider: {{ .Provider }}</p>
+    <p>Amount: {{ .Amount }}</p>
+    <p>Interval: {{ .Interval }}</p>
+    <p>Period: {{ .Period }}</p>
+    <p>Created at: {{ .CreatedAt }}</p>
+  </div>
+  {{ end }}
+</div>
+{{ end }}
