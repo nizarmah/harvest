@@ -7,5 +7,3 @@ import (
 type Server struct {
 	mux *http.ServeMux
 }
-
-type HandlerFunc = http.HandlerFunc
