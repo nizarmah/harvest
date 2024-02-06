@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"harvest/bean/internal/entity"
-	"harvest/bean/internal/usecases/interfaces"
+	"harvest/bean/internal/usecase/interfaces"
 
 	"harvest/bean/internal/driver/postgres/postgrestest"
 )
