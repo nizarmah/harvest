@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 
+	paymentMethodUS "harvest/bean/internal/usecase/paymentmethod"
 	subscriptionUS "harvest/bean/internal/usecase/subscription"
 
 	envAdapter "harvest/bean/internal/adapter/env"
 	landingHandler "harvest/bean/internal/adapter/handler/landing"
 	loginHandler "harvest/bean/internal/adapter/handler/login"
+	paymentMethodHandler "harvest/bean/internal/adapter/handler/paymentmethods"
 	subscriptionsHandler "harvest/bean/internal/adapter/handler/subscriptions"
 
 	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
@@ -17,6 +19,7 @@ import (
 	"harvest/bean/internal/driver/template"
 	landingVD "harvest/bean/internal/driver/view/landing"
 	loginVD "harvest/bean/internal/driver/view/login"
+	paymentMethodsVD "harvest/bean/internal/driver/view/paymentmethods"
 	subscriptionsVD "harvest/bean/internal/driver/view/subscriptions"
 )
 
@@ -67,16 +70,30 @@ func main() {
 		)
 	}
 
+	paymentMethodsView, err := paymentMethodsVD.New(template.FS, template.PaymentMethodsTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating payment methods view: %v", err),
+		)
+	}
+
 	s := server.New()
 
 	s.Route("/", landingHandler.New(landingView))
 	s.Route("/get-started", loginHandler.New(loginView))
+
 	s.Route("/subscriptions", subscriptionsHandler.New(
 		subscriptionUS.UseCase{
 			PaymentMethods: paymentMethodRepo,
 			Subscriptions:  subscriptionRepo,
 		},
 		subscriptionsView,
+	))
+	s.Route("/cards", paymentMethodHandler.New(
+		paymentMethodUS.UseCase{
+			PaymentMethods: paymentMethodRepo,
+		},
+		paymentMethodsView,
 	))
 
 	s.Listen(":8080")

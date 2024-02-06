@@ -9,7 +9,7 @@ import (
 )
 
 type UseCase struct {
-	paymentMethods interfaces.PaymentMethodDataSource
+	PaymentMethods interfaces.PaymentMethodDataSource
 }
 
 func (u *UseCase) Create(
@@ -40,7 +40,7 @@ func (u *UseCase) Create(
 		return nil, fmt.Errorf("invalid exp year: %w", err)
 	}
 
-	method, err := u.paymentMethods.Create(userID, label, last4, brand, expMonth, expYear)
+	method, err := u.PaymentMethods.Create(userID, label, last4, brand, expMonth, expYear)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create payment method: %w", err)
 	}
@@ -49,7 +49,7 @@ func (u *UseCase) Create(
 }
 
 func (u *UseCase) Get(userID string, paymentMethodID string) (*entity.PaymentMethod, error) {
-	method, err := u.paymentMethods.FindByID(userID, paymentMethodID)
+	method, err := u.PaymentMethods.FindByID(userID, paymentMethodID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get payment method: %w", err)
 	}
@@ -58,7 +58,7 @@ func (u *UseCase) Get(userID string, paymentMethodID string) (*entity.PaymentMet
 }
 
 func (u *UseCase) List(userID string) ([]*entity.PaymentMethod, error) {
-	methods, err := u.paymentMethods.FindByUserID(userID)
+	methods, err := u.PaymentMethods.FindByUserID(userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list payment methods: %w", err)
 	}
@@ -67,7 +67,7 @@ func (u *UseCase) List(userID string) ([]*entity.PaymentMethod, error) {
 }
 
 func (u *UseCase) Delete(userID string, paymentMethodID string) error {
-	if err := u.paymentMethods.Delete(userID, paymentMethodID); err != nil {
+	if err := u.PaymentMethods.Delete(userID, paymentMethodID); err != nil {
 		return fmt.Errorf("failed to delete payment method: %w", err)
 	}
 

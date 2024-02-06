@@ -83,6 +83,10 @@ type SubscriptionsViewData struct {
 	Subscriptions []*Subscription
 }
 
+type PaymentMethodsViewData struct {
+	PaymentMethods []*PaymentMethod
+}
+
 type ViewData interface{}
 
 var _ ViewData = LandingViewData{}
