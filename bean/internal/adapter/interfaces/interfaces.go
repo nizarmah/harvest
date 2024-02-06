@@ -14,3 +14,4 @@ type View[T any] interface {
 
 type LandingView View[entity.LandingViewData]
 type LoginView View[entity.LoginViewData]
+type SubscriptionsView View[entity.SubscriptionsViewData]

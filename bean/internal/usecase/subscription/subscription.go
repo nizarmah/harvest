@@ -9,8 +9,8 @@ import (
 )
 
 type UseCase struct {
-	paymentMethods interfaces.PaymentMethodDataSource
-	subscriptions  interfaces.SubscriptionDataSource
+	PaymentMethods interfaces.PaymentMethodDataSource
+	Subscriptions  interfaces.SubscriptionDataSource
 }
 
 func (u *UseCase) Create(
@@ -42,7 +42,7 @@ func (u *UseCase) Create(
 		return nil, fmt.Errorf("invalid period: %w", err)
 	}
 
-	method, err := u.paymentMethods.FindByID(userID, paymentMethodID)
+	method, err := u.PaymentMethods.FindByID(userID, paymentMethodID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get payment method: %w", err)
 	}
@@ -51,7 +51,7 @@ func (u *UseCase) Create(
 		return nil, fmt.Errorf("payment method not found")
 	}
 
-	subscription, err := u.subscriptions.Create(
+	subscription, err := u.Subscriptions.Create(
 		userID,
 		paymentMethodID,
 		label,
@@ -68,7 +68,7 @@ func (u *UseCase) Create(
 }
 
 func (u *UseCase) Get(userID string, subscriptionID string) (*entity.Subscription, error) {
-	subscription, err := u.subscriptions.FindByID(userID, subscriptionID)
+	subscription, err := u.Subscriptions.FindByID(userID, subscriptionID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get subscription: %w", err)
 	}
@@ -77,7 +77,7 @@ func (u *UseCase) Get(userID string, subscriptionID string) (*entity.Subscriptio
 }
 
 func (u *UseCase) List(userID string) ([]*entity.Subscription, error) {
-	subscriptions, err := u.subscriptions.FindByUserID(userID)
+	subscriptions, err := u.Subscriptions.FindByUserID(userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get subscriptions: %w", err)
 	}
@@ -86,7 +86,7 @@ func (u *UseCase) List(userID string) ([]*entity.Subscription, error) {
 }
 
 func (u *UseCase) Delete(userID string, subscriptionID string) error {
-	if err := u.subscriptions.Delete(userID, subscriptionID); err != nil {
+	if err := u.Subscriptions.Delete(userID, subscriptionID); err != nil {
 		return fmt.Errorf("failed to delete subscription: %w", err)
 	}
 

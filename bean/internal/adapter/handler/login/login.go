@@ -21,6 +21,10 @@ func New(view interfaces.LoginView) http.Handler {
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
+	if email != "" {
+		http.Redirect(w, r, "/subscriptions", http.StatusFound)
+		return
+	}
 
 	err := h.view.Render(w, &entity.LoginViewData{
 		Email: email,
