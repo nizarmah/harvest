@@ -26,4 +26,9 @@ var (
 		baseTemplate,
 		"subscriptions.html",
 	}
+
+	PaymentMethodsTemplate = []string{
+		baseTemplate,
+		"paymentmethods.html",
+	}
 )
