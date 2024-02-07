@@ -34,11 +34,42 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.view.Render(w, &entity.SubscriptionsViewData{
-		Subscriptions: subs,
-	})
+	err = h.view.Render(w, makeViewData(subs))
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
+}
+
+func makeViewData(subscriptions []*entity.Subscription) *entity.SubscriptionsViewData {
+	var subs = make([]entity.SubscriptionViewData, 0, len(subscriptions))
+	for _, sub := range subscriptions {
+		subs = append(subs, makeSubViewData(sub))
+	}
+
+	return &entity.SubscriptionsViewData{
+		Subscriptions: subs,
+	}
+}
+
+func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewData {
+	dollars, cents := subscription.Amount/100, subscription.Amount%100
+
+	frequency := makeFrequency(subscription.Interval, subscription.Period)
+
+	return entity.SubscriptionViewData{
+		ID:        subscription.ID,
+		Label:     subscription.Label,
+		Provider:  subscription.Provider,
+		Amount:    fmt.Sprintf("$%d.%02d", dollars, cents),
+		Frequency: frequency,
+	}
+}
+
+func makeFrequency(interval int, period entity.SubscriptionPeriod) string {
+	if interval == 1 {
+		return fmt.Sprintf("Every %s", period)
+	}
+
+	return fmt.Sprintf("Every %d %s", interval, period)
 }

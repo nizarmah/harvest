@@ -6,14 +6,7 @@ import (
 
 // --- Database ---
 
-type SubscriptionPeriod string
-
-const (
-	SubscriptionPeriodDaily   SubscriptionPeriod = "day"
-	SubscriptionPeriodWeekly  SubscriptionPeriod = "week"
-	SubscriptionPeriodMonthly SubscriptionPeriod = "month"
-	SubscriptionPeriodYearly  SubscriptionPeriod = "year"
-)
+// --- Database --- Subscription ---
 
 type Subscription struct {
 	ID              string
@@ -30,13 +23,16 @@ type Subscription struct {
 	UpdatedAt time.Time
 }
 
-type PaymentMethodBrand string
+type SubscriptionPeriod string
 
 const (
-	PaymentMethodBrandAmex       PaymentMethodBrand = "amex"
-	PaymentMethodBrandMastercard PaymentMethodBrand = "mastercard"
-	PaymentMethodBrandVisa       PaymentMethodBrand = "visa"
+	SubscriptionPeriodDaily   SubscriptionPeriod = "day"
+	SubscriptionPeriodWeekly  SubscriptionPeriod = "week"
+	SubscriptionPeriodMonthly SubscriptionPeriod = "month"
+	SubscriptionPeriodYearly  SubscriptionPeriod = "year"
 )
+
+// --- Database --- Payment Method ---
 
 type PaymentMethod struct {
 	ID     string
@@ -52,6 +48,16 @@ type PaymentMethod struct {
 	UpdatedAt time.Time
 }
 
+type PaymentMethodBrand string
+
+const (
+	PaymentMethodBrandAmex       PaymentMethodBrand = "amex"
+	PaymentMethodBrandMastercard PaymentMethodBrand = "mastercard"
+	PaymentMethodBrandVisa       PaymentMethodBrand = "visa"
+)
+
+// --- Database --- User ---
+
 type User struct {
 	ID string
 
@@ -60,6 +66,8 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+// --- Database --- Login Token ---
 
 type LoginToken struct {
 	ID string
@@ -73,25 +81,37 @@ type LoginToken struct {
 
 // --- View Data ---
 
+type ViewData interface{}
+
+// --- View Data --- Landing ---
+
 type LandingViewData struct{}
+
+// --- View Data --- Login ---
 
 type LoginViewData struct {
 	Email string
 }
 
+// --- View Data --- Subscriptions ---
+
 type SubscriptionsViewData struct {
-	Subscriptions []*Subscription
+	Subscriptions []SubscriptionViewData
 }
+
+type SubscriptionViewData struct {
+	ID        string
+	Label     string
+	Provider  string
+	Amount    string
+	Frequency string
+}
+
+// --- View Data --- Payment Methods ---
 
 type PaymentMethodsViewData struct {
 	PaymentMethods []*PaymentMethod
 }
-
-type ViewData interface{}
-
-var _ ViewData = LandingViewData{}
-var _ ViewData = LoginViewData{}
-var _ ViewData = SubscriptionsViewData{}
 
 // --- Misc ---
 

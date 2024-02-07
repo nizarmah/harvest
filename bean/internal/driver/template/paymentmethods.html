@@ -15,7 +15,7 @@
   </div>
 
   {{ range .PaymentMethods }}
-  <div id="{{ .ID }}" class="subsection">
+  <div id="card-{{ .ID }}" class="subsection">
     <h5>{{ .Label }}</h5>
     <p>
       {{ .Last4 }}
@@ -25,12 +25,14 @@
       {{ .Brand }}
     </p>
     <p class="actionbar">
-      <form method="post">
-        <input type="hidden" name="_method" value="delete" />
-        <input type="hidden" name="id" value="{{ .ID }}" />
-        <input type="submit" value="Delete" />
-      </form>
+      <label for="delete-card-{{ .ID }}">Delete</label>
     </p>
+
+    <form class="hidden" method="post">
+      <input type="hidden" name="_method" value="delete" />
+      <input type="hidden" name="id" value="{{ .ID }}" />
+      <input id="delete-card-{{ .ID }}" type="submit" value="Delete" />
+    </form>
   </div>
   {{ end }}
 </div>

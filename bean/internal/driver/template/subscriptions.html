@@ -8,15 +8,35 @@
 
 {{ define "content" }}
 <div class="section">
-  {{ range .Subscriptions }}
   <div class="subsection">
-    <p>Payment method id: {{ .PaymentMethodID }}</p>
-    <p>Label: {{ .Label }}</p>
-    <p>Provider: {{ .Provider }}</p>
-    <p>Amount: {{ .Amount }}</p>
-    <p>Interval: {{ .Interval }}</p>
-    <p>Period: {{ .Period }}</p>
-    <p>Created at: {{ .CreatedAt }}</p>
+    <p class="actionbar">
+      <a href="/subscriptions/new">Add a new subscription</a>
+    </p>
+  </div>
+
+  {{ range .Subscriptions }}
+  <div id="sub-{{ .ID }}" class="subsection">
+    <h5>
+      {{ if .Provider }}
+        <a href="{{ .Provider }}">{{ .Label }}</a>
+      {{ else }}
+        {{ .Label }}
+      {{ end }}
+    </h5>
+    <p>
+      {{ .Amount }}
+      &nbsp;·&nbsp;
+      {{ .Frequency }}
+    </p>
+    <p class="actionbar">
+      <label for="delete-sub-{{ .ID }}">Delete</label>
+    </p>
+
+    <form class="hidden" method="post">
+      <input type="hidden" name="_method" value="delete" />
+      <input type="hidden" name="id" value="{{ .ID }}" />
+      <input id="delete-sub-{{ .ID }}" type="submit" value="Delete" />
+    </form>
   </div>
   {{ end }}
 </div>
