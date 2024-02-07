@@ -8,14 +8,29 @@
 
 {{ define "content" }}
 <div class="section">
-  {{ range .PaymentMethods }}
   <div class="subsection">
-    <p>Label: {{ .Label }}</p>
-    <p>Last4: {{ .Last4 }}</p>
-    <p>Brand: {{ .Brand }}</p>
-    <p>ExpMonth: {{ .ExpMonth }}</p>
-    <p>ExpYear: {{ .ExpYear }}</p>
-    <p>Created at: {{ .CreatedAt }}</p>
+    <p class="actionbar">
+      <a href="/cards/new">Add a new card</a>
+    </p>
+  </div>
+
+  {{ range .PaymentMethods }}
+  <div id="{{ .ID }}" class="subsection">
+    <h5>{{ .Label }}</h5>
+    <p>
+      {{ .Last4 }}
+      &nbsp;·&nbsp;
+      {{ .ExpMonth }} / {{ .ExpYear }}
+      &nbsp;·&nbsp;
+      {{ .Brand }}
+    </p>
+    <p class="actionbar">
+      <form method="post">
+        <input type="hidden" name="_method" value="delete" />
+        <input type="hidden" name="id" value="{{ .ID }}" />
+        <input type="submit" value="Delete" />
+      </form>
+    </p>
   </div>
   {{ end }}
 </div>
