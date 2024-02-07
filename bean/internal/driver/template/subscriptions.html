@@ -18,16 +18,10 @@
   <div id="sub-{{ .ID }}" class="subsection">
     <h5>
       {{ if .Provider }}
-        <a target="_blank" href="{{ .Provider }}">{{ .Label }}</a>
-      {{ else }}
-        {{ .Label }}
-      {{ end }}
+      <a target="_blank" href="{{ .Provider }}">{{ .Label }}</a>
+      {{ else }} {{ .Label }} {{ end }}
     </h5>
-    <p>
-      {{ .Amount }}
-      &nbsp;·&nbsp;
-      {{ .Frequency }}
-    </p>
+    <p>{{ .Amount }} &nbsp;·&nbsp; {{ .Frequency }}</p>
     <p class="actionbar">
       <label for="delete-sub-{{ .ID }}">Delete</label>
     </p>
