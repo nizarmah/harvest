@@ -61,7 +61,7 @@ func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewD
 		ID:        subscription.ID,
 		Label:     subscription.Label,
 		Provider:  subscription.Provider,
-		Amount:    fmt.Sprintf("%d.%02d", dollars, cents),
+		Amount:    fmt.Sprintf("$%d.%02d", dollars, cents),
 		Frequency: frequency,
 	}
 }
