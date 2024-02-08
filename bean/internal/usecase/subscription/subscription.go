@@ -67,7 +67,7 @@ func (u *UseCase) Create(
 	return subscription, nil
 }
 
-func (u *UseCase) Get(userID string, subscriptionID string) (*entity.Subscription, error) {
+func (u *UseCase) Get(userID string, subscriptionID string) (*entity.SubscriptionWithPaymentMethod, error) {
 	subscription, err := u.Subscriptions.FindByID(userID, subscriptionID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get subscription: %w", err)
@@ -76,7 +76,7 @@ func (u *UseCase) Get(userID string, subscriptionID string) (*entity.Subscriptio
 	return subscription, nil
 }
 
-func (u *UseCase) List(userID string) ([]*entity.Subscription, error) {
+func (u *UseCase) List(userID string) ([]*entity.SubscriptionWithPaymentMethod, error) {
 	subscriptions, err := u.Subscriptions.FindByUserID(userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get subscriptions: %w", err)

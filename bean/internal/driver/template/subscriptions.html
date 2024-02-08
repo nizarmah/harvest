@@ -12,14 +12,8 @@
     <p class="actionbar">
       <a href="/subscriptions/new">Add a new subscription</a>
     </p>
-  </div>
-
-  <div id="sub-default" class="subsection">
-    <h5>Bean</h5>
-    <p>$1.99 &nbsp;·&nbsp; Every month</p>
-    <p class="actionbar">
-      <a target="_blank" href="https://todo-add-stripe-link">End</label>
-    </p>
+    <br /><br />
+    <hr />
   </div>
 
   {{ range .Subscriptions }}
@@ -30,9 +24,20 @@
       {{ else }} {{ .Label }} {{ end }}
     </h5>
     <p>{{ .Amount }} &nbsp;·&nbsp; {{ .Frequency }}</p>
+    <p>
+      Using <a href="/cards?id={{ .PaymentMethodID }}">
+        {{ if .PaymentMethodLabel }}
+        {{ .PaymentMethodLabel }}
+        {{ else }}
+        {{ .PaymentMethodLast4 }} &nbsp;·&nbsp; {{ .PaymentMethodExpMonth }} / {{ .PaymentMethodExpYear }}
+        {{ end }}
+      </a>
+    </p>
     <p class="actionbar">
       <label for="delete-sub-{{ .ID }}">Delete</label>
     </p>
+    <br /><br />
+    <hr />
 
     <form class="hidden" method="post">
       <input type="hidden" name="_method" value="delete" />
@@ -41,5 +46,13 @@
     </form>
   </div>
   {{ end }}
+
+  <div id="sub-default" class="subsection">
+    <h5>Bean</h5>
+    <p>$1.99 &nbsp;·&nbsp; Every month</p>
+    <p class="actionbar">
+      <a target="_blank" href="https://todo-add-stripe-link">End</label>
+    </p>
+  </div>
 </div>
 {{ end }}

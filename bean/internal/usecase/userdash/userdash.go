@@ -1,23 +1,12 @@
 package userdash
 
 import (
-	"fmt"
-
 	"harvest/bean/internal/entity"
-
-	"harvest/bean/internal/usecase/interfaces"
 )
 
-type UseCase struct {
-	subscriptions interfaces.SubscriptionDataSource
-}
+type UseCase struct{}
 
-func (u *UseCase) GetEstimates(userID string) (*entity.Estimates, error) {
-	subs, err := u.subscriptions.FindByUserID(userID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get subscriptions: %w", err)
-	}
-
+func (u *UseCase) GetEstimates(subs []*entity.Subscription) (*entity.Estimates, error) {
 	estimates := &entity.Estimates{
 		Daily:   0,
 		Weekly:  0,
