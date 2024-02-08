@@ -8,6 +8,11 @@ import (
 
 // --- Database --- Subscription ---
 
+type SubscriptionWithPaymentMethod struct {
+	Subscription  *Subscription
+	PaymentMethod *PaymentMethod
+}
+
 type Subscription struct {
 	ID              string
 	UserID          string
@@ -100,11 +105,19 @@ type SubscriptionsViewData struct {
 }
 
 type SubscriptionViewData struct {
-	ID        string
+	ID string
+
 	Label     string
 	Provider  string
 	Amount    string
 	Frequency string
+
+	PaymentMethodID string
+
+	PaymentMethodLabel    string
+	PaymentMethodLast4    string
+	PaymentMethodExpMonth int
+	PaymentMethodExpYear  int
 }
 
 // --- View Data --- Payment Methods ---

@@ -91,7 +91,11 @@ func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		}
 
 		if sub == nil {
-			t.Error("expected subscription, got nil")
+			t.Fatalf("expected subscription, got nil")
+		}
+
+		if sub.PaymentMethod.ID != methodID {
+			t.Errorf("expected payment method ID: %s, got: %s", methodID, sub.PaymentMethod.ID)
 		}
 	})
 
@@ -130,8 +134,12 @@ func findByUserID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		}
 
 		for _, sub := range subs {
-			if sub.UserID != userWithSubsID {
-				t.Errorf("expected user ID: %s, got: %s", userWithSubsID, sub.UserID)
+			if sub.Subscription.UserID != userWithSubsID {
+				t.Errorf("expected user ID: %s, got: %s", userWithSubsID, sub.Subscription.UserID)
+			}
+
+			if sub.PaymentMethod.UserID != userWithSubsID {
+				t.Errorf("expected user ID: %s, got: %s", userWithSubsID, sub.PaymentMethod.UserID)
 			}
 		}
 	})
@@ -159,12 +167,12 @@ func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 			t.Fatalf("failed to delete subscription: %s", err)
 		}
 
-		sub, err = ds.FindByID(userWithSubsID, sub.ID)
+		subWithMethod, err := ds.FindByID(userWithSubsID, sub.ID)
 		if err != nil {
 			t.Fatalf("failed to find subscription: %s", err)
 		}
 
-		if sub != nil {
+		if subWithMethod != nil {
 			t.Errorf("expected nil subscription, got: %v", sub)
 		}
 	})

@@ -41,7 +41,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func makeViewData(subscriptions []*entity.Subscription) *entity.SubscriptionsViewData {
+func makeViewData(subscriptions []*entity.SubscriptionWithPaymentMethod) *entity.SubscriptionsViewData {
 	var subs = make([]entity.SubscriptionViewData, 0, len(subscriptions))
 	for _, sub := range subscriptions {
 		subs = append(subs, makeSubViewData(sub))
@@ -52,7 +52,9 @@ func makeViewData(subscriptions []*entity.Subscription) *entity.SubscriptionsVie
 	}
 }
 
-func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewData {
+func makeSubViewData(sub *entity.SubscriptionWithPaymentMethod) entity.SubscriptionViewData {
+	subscription, method := sub.Subscription, sub.PaymentMethod
+
 	dollars, cents := subscription.Amount/100, subscription.Amount%100
 
 	frequency := makeFrequency(subscription.Interval, subscription.Period)
@@ -63,6 +65,12 @@ func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewD
 		Provider:  subscription.Provider,
 		Amount:    fmt.Sprintf("$%d.%02d", dollars, cents),
 		Frequency: frequency,
+
+		PaymentMethodID:       method.ID,
+		PaymentMethodLabel:    method.Label,
+		PaymentMethodLast4:    method.Last4,
+		PaymentMethodExpMonth: method.ExpMonth,
+		PaymentMethodExpYear:  method.ExpYear,
 	}
 }
 
@@ -71,5 +79,5 @@ func makeFrequency(interval int, period entity.SubscriptionPeriod) string {
 		return fmt.Sprintf("Every %s", period)
 	}
 
-	return fmt.Sprintf("Every %d %s", interval, period)
+	return fmt.Sprintf("Every %d %ss", interval, period)
 }
