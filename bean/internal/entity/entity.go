@@ -107,6 +107,9 @@ type LoginViewData struct {
 
 type SubscriptionsViewData struct {
 	Subscriptions []SubscriptionViewData
+
+	MonthlyEstimate string
+	YearlyEstimate  string
 }
 
 type SubscriptionViewData struct {

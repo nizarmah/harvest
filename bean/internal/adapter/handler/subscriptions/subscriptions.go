@@ -6,24 +6,28 @@ import (
 
 	"harvest/bean/internal/entity"
 
+	estimatorUC "harvest/bean/internal/usecase/estimator"
 	"harvest/bean/internal/usecase/subscription"
 
 	"harvest/bean/internal/adapter/interfaces"
 )
 
 type handler struct {
-	usecase subscription.UseCase
+	usecase   subscription.UseCase
+	estimator estimatorUC.UseCase
 
 	view interfaces.SubscriptionsView
 }
 
 func New(
-	usecase subscription.UseCase,
+	uc subscription.UseCase,
+	es estimatorUC.UseCase,
 	view interfaces.SubscriptionsView,
 ) http.Handler {
 	return &handler{
-		usecase: usecase,
-		view:    view,
+		usecase:   uc,
+		estimator: es,
+		view:      view,
 	}
 }
 
@@ -34,21 +38,32 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.view.Render(w, makeViewData(subs))
+	err = h.view.Render(w, h.makeViewData(subs))
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 }
 
-func makeViewData(subscriptions []*entity.SubscriptionWithPaymentMethod) *entity.SubscriptionsViewData {
-	var subs = make([]entity.SubscriptionViewData, 0, len(subscriptions))
+func (h *handler) makeViewData(subscriptions []*entity.SubscriptionWithPaymentMethod) *entity.SubscriptionsViewData {
+	subs := make([]*entity.Subscription, 0, len(subscriptions))
+	viewdata := make([]entity.SubscriptionViewData, 0, len(subscriptions))
+
 	for _, sub := range subscriptions {
-		subs = append(subs, makeSubViewData(sub))
+		subs = append(subs, sub.Subscription)
+		viewdata = append(viewdata, makeSubViewData(sub))
 	}
 
+	estimates := h.estimator.GetEstimates(subs)
+
+	monthlyDollars, monthlyCents := estimates.Monthly/100, estimates.Monthly%100
+	yearlyDollars, yearlyCents := estimates.Yearly/100, estimates.Yearly%100
+
 	return &entity.SubscriptionsViewData{
-		Subscriptions: subs,
+		Subscriptions: viewdata,
+
+		MonthlyEstimate: fmt.Sprintf("$%d.%02d", monthlyDollars, monthlyCents),
+		YearlyEstimate:  fmt.Sprintf("$%d.%02d", yearlyDollars, yearlyCents),
 	}
 }
 

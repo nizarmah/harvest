@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	paymentMethodUS "harvest/bean/internal/usecase/paymentmethod"
-	subscriptionUS "harvest/bean/internal/usecase/subscription"
-	userDashUS "harvest/bean/internal/usecase/userdash"
+	estimatorUC "harvest/bean/internal/usecase/estimator"
+	paymentMethodUC "harvest/bean/internal/usecase/paymentmethod"
+	subscriptionUC "harvest/bean/internal/usecase/subscription"
 
 	envAdapter "harvest/bean/internal/adapter/env"
 	landingHandler "harvest/bean/internal/adapter/handler/landing"
@@ -84,17 +84,18 @@ func main() {
 	s.Route("/get-started", loginHandler.New(loginView))
 
 	s.Route("/subscriptions", subscriptionsHandler.New(
-		subscriptionUS.UseCase{
+		subscriptionUC.UseCase{
 			PaymentMethods: paymentMethodRepo,
 			Subscriptions:  subscriptionRepo,
 		},
+		estimatorUC.UseCase{},
 		subscriptionsView,
 	))
 	s.Route("/cards", paymentMethodHandler.New(
-		paymentMethodUS.UseCase{
+		paymentMethodUC.UseCase{
 			PaymentMethods: paymentMethodRepo,
 		},
-		userDashUS.UseCase{},
+		estimatorUC.UseCase{},
 		paymentMethodsView,
 	))
 
