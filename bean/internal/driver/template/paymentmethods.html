@@ -16,6 +16,7 @@
 
   {{ range .PaymentMethods }}
   <div id="card-{{ .ID }}" class="subsection">
+    <hr /><br /><br />
     <h5>{{ .Label }}</h5>
     <p>
       {{ .Last4 }}
@@ -24,6 +25,12 @@
       &nbsp;·&nbsp;
       {{ .Brand }}
     </p>
+    <p>
+      {{ .MonthlyEstimate }} monthly
+      &nbsp;·&nbsp;
+      {{ .YearlyEstimate }} yearly
+    </p>
+    <br />
     <p class="actionbar">
       <label for="delete-card-{{ .ID }}">Delete</label>
     </p>

@@ -48,7 +48,7 @@ func (u *UseCase) Create(
 	return method, nil
 }
 
-func (u *UseCase) Get(userID string, paymentMethodID string) (*entity.PaymentMethod, error) {
+func (u *UseCase) Get(userID string, paymentMethodID string) (*entity.PaymentMethodWithSubscriptions, error) {
 	method, err := u.PaymentMethods.FindByID(userID, paymentMethodID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get payment method: %w", err)
@@ -57,7 +57,7 @@ func (u *UseCase) Get(userID string, paymentMethodID string) (*entity.PaymentMet
 	return method, nil
 }
 
-func (u *UseCase) List(userID string) ([]*entity.PaymentMethod, error) {
+func (u *UseCase) List(userID string) ([]*entity.PaymentMethodWithSubscriptions, error) {
 	methods, err := u.PaymentMethods.FindByUserID(userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list payment methods: %w", err)

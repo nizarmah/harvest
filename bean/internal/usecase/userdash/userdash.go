@@ -6,7 +6,7 @@ import (
 
 type UseCase struct{}
 
-func (u *UseCase) GetEstimates(subs []*entity.Subscription) (*entity.Estimates, error) {
+func (u *UseCase) GetEstimates(subs []*entity.Subscription) *entity.Estimates {
 	estimates := &entity.Estimates{
 		Daily:   0,
 		Weekly:  0,
@@ -23,5 +23,5 @@ func (u *UseCase) GetEstimates(subs []*entity.Subscription) (*entity.Estimates, 
 		estimates.Yearly += e.Yearly
 	}
 
-	return estimates, nil
+	return estimates
 }
