@@ -9,6 +9,17 @@
 {{ define "content" }}
 <div class="section">
   <div class="subsection">
+    <h3>Total spending</h3>
+    <p>
+      {{ .MonthlyEstimate }} monthly
+      &nbsp;·&nbsp;
+      {{ .YearlyEstimate }} yearly
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="subsection">
     <p class="actionbar">
       <a href="/subscriptions/new">Add a new subscription</a>
     </p>
