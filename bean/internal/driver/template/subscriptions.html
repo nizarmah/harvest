@@ -12,12 +12,11 @@
     <p class="actionbar">
       <a href="/subscriptions/new">Add a new subscription</a>
     </p>
-    <br /><br />
-    <hr />
   </div>
 
   {{ range .Subscriptions }}
   <div id="sub-{{ .ID }}" class="subsection">
+    <hr /><br /><br />
     <h5>
       {{ if .Provider }}
       <a target="_blank" href="{{ .Provider }}">{{ .Label }}</a>
@@ -33,11 +32,10 @@
         {{ end }}
       </a>
     </p>
+    <br />
     <p class="actionbar">
       <label for="delete-sub-{{ .ID }}">Delete</label>
     </p>
-    <br /><br />
-    <hr />
 
     <form class="hidden" method="post">
       <input type="hidden" name="_method" value="delete" />
@@ -48,8 +46,11 @@
   {{ end }}
 
   <div id="sub-default" class="subsection">
+    <hr /><br /><br />
     <h5>Bean</h5>
     <p>$1.99 &nbsp;·&nbsp; Every month</p>
+    <p>Using a card we don't track</p>
+    <br />
     <p class="actionbar">
       <a target="_blank" href="https://todo-add-stripe-link">End</label>
     </p>

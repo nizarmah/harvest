@@ -79,5 +79,5 @@ func makeFrequency(interval int, period entity.SubscriptionPeriod) string {
 		return fmt.Sprintf("Every %s", period)
 	}
 
-	return fmt.Sprintf("Every %d %s", interval, period)
+	return fmt.Sprintf("Every %d %ss", interval, period)
 }
