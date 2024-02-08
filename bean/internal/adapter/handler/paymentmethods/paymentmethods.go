@@ -47,12 +47,24 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) makeViewData(paymentMethods []*entity.PaymentMethodWithSubscriptions) *entity.PaymentMethodsViewData {
 	viewdata := make([]entity.PaymentMethodViewData, 0, len(paymentMethods))
+	monthly, yearly := 0, 0
+
 	for _, method := range paymentMethods {
 		viewdata = append(viewdata, h.makeMethodViewData(method))
+
+		estimates := h.estimator.GetEstimates(method.Subscriptions)
+
+		monthly += estimates.Monthly
+		yearly += estimates.Yearly
 	}
 
+	monthlyDollars, monthlyCents := monthly/100, monthly%100
+	yearlyDollars, yearlyCents := yearly/100, yearly%100
+
 	return &entity.PaymentMethodsViewData{
-		PaymentMethods: viewdata,
+		PaymentMethods:  viewdata,
+		MonthlyEstimate: fmt.Sprintf("$%d.%02d", monthlyDollars, monthlyCents),
+		YearlyEstimate:  fmt.Sprintf("$%d.%02d", yearlyDollars, yearlyCents),
 	}
 }
 
