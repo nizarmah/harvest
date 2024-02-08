@@ -86,7 +86,17 @@ func findByID(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 		}
 
 		if method == nil {
-			t.Error("expected payment method, got nil")
+			t.Fatalf("expected payment method, got nil")
+		}
+
+		if len(method.Subscriptions) != 1 {
+			t.Errorf("expected %d subscriptions, got: %d", 1, len(method.Subscriptions))
+		}
+
+		for _, sub := range method.Subscriptions {
+			if sub.ID == "" {
+				t.Error("expected subscription ID, got empty string")
+			}
 		}
 	})
 
@@ -125,8 +135,18 @@ func findByUserID(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 		}
 
 		for _, method := range methods {
-			if method.UserID != userWithMethodsID {
-				t.Errorf("expected user ID: %s, got: %s", userWithMethodsID, method.UserID)
+			if method.PaymentMethod.UserID != userWithMethodsID {
+				t.Errorf("expected user ID: %s, got: %s", userWithMethodsID, method.PaymentMethod.UserID)
+			}
+
+			if len(method.Subscriptions) != 1 {
+				t.Errorf("expected %d subscriptions, got: %d", 1, len(method.Subscriptions))
+			}
+
+			for _, sub := range method.Subscriptions {
+				if sub.ID == "" {
+					t.Error("expected subscription ID, got empty string")
+				}
 			}
 		}
 	})
@@ -154,12 +174,12 @@ func delete(t *testing.T, ds interfaces.PaymentMethodDataSource) {
 			t.Fatalf("failed to delete payment method: %s", err)
 		}
 
-		method, err = ds.FindByID(userWithMethodsID, method.ID)
+		methodWithSubs, err := ds.FindByID(userWithMethodsID, method.ID)
 		if err != nil {
 			t.Fatalf("failed to find payment method: %s", err)
 		}
 
-		if method != nil {
+		if methodWithSubs != nil {
 			t.Errorf("expected nil payment method, got: %v", method)
 		}
 	})

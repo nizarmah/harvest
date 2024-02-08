@@ -5,6 +5,7 @@ import (
 
 	paymentMethodUS "harvest/bean/internal/usecase/paymentmethod"
 	subscriptionUS "harvest/bean/internal/usecase/subscription"
+	userDashUS "harvest/bean/internal/usecase/userdash"
 
 	envAdapter "harvest/bean/internal/adapter/env"
 	landingHandler "harvest/bean/internal/adapter/handler/landing"
@@ -93,6 +94,7 @@ func main() {
 		paymentMethodUS.UseCase{
 			PaymentMethods: paymentMethodRepo,
 		},
+		userDashUS.UseCase{},
 		paymentMethodsView,
 	))
 

@@ -39,6 +39,11 @@ const (
 
 // --- Database --- Payment Method ---
 
+type PaymentMethodWithSubscriptions struct {
+	PaymentMethod *PaymentMethod
+	Subscriptions []*Subscription
+}
+
 type PaymentMethod struct {
 	ID     string
 	UserID string
@@ -123,7 +128,20 @@ type SubscriptionViewData struct {
 // --- View Data --- Payment Methods ---
 
 type PaymentMethodsViewData struct {
-	PaymentMethods []*PaymentMethod
+	PaymentMethods []PaymentMethodViewData
+}
+
+type PaymentMethodViewData struct {
+	ID string
+
+	Label    string
+	Last4    string
+	Brand    string
+	ExpMonth int
+	ExpYear  int
+
+	MonthlyEstimate string
+	YearlyEstimate  string
 }
 
 // --- Misc ---
