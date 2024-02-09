@@ -3,6 +3,7 @@ package landing
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"harvest/bean/internal/entity"
 
@@ -76,9 +77,14 @@ func (h *handler) makeMethodViewData(pm *entity.PaymentMethodWithSubscriptions) 
 	monthlyDollars, monthlyCents := estimates.Monthly/100, estimates.Monthly%100
 	yearlyDollars, yearlyCents := estimates.Yearly/100, estimates.Yearly%100
 
+	label := method.Label
+	if label == "" {
+		label = fmt.Sprintf("Card %s", method.Last4)
+	}
+
 	return entity.PaymentMethodViewData{
 		ID:       method.ID,
-		Label:    method.Label,
+		Label:    label,
 		Last4:    method.Last4,
 		Brand:    string(method.Brand),
 		ExpMonth: method.ExpMonth,
@@ -106,10 +112,18 @@ func (h *handler) makeSubViewData(subscription *entity.Subscription) entity.Subs
 
 	frequency := makeFrequency(subscription.Interval, subscription.Period)
 
+	label := subscription.Label
+	provider := subscription.Provider
+
+	u, _ := url.Parse(provider)
+	if label == "" && u != nil {
+		label = u.Host
+	}
+
 	return entity.SubscriptionViewData{
 		ID:        subscription.ID,
-		Label:     subscription.Label,
-		Provider:  subscription.Provider,
+		Label:     label,
+		Provider:  provider,
 		Amount:    fmt.Sprintf("$%d.%02d", dollars, cents),
 		Frequency: frequency,
 	}
