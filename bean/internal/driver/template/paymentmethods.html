@@ -5,63 +5,7 @@
 {{ end }}
 
 {{ define "content" }}
-<style>
-summary > h1,
-summary > h2,
-summary > h3,
-summary > h4,
-summary > h5 {
-  display: inline;
-
-  margin-left: 0.5em;
-
-  cursor: pointer;
-}
-
-ul {
-  list-style: none;
-
-  padding: 0;
-  margin: 0;
-}
-
-hr {
-  opacity: 0.4;
-}
-
-.card-content {
-  position: relative;
-}
-
-.card-content:nth-of-type(odd)::before {
-  content: "";
-
-  background-color: #f9f9f9;
-
-  width: 100vw;
-  height: 100%;
-
-  position: absolute;
-  z-index: -1;
-
-  top: 0;
-  /*
-   * The left value is calculated as follows.
-   * 
-   * We know the container width is min(100%, 36em).
-   * 
-   * Thus, we know the area outside the container.
-   * That is 100vw - min(100%, 36em).
-   * 
-   * But that area is to the left and right of the container.
-   * The container is centered, so they are equal. 
-   * So, we split it in half.
-   * 
-   * Then, we subtract that from 0rem to get the negative value.
-   */
-  left: calc(0rem - calc((100vw - min(100%, 36em)) / 2));
-}
-</style>
+{{ template "styles" . }}
 
 <div class="section">
   <div class="subsection">
@@ -130,6 +74,8 @@ hr {
   </details>
   <br /><br />
 </div>
+
+{{ template "scripts" . }}
 {{ end }}
 
 {{ define "card-summary" }}
@@ -165,4 +111,98 @@ hr {
     <a href="/todo">Delete</a>
   </p>
 </li>
+{{ end }}
+
+{{ define "styles" }}
+<style>
+summary > h1,
+summary > h2,
+summary > h3,
+summary > h4,
+summary > h5 {
+  display: inline;
+
+  margin-left: 0.5em;
+
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+
+  padding: 0;
+  margin: 0;
+}
+
+hr {
+  opacity: 0.4;
+}
+
+.card-content {
+  position: relative;
+}
+
+.card-content:nth-of-type(odd)::before {
+  content: "";
+
+  background-color: #f9f9f9;
+
+  width: 100vw;
+  height: 100%;
+
+  position: absolute;
+  z-index: -1;
+
+  top: 0;
+  /*
+    * The left value is calculated as follows.
+    * 
+    * We know the container width is min(100%, 36em).
+    * 
+    * Thus, we know the area outside the container.
+    * That is 100vw - min(100%, 36em).
+    * 
+    * But that area is to the left and right of the container.
+    * The container is centered, so they are equal. 
+    * So, we split it in half.
+    * 
+    * Then, we subtract that from 0rem to get the negative value.
+    */
+  left: calc(0rem - calc((100vw - min(100%, 36em)) / 2));
+}
+</style>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+  // remembers if details are open or closed
+
+  document.addEventListener("DOMContentLoaded", function (event) {
+    const details = document.querySelectorAll("details");
+
+    details.forEach(function (detail) {
+      const key = "details-" + detail.id;
+
+      var open = localStorage.getItem(key);
+      if (open === "true") detail.open = true;
+
+      detail.addEventListener("toggle", function (event) {
+        localStorage.setItem(key, event.target.open);
+      });
+    });
+  });
+</script>
+<script>
+  // maintains scroll position on page reload
+
+  document.addEventListener("DOMContentLoaded", function (event) {
+    const scrollpos = localStorage.getItem("scrollpos");
+
+    if (scrollpos) window.scrollTo(0, scrollpos);
+  });
+
+  window.addEventListener("beforeunload", function (event) {
+    localStorage.setItem("scrollpos", window.scrollY);
+  });
+</script>
 {{ end }}
