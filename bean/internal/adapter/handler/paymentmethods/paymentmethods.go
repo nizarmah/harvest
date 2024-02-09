@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
+	"harvest/bean/internal/entity/viewmodel"
 
 	estimatorUC "harvest/bean/internal/usecase/estimator"
 	"harvest/bean/internal/usecase/paymentmethod"
@@ -46,8 +47,8 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *handler) makeViewData(paymentMethods []*entity.PaymentMethodWithSubscriptions) *entity.PaymentMethodsViewData {
-	methods := make([]entity.PaymentMethodViewData, 0, len(paymentMethods))
+func (h *handler) makeViewData(paymentMethods []*model.PaymentMethodWithSubscriptions) *viewmodel.PaymentMethodsViewData {
+	methods := make([]viewmodel.PaymentMethodViewData, 0, len(paymentMethods))
 	monthly, yearly := 0, 0
 
 	for _, method := range paymentMethods {
@@ -59,7 +60,7 @@ func (h *handler) makeViewData(paymentMethods []*entity.PaymentMethodWithSubscri
 		methods = append(methods, makeMethodViewData(method, estimates))
 	}
 
-	return &entity.PaymentMethodsViewData{
+	return &viewmodel.PaymentMethodsViewData{
 		PaymentMethods:  methods,
 		MonthlyEstimate: toDollarsString(monthly),
 		YearlyEstimate:  toDollarsString(yearly),
@@ -67,9 +68,9 @@ func (h *handler) makeViewData(paymentMethods []*entity.PaymentMethodWithSubscri
 }
 
 func makeMethodViewData(
-	pm *entity.PaymentMethodWithSubscriptions,
-	estimates *entity.Estimates,
-) entity.PaymentMethodViewData {
+	pm *model.PaymentMethodWithSubscriptions,
+	estimates *model.Estimates,
+) viewmodel.PaymentMethodViewData {
 	method, subs := pm.PaymentMethod, pm.Subscriptions
 
 	label := method.Label
@@ -77,7 +78,7 @@ func makeMethodViewData(
 		label = fmt.Sprintf("Card %s", method.Last4)
 	}
 
-	return entity.PaymentMethodViewData{
+	return viewmodel.PaymentMethodViewData{
 		ID:       method.ID,
 		Label:    label,
 		Last4:    method.Last4,
@@ -92,8 +93,8 @@ func makeMethodViewData(
 	}
 }
 
-func makeSubsViewData(subscriptions []*entity.Subscription) []entity.SubscriptionViewData {
-	subs := make([]entity.SubscriptionViewData, 0, len(subscriptions))
+func makeSubsViewData(subscriptions []*model.Subscription) []viewmodel.SubscriptionViewData {
+	subs := make([]viewmodel.SubscriptionViewData, 0, len(subscriptions))
 	for _, sub := range subscriptions {
 		subs = append(subs, makeSubViewData(sub))
 	}
@@ -101,7 +102,7 @@ func makeSubsViewData(subscriptions []*entity.Subscription) []entity.Subscriptio
 	return subs
 }
 
-func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewData {
+func makeSubViewData(subscription *model.Subscription) viewmodel.SubscriptionViewData {
 	label := subscription.Label
 	provider := subscription.Provider
 
@@ -110,7 +111,7 @@ func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewD
 		label = u.Host
 	}
 
-	return entity.SubscriptionViewData{
+	return viewmodel.SubscriptionViewData{
 		ID:        subscription.ID,
 		Label:     label,
 		Provider:  provider,
@@ -119,7 +120,7 @@ func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewD
 	}
 }
 
-func toFrequencyString(interval int, period entity.SubscriptionPeriod) string {
+func toFrequencyString(interval int, period model.SubscriptionPeriod) string {
 	if interval == 1 {
 		return fmt.Sprintf("Every %s", period)
 	}

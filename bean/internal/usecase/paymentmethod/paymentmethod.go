@@ -3,7 +3,7 @@ package paymentmethod
 import (
 	"fmt"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 
 	"harvest/bean/internal/usecase/interfaces"
 )
@@ -16,10 +16,10 @@ func (u *UseCase) Create(
 	userID string,
 	label string,
 	last4 string,
-	brand entity.PaymentMethodBrand,
+	brand model.PaymentMethodBrand,
 	expMonth int,
 	expYear int,
-) (*entity.PaymentMethod, error) {
+) (*model.PaymentMethod, error) {
 	if err := validateLabel(label); err != nil {
 		return nil, fmt.Errorf("invalid label: %w", err)
 	}
@@ -48,7 +48,7 @@ func (u *UseCase) Create(
 	return method, nil
 }
 
-func (u *UseCase) Get(userID string, paymentMethodID string) (*entity.PaymentMethodWithSubscriptions, error) {
+func (u *UseCase) Get(userID string, paymentMethodID string) (*model.PaymentMethodWithSubscriptions, error) {
 	method, err := u.PaymentMethods.FindByID(userID, paymentMethodID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get payment method: %w", err)
@@ -57,7 +57,7 @@ func (u *UseCase) Get(userID string, paymentMethodID string) (*entity.PaymentMet
 	return method, nil
 }
 
-func (u *UseCase) List(userID string) ([]*entity.PaymentMethodWithSubscriptions, error) {
+func (u *UseCase) List(userID string) ([]*model.PaymentMethodWithSubscriptions, error) {
 	methods, err := u.PaymentMethods.FindByUserID(userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list payment methods: %w", err)

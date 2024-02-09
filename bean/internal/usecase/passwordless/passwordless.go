@@ -3,7 +3,7 @@ package passwordless
 import (
 	"fmt"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 
 	"harvest/bean/internal/usecase/interfaces"
 
@@ -54,7 +54,7 @@ func (u *UseCase) SendEmail(email string) error {
 	return nil
 }
 
-func (u *UseCase) Login(id string, password string) (*entity.User, error) {
+func (u *UseCase) Login(id string, password string) (*model.User, error) {
 	hash, err := u.hasher.Hash(password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
@@ -79,7 +79,7 @@ func (u *UseCase) Login(id string, password string) (*entity.User, error) {
 	return user, nil
 }
 
-func (u *UseCase) findOrCreateUser(email string) (*entity.User, error) {
+func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
 	user, err := u.users.FindByEmail(email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %w", err)

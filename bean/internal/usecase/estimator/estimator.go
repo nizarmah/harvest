@@ -1,13 +1,13 @@
 package userdash
 
 import (
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 )
 
 type UseCase struct{}
 
-func (u *UseCase) GetEstimates(subs []*entity.Subscription) *entity.Estimates {
-	estimates := &entity.Estimates{
+func (u *UseCase) GetEstimates(subs []*model.Subscription) *model.Estimates {
+	estimates := &model.Estimates{
 		Daily:   0,
 		Weekly:  0,
 		Monthly: 0,

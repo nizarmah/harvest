@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 )
 
 func TestValidateLabel(t *testing.T) {
@@ -69,11 +69,11 @@ func TestValidateInterval(t *testing.T) {
 
 func TestValidatePeriod(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
-		tests := []entity.SubscriptionPeriod{
-			entity.SubscriptionPeriodDaily,
-			entity.SubscriptionPeriodWeekly,
-			entity.SubscriptionPeriodMonthly,
-			entity.SubscriptionPeriodYearly,
+		tests := []model.SubscriptionPeriod{
+			model.SubscriptionPeriodDaily,
+			model.SubscriptionPeriodWeekly,
+			model.SubscriptionPeriodMonthly,
+			model.SubscriptionPeriodYearly,
 		}
 
 		for _, test := range tests {

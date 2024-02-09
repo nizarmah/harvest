@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 )
 
 func TestValidateLabel(t *testing.T) {
@@ -43,10 +43,10 @@ func TestValidateLast4(t *testing.T) {
 
 func TestValidateBrand(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
-		tests := []entity.PaymentMethodBrand{
-			entity.PaymentMethodBrandAmex,
-			entity.PaymentMethodBrandMastercard,
-			entity.PaymentMethodBrandVisa,
+		tests := []model.PaymentMethodBrand{
+			model.PaymentMethodBrandAmex,
+			model.PaymentMethodBrandMastercard,
+			model.PaymentMethodBrandVisa,
 		}
 
 		for _, test := range tests {
