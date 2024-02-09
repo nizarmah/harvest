@@ -60,7 +60,8 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodW
 				" payment_methods.id, payment_methods.user_id," +
 				" payment_methods.label, payment_methods.last4, payment_methods.brand, payment_methods.exp_month, payment_methods.exp_year," +
 				" payment_methods.created_at, payment_methods.updated_at," +
-				" subscriptions.id, subscriptions.label, subscriptions.amount, subscriptions.interval, subscriptions.period" +
+				" subscriptions.id, subscriptions.label, subscriptions.provider," +
+				" subscriptions.amount, subscriptions.interval, subscriptions.period" +
 				" FROM payment_methods" +
 				" LEFT JOIN subscriptions" +
 				" ON payment_methods.id = subscriptions.payment_method_id" +
@@ -87,6 +88,7 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodW
 		var (
 			subID       *string
 			subLabel    *string
+			subProvider *string
 			subAmount   *int
 			subInterval *int
 			subPeriod   *string
@@ -96,7 +98,8 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodW
 			&method.ID, &method.UserID,
 			&method.Label, &method.Last4, &method.Brand, &method.ExpMonth, &method.ExpYear,
 			&method.CreatedAt, &method.UpdatedAt,
-			&subID, &subLabel, &subAmount, &subInterval, &subPeriod,
+			&subID, &subLabel, &subProvider,
+			&subAmount, &subInterval, &subPeriod,
 		)
 
 		if err != nil {
@@ -107,6 +110,7 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodW
 		if subID != nil {
 			sub.ID = *subID
 			sub.Label = *subLabel
+			sub.Provider = *subProvider
 			sub.Amount = *subAmount
 			sub.Interval = *subInterval
 			sub.Period = entity.SubscriptionPeriod(*subPeriod)
@@ -131,7 +135,8 @@ func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSu
 				" payment_methods.id, payment_methods.user_id," +
 				" payment_methods.label, payment_methods.last4, payment_methods.brand, payment_methods.exp_month, payment_methods.exp_year," +
 				" payment_methods.created_at, payment_methods.updated_at," +
-				" subscriptions.id, subscriptions.label, subscriptions.amount, subscriptions.interval, subscriptions.period" +
+				" subscriptions.id, subscriptions.label, subscriptions.provider," +
+				" subscriptions.amount, subscriptions.interval, subscriptions.period" +
 				" FROM payment_methods" +
 				" LEFT JOIN subscriptions" +
 				" ON payment_methods.id = subscriptions.payment_method_id" +
@@ -158,6 +163,7 @@ func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSu
 		var (
 			subID       *string
 			subLabel    *string
+			subProvider *string
 			subAmount   *int
 			subInterval *int
 			subPeriod   *string
@@ -167,7 +173,8 @@ func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSu
 			&method.ID, &method.UserID,
 			&method.Label, &method.Last4, &method.Brand, &method.ExpMonth, &method.ExpYear,
 			&method.CreatedAt, &method.UpdatedAt,
-			&subID, &subLabel, &subAmount, &subInterval, &subPeriod,
+			&subID, &subLabel, &subProvider,
+			&subAmount, &subInterval, &subPeriod,
 		)
 
 		if err != nil {
@@ -178,6 +185,7 @@ func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSu
 		if subID != nil {
 			sub.ID = *subID
 			sub.Label = *subLabel
+			sub.Provider = *subProvider
 			sub.Amount = *subAmount
 			sub.Interval = *subInterval
 			sub.Period = entity.SubscriptionPeriod(*subPeriod)

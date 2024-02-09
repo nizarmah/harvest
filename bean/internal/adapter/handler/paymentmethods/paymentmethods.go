@@ -86,5 +86,39 @@ func (h *handler) makeMethodViewData(pm *entity.PaymentMethodWithSubscriptions) 
 
 		MonthlyEstimate: fmt.Sprintf("$%d.%02d", monthlyDollars, monthlyCents),
 		YearlyEstimate:  fmt.Sprintf("$%d.%02d", yearlyDollars, yearlyCents),
+
+		Subscriptions: h.makeSubsViewData(subs),
 	}
+}
+
+func (h *handler) makeSubsViewData(subs []*entity.Subscription) []entity.SubscriptionViewData {
+	viewdata := make([]entity.SubscriptionViewData, 0, len(subs))
+
+	for _, sub := range subs {
+		viewdata = append(viewdata, h.makeSubViewData(sub))
+	}
+
+	return viewdata
+}
+
+func (h *handler) makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewData {
+	dollars, cents := subscription.Amount/100, subscription.Amount%100
+
+	frequency := makeFrequency(subscription.Interval, subscription.Period)
+
+	return entity.SubscriptionViewData{
+		ID:        subscription.ID,
+		Label:     subscription.Label,
+		Provider:  subscription.Provider,
+		Amount:    fmt.Sprintf("$%d.%02d", dollars, cents),
+		Frequency: frequency,
+	}
+}
+
+func makeFrequency(interval int, period entity.SubscriptionPeriod) string {
+	if interval == 1 {
+		return fmt.Sprintf("Every %s", period)
+	}
+
+	return fmt.Sprintf("Every %d %ss", interval, period)
 }

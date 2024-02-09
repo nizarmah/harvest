@@ -148,6 +148,8 @@ type PaymentMethodViewData struct {
 
 	MonthlyEstimate string
 	YearlyEstimate  string
+
+	Subscriptions []SubscriptionViewData
 }
 
 // --- Misc ---
