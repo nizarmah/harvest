@@ -57,18 +57,13 @@ func (ds *dataSource) Create(
 	return sub, nil
 }
 
-func (ds *dataSource) FindByID(userID string, id string) (*entity.SubscriptionWithPaymentMethod, error) {
+func (ds *dataSource) FindByID(userID string, id string) (*entity.Subscription, error) {
 	sub := &entity.Subscription{}
-	method := &entity.PaymentMethod{}
 
 	err := ds.db.Pool.
 		QueryRow(
 			context.Background(),
-			("SELECT"+
-				" subscriptions.*, payment_methods.*"+
-				" FROM subscriptions"+
-				" LEFT JOIN payment_methods"+
-				" ON subscriptions.payment_method_id = payment_methods.id"+
+			("SELECT * FROM subscriptions"+
 				" WHERE"+
 				" subscriptions.user_id = $1"+
 				" AND subscriptions.id = $2"),
@@ -79,9 +74,6 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.SubscriptionWi
 			&sub.Label, &sub.Provider,
 			&sub.Amount, &sub.Interval, &sub.Period,
 			&sub.CreatedAt, &sub.UpdatedAt,
-			&method.ID, &method.UserID,
-			&method.Label, &method.Last4, &method.Brand, &method.ExpMonth, &method.ExpYear,
-			&method.CreatedAt, &method.UpdatedAt,
 		)
 
 	if err == pgx.ErrNoRows {
@@ -92,58 +84,7 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.SubscriptionWi
 		return nil, fmt.Errorf("failed to find subscription: %w", err)
 	}
 
-	return &entity.SubscriptionWithPaymentMethod{
-		Subscription:  sub,
-		PaymentMethod: method,
-	}, nil
-}
-
-func (ds *dataSource) FindByUserID(userID string) ([]*entity.SubscriptionWithPaymentMethod, error) {
-	rows, err := ds.db.Pool.
-		Query(
-			context.Background(),
-			("SELECT" +
-				" subscriptions.*, payment_methods.*" +
-				" FROM subscriptions" +
-				" LEFT JOIN payment_methods" +
-				" ON subscriptions.payment_method_id = payment_methods.id" +
-				" WHERE" +
-				" subscriptions.user_id = $1"),
-			userID,
-		)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to find subscriptions: %w", err)
-	}
-
-	defer rows.Close()
-
-	subs := []*entity.SubscriptionWithPaymentMethod{}
-	for rows.Next() {
-		sub := &entity.Subscription{}
-		method := &entity.PaymentMethod{}
-
-		err := rows.Scan(
-			&sub.ID, &sub.UserID, &sub.PaymentMethodID,
-			&sub.Label, &sub.Provider,
-			&sub.Amount, &sub.Interval, &sub.Period,
-			&sub.CreatedAt, &sub.UpdatedAt,
-			&method.ID, &method.UserID,
-			&method.Label, &method.Last4, &method.Brand, &method.ExpMonth, &method.ExpYear,
-			&method.CreatedAt, &method.UpdatedAt,
-		)
-
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan subscription: %w", err)
-		}
-
-		subs = append(subs, &entity.SubscriptionWithPaymentMethod{
-			Subscription:  sub,
-			PaymentMethod: method,
-		})
-	}
-
-	return subs, nil
+	return sub, nil
 }
 
 func (ds *dataSource) Delete(userID string, id string) error {

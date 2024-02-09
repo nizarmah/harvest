@@ -22,11 +22,6 @@ var (
 		"login.html",
 	}
 
-	SubscriptionsTemplate = []string{
-		baseTemplate,
-		"subscriptions.html",
-	}
-
 	PaymentMethodsTemplate = []string{
 		baseTemplate,
 		"paymentmethods.html",

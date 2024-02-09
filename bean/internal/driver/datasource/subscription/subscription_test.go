@@ -31,10 +31,6 @@ func TestDataSouce(t *testing.T) {
 		findByID(t, ds)
 	})
 
-	t.Run("find_by_user_id", func(t *testing.T) {
-		findByUserID(t, ds)
-	})
-
 	t.Run("delete", func(t *testing.T) {
 		delete(t, ds)
 	})
@@ -91,11 +87,7 @@ func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		}
 
 		if sub == nil {
-			t.Fatalf("expected subscription, got nil")
-		}
-
-		if sub.PaymentMethod.ID != methodID {
-			t.Errorf("expected payment method ID: %s, got: %s", methodID, sub.PaymentMethod.ID)
+			t.Error("expected subscription, got nil")
 		}
 	})
 
@@ -122,40 +114,6 @@ func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	})
 }
 
-func findByUserID(t *testing.T, ds interfaces.SubscriptionDataSource) {
-	t.Run("has_subscriptions", func(t *testing.T) {
-		subs, err := ds.FindByUserID(userWithSubsID)
-		if err != nil {
-			t.Fatalf("failed to find subscriptions by user id: %s", err)
-		}
-
-		if len(subs) != 2 {
-			t.Errorf("expected %d subscriptions, got: %d", 2, len(subs))
-		}
-
-		for _, sub := range subs {
-			if sub.Subscription.UserID != userWithSubsID {
-				t.Errorf("expected user ID: %s, got: %s", userWithSubsID, sub.Subscription.UserID)
-			}
-
-			if sub.PaymentMethod.UserID != userWithSubsID {
-				t.Errorf("expected user ID: %s, got: %s", userWithSubsID, sub.PaymentMethod.UserID)
-			}
-		}
-	})
-
-	t.Run("no_subscriptions", func(t *testing.T) {
-		subs, err := ds.FindByUserID(userWithNoSubsID)
-		if err != nil {
-			t.Fatalf("failed to find subscriptions by user id: %s", err)
-		}
-
-		if len(subs) != 0 {
-			t.Errorf("expected %d subscriptions, got: %d", 0, len(subs))
-		}
-	})
-}
-
 func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	t.Run("existing_subscription", func(t *testing.T) {
 		sub, err := ds.Create(userWithSubsID, methodID, "action-delete", "bean", 1000, 1, entity.SubscriptionPeriodMonthly)
@@ -167,12 +125,12 @@ func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 			t.Fatalf("failed to delete subscription: %s", err)
 		}
 
-		subWithMethod, err := ds.FindByID(userWithSubsID, sub.ID)
+		sub, err = ds.FindByID(userWithSubsID, sub.ID)
 		if err != nil {
 			t.Fatalf("failed to find subscription: %s", err)
 		}
 
-		if subWithMethod != nil {
+		if sub != nil {
 			t.Errorf("expected nil subscription, got: %v", sub)
 		}
 	})
