@@ -22,7 +22,7 @@ func New(view interfaces.LoginView) http.Handler {
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	if email != "" {
-		http.Redirect(w, r, "/cards", http.StatusFound)
+		http.Redirect(w, r, "/home", http.StatusFound)
 		return
 	}
 

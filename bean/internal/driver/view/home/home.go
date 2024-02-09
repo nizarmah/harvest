@@ -6,4 +6,4 @@ import (
 	"harvest/bean/internal/driver/view"
 )
 
-var New = view.New[viewmodel.PaymentMethodsViewData]
+var New = view.New[viewmodel.HomeViewData]

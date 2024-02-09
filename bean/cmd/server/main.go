@@ -7,17 +7,17 @@ import (
 	paymentMethodUC "harvest/bean/internal/usecase/paymentmethod"
 
 	envAdapter "harvest/bean/internal/adapter/env"
+	homeHandler "harvest/bean/internal/adapter/handler/home"
 	landingHandler "harvest/bean/internal/adapter/handler/landing"
 	loginHandler "harvest/bean/internal/adapter/handler/login"
-	paymentMethodHandler "harvest/bean/internal/adapter/handler/paymentmethods"
 
 	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
 	"harvest/bean/internal/driver/postgres"
 	"harvest/bean/internal/driver/server"
 	"harvest/bean/internal/driver/template"
+	homeVD "harvest/bean/internal/driver/view/home"
 	landingVD "harvest/bean/internal/driver/view/landing"
 	loginVD "harvest/bean/internal/driver/view/login"
-	paymentMethodsVD "harvest/bean/internal/driver/view/paymentmethods"
 )
 
 func main() {
@@ -59,7 +59,7 @@ func main() {
 		)
 	}
 
-	paymentMethodsView, err := paymentMethodsVD.New(template.FS, template.PaymentMethodsTemplate)
+	homeView, err := homeVD.New(template.FS, template.HomeTemplate)
 	if err != nil {
 		panic(
 			fmt.Errorf("error creating payment methods view: %v", err),
@@ -71,12 +71,12 @@ func main() {
 	s.Route("/", landingHandler.New(landingView))
 	s.Route("/get-started", loginHandler.New(loginView))
 
-	s.Route("/cards", paymentMethodHandler.New(
+	s.Route("/home", homeHandler.New(
+		estimatorUC.UseCase{},
 		paymentMethodUC.UseCase{
 			PaymentMethods: paymentMethodRepo,
 		},
-		estimatorUC.UseCase{},
-		paymentMethodsView,
+		homeView,
 	))
 
 	s.Listen(":8080")
