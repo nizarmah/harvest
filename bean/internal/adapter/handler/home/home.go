@@ -16,13 +16,13 @@ type handler struct {
 	estimator      estimatorUC.UseCase
 	paymentMethods paymentmethod.UseCase
 
-	view interfaces.PaymentMethodsView
+	view interfaces.HomeView
 }
 
 func New(
 	es estimatorUC.UseCase,
 	pm paymentmethod.UseCase,
-	view interfaces.PaymentMethodsView,
+	view interfaces.HomeView,
 ) http.Handler {
 	return &handler{
 		estimator:      es,

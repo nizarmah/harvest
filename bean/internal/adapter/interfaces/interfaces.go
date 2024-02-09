@@ -14,4 +14,4 @@ type View[T any] interface {
 
 type LandingView View[viewmodel.LandingViewData]
 type LoginView View[viewmodel.LoginViewData]
-type PaymentMethodsView View[viewmodel.HomeViewData]
+type HomeView View[viewmodel.HomeViewData]
