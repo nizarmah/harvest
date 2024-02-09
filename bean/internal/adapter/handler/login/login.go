@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/viewmodel"
 
 	"harvest/bean/internal/adapter/interfaces"
 )
@@ -26,7 +26,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.view.Render(w, &entity.LoginViewData{
+	err := h.view.Render(w, &viewmodel.LoginViewData{
 		Email: email,
 	})
 	if err != nil {

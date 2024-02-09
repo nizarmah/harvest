@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 
 	"harvest/bean/internal/usecase/interfaces"
 
@@ -23,8 +23,8 @@ func New(db *postgres.DB) interfaces.LoginTokenDataSource {
 	}
 }
 
-func (ds *dataSource) Create(email string, hashedToken string) (*entity.LoginToken, error) {
-	token := &entity.LoginToken{}
+func (ds *dataSource) Create(email string, hashedToken string) (*model.LoginToken, error) {
+	token := &model.LoginToken{}
 
 	err := ds.db.Pool.
 		QueryRow(
@@ -45,8 +45,8 @@ func (ds *dataSource) Create(email string, hashedToken string) (*entity.LoginTok
 	return token, nil
 }
 
-func (ds *dataSource) FindUnexpired(id string) (*entity.LoginToken, error) {
-	token := &entity.LoginToken{}
+func (ds *dataSource) FindUnexpired(id string) (*model.LoginToken, error) {
+	token := &model.LoginToken{}
 
 	err := ds.db.Pool.
 		QueryRow(

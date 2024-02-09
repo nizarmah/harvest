@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 )
 
 // --- Data Sources ---
@@ -14,10 +14,10 @@ type SubscriptionDataSource interface {
 		provider string,
 		amount int,
 		interval int,
-		period entity.SubscriptionPeriod,
-	) (*entity.Subscription, error)
+		period model.SubscriptionPeriod,
+	) (*model.Subscription, error)
 
-	FindByID(userID string, id string) (*entity.Subscription, error)
+	FindByID(userID string, id string) (*model.Subscription, error)
 
 	Delete(userID string, id string) error
 }
@@ -27,30 +27,30 @@ type PaymentMethodDataSource interface {
 		userID string,
 		label string,
 		last4 string,
-		brand entity.PaymentMethodBrand,
+		brand model.PaymentMethodBrand,
 		expMonth int,
 		expYear int,
-	) (*entity.PaymentMethod, error)
+	) (*model.PaymentMethod, error)
 
-	FindByID(userID string, id string) (*entity.PaymentMethodWithSubscriptions, error)
-	FindByUserID(userID string) ([]*entity.PaymentMethodWithSubscriptions, error)
+	FindByID(userID string, id string) (*model.PaymentMethodWithSubscriptions, error)
+	FindByUserID(userID string) ([]*model.PaymentMethodWithSubscriptions, error)
 
 	Delete(userID string, id string) error
 }
 
 type UserDataSource interface {
-	Create(email string) (*entity.User, error)
+	Create(email string) (*model.User, error)
 
-	FindById(id string) (*entity.User, error)
-	FindByEmail(email string) (*entity.User, error)
+	FindById(id string) (*model.User, error)
+	FindByEmail(email string) (*model.User, error)
 
 	Delete(id string) error
 }
 
 type LoginTokenDataSource interface {
-	Create(email string, hashedToken string) (*entity.LoginToken, error)
+	Create(email string, hashedToken string) (*model.LoginToken, error)
 
-	FindUnexpired(id string) (*entity.LoginToken, error)
+	FindUnexpired(id string) (*model.LoginToken, error)
 
 	Delete(id string) error
 }

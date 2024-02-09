@@ -3,7 +3,7 @@ package subscription
 import (
 	"fmt"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 
 	"harvest/bean/internal/usecase/interfaces"
 )
@@ -20,8 +20,8 @@ func (u *UseCase) Create(
 	provider string,
 	amount int,
 	interval int,
-	period entity.SubscriptionPeriod,
-) (*entity.Subscription, error) {
+	period model.SubscriptionPeriod,
+) (*model.Subscription, error) {
 	if err := validateLabel(label); err != nil {
 		return nil, fmt.Errorf("invalid label: %w", err)
 	}

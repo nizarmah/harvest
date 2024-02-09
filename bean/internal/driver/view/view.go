@@ -6,16 +6,16 @@ import (
 	"html/template"
 	"net/http"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/viewmodel"
 
 	"harvest/bean/internal/adapter/interfaces"
 )
 
-type Base[T entity.ViewData] struct {
+type Base[T viewmodel.ViewData] struct {
 	tmpl *template.Template
 }
 
-func New[T entity.ViewData](FS embed.FS, templates []string) (interfaces.View[T], error) {
+func New[T viewmodel.ViewData](FS embed.FS, templates []string) (interfaces.View[T], error) {
 	tmpl, err := template.ParseFS(FS, templates...)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing templates: %w", err)

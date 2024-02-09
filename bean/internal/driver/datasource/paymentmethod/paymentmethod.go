@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 
 	"harvest/bean/internal/usecase/interfaces"
 
@@ -25,11 +25,11 @@ func (ds *dataSource) Create(
 	userID string,
 	label string,
 	last4 string,
-	brand entity.PaymentMethodBrand,
+	brand model.PaymentMethodBrand,
 	expMonth int,
 	expYear int,
-) (*entity.PaymentMethod, error) {
-	method := &entity.PaymentMethod{}
+) (*model.PaymentMethod, error) {
+	method := &model.PaymentMethod{}
 
 	err := ds.db.Pool.
 		QueryRow(
@@ -52,7 +52,7 @@ func (ds *dataSource) Create(
 	return method, nil
 }
 
-func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodWithSubscriptions, error) {
+func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWithSubscriptions, error) {
 	rows, err := ds.db.Pool.
 		Query(
 			context.Background(),
@@ -81,8 +81,8 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodW
 
 	defer rows.Close()
 
-	method := &entity.PaymentMethod{}
-	subs := []*entity.Subscription{}
+	method := &model.PaymentMethod{}
+	subs := []*model.Subscription{}
 
 	for rows.Next() {
 		var (
@@ -106,14 +106,14 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodW
 			return nil, fmt.Errorf("failed to scan payment method: %w", err)
 		}
 
-		sub := &entity.Subscription{}
+		sub := &model.Subscription{}
 		if subID != nil {
 			sub.ID = *subID
 			sub.Label = *subLabel
 			sub.Provider = *subProvider
 			sub.Amount = *subAmount
 			sub.Interval = *subInterval
-			sub.Period = entity.SubscriptionPeriod(*subPeriod)
+			sub.Period = model.SubscriptionPeriod(*subPeriod)
 		}
 
 		if sub.ID != "" {
@@ -121,13 +121,13 @@ func (ds *dataSource) FindByID(userID string, id string) (*entity.PaymentMethodW
 		}
 	}
 
-	return &entity.PaymentMethodWithSubscriptions{
+	return &model.PaymentMethodWithSubscriptions{
 		PaymentMethod: method,
 		Subscriptions: subs,
 	}, nil
 }
 
-func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSubscriptions, error) {
+func (ds *dataSource) FindByUserID(userID string) ([]*model.PaymentMethodWithSubscriptions, error) {
 	rows, err := ds.db.Pool.
 		Query(
 			context.Background(),
@@ -152,14 +152,14 @@ func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSu
 
 	defer rows.Close()
 
-	methods := []*entity.PaymentMethodWithSubscriptions{}
-	cache := &entity.PaymentMethodWithSubscriptions{
-		PaymentMethod: &entity.PaymentMethod{},
-		Subscriptions: []*entity.Subscription{},
+	methods := []*model.PaymentMethodWithSubscriptions{}
+	cache := &model.PaymentMethodWithSubscriptions{
+		PaymentMethod: &model.PaymentMethod{},
+		Subscriptions: []*model.Subscription{},
 	}
 
 	for rows.Next() {
-		method := &entity.PaymentMethod{}
+		method := &model.PaymentMethod{}
 		var (
 			subID       *string
 			subLabel    *string
@@ -181,14 +181,14 @@ func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSu
 			return nil, fmt.Errorf("failed to scan payment method: %w", err)
 		}
 
-		sub := &entity.Subscription{}
+		sub := &model.Subscription{}
 		if subID != nil {
 			sub.ID = *subID
 			sub.Label = *subLabel
 			sub.Provider = *subProvider
 			sub.Amount = *subAmount
 			sub.Interval = *subInterval
-			sub.Period = entity.SubscriptionPeriod(*subPeriod)
+			sub.Period = model.SubscriptionPeriod(*subPeriod)
 		}
 
 		if cache.PaymentMethod.ID == "" {
@@ -198,9 +198,9 @@ func (ds *dataSource) FindByUserID(userID string) ([]*entity.PaymentMethodWithSu
 		if cache.PaymentMethod.ID != method.ID {
 			methods = append(methods, cache)
 
-			cache = &entity.PaymentMethodWithSubscriptions{
+			cache = &model.PaymentMethodWithSubscriptions{
 				PaymentMethod: method,
-				Subscriptions: []*entity.Subscription{},
+				Subscriptions: []*model.Subscription{},
 			}
 		}
 

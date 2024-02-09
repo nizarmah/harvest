@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 
 	"harvest/bean/internal/usecase/interfaces"
 
@@ -30,9 +30,9 @@ func (ds *dataSource) Create(
 	provider string,
 	amount int,
 	interval int,
-	period entity.SubscriptionPeriod,
-) (*entity.Subscription, error) {
-	sub := &entity.Subscription{}
+	period model.SubscriptionPeriod,
+) (*model.Subscription, error) {
+	sub := &model.Subscription{}
 
 	err := ds.db.Pool.
 		QueryRow(
@@ -57,8 +57,8 @@ func (ds *dataSource) Create(
 	return sub, nil
 }
 
-func (ds *dataSource) FindByID(userID string, id string) (*entity.Subscription, error) {
-	sub := &entity.Subscription{}
+func (ds *dataSource) FindByID(userID string, id string) (*model.Subscription, error) {
+	sub := &model.Subscription{}
 
 	err := ds.db.Pool.
 		QueryRow(

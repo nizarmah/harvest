@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 )
 
 func validateLabel(label string) error {
@@ -28,18 +28,18 @@ func validateLast4(last4 string) error {
 	return nil
 }
 
-func validateBrand(brand entity.PaymentMethodBrand) error {
+func validateBrand(brand model.PaymentMethodBrand) error {
 	switch brand {
-	case entity.PaymentMethodBrandAmex,
-		entity.PaymentMethodBrandMastercard,
-		entity.PaymentMethodBrandVisa:
+	case model.PaymentMethodBrandAmex,
+		model.PaymentMethodBrandMastercard,
+		model.PaymentMethodBrandVisa:
 		return nil
 	default:
 		return fmt.Errorf(
 			"brand must be: %s, %s, %s",
-			entity.PaymentMethodBrandAmex,
-			entity.PaymentMethodBrandMastercard,
-			entity.PaymentMethodBrandVisa,
+			model.PaymentMethodBrandAmex,
+			model.PaymentMethodBrandMastercard,
+			model.PaymentMethodBrandVisa,
 		)
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/model"
 
 	"harvest/bean/internal/usecase/interfaces"
 
@@ -23,8 +23,8 @@ func New(db *postgres.DB) interfaces.UserDataSource {
 	}
 }
 
-func (ds *dataSource) Create(email string) (*entity.User, error) {
-	user := &entity.User{}
+func (ds *dataSource) Create(email string) (*model.User, error) {
+	user := &model.User{}
 
 	err := ds.db.Pool.
 		QueryRow(
@@ -43,8 +43,8 @@ func (ds *dataSource) Create(email string) (*entity.User, error) {
 	return user, nil
 }
 
-func (ds *dataSource) FindById(id string) (*entity.User, error) {
-	user := &entity.User{}
+func (ds *dataSource) FindById(id string) (*model.User, error) {
+	user := &model.User{}
 
 	err := ds.db.Pool.
 		QueryRow(
@@ -65,8 +65,8 @@ func (ds *dataSource) FindById(id string) (*entity.User, error) {
 	return user, nil
 }
 
-func (ds *dataSource) FindByEmail(email string) (*entity.User, error) {
-	user := &entity.User{}
+func (ds *dataSource) FindByEmail(email string) (*model.User, error) {
+	user := &model.User{}
 
 	err := ds.db.Pool.
 		QueryRow(

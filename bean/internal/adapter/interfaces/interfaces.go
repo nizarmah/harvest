@@ -3,7 +3,7 @@ package interfaces
 import (
 	"net/http"
 
-	"harvest/bean/internal/entity"
+	"harvest/bean/internal/entity/viewmodel"
 )
 
 // --- Views ---
@@ -12,6 +12,6 @@ type View[T any] interface {
 	Render(http.ResponseWriter, *T) error
 }
 
-type LandingView View[entity.LandingViewData]
-type LoginView View[entity.LoginViewData]
-type PaymentMethodsView View[entity.PaymentMethodsViewData]
+type LandingView View[viewmodel.LandingViewData]
+type LoginView View[viewmodel.LoginViewData]
+type PaymentMethodsView View[viewmodel.PaymentMethodsViewData]
