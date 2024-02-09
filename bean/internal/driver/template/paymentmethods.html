@@ -1,12 +1,68 @@
 {{ define "navbar" }}
-<a href="/subscriptions">Subscription</a>
-&nbsp;·&nbsp;
-<a>Cards</a>
+<a target="_blank" href="https://todo-stripe-link">Subscription</a>
 &nbsp;·&nbsp;
 <a href="/logout">Logout</a>
 {{ end }}
 
 {{ define "content" }}
+<style>
+summary > h1,
+summary > h2,
+summary > h3,
+summary > h4,
+summary > h5 {
+  display: inline;
+
+  margin-left: 0.5em;
+
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+
+  padding: 0;
+  margin: 0;
+}
+
+hr {
+  opacity: 0.4;
+}
+
+.card-content {
+  position: relative;
+}
+
+.card-content:nth-of-type(odd)::before {
+  content: "";
+
+  background-color: #f9f9f9;
+
+  width: 100vw;
+  height: 100%;
+
+  position: absolute;
+  z-index: -1;
+
+  top: 0;
+  /*
+   * The left value is calculated as follows.
+   * 
+   * We know the container width is min(100%, 36em).
+   * 
+   * Thus, we know the area outside the container.
+   * That is 100vw - min(100%, 36em).
+   * 
+   * But that area is to the left and right of the container.
+   * The container is centered, so they are equal. 
+   * So, we split it in half.
+   * 
+   * Then, we subtract that from 0rem to get the negative value.
+   */
+  left: calc(0rem - calc((100vw - min(100%, 36em)) / 2));
+}
+</style>
+
 <div class="section">
   <div class="subsection">
     <h3>Total spending</h3>
@@ -19,39 +75,92 @@
 </div>
 
 <div class="section">
-  <div class="subsection">
-    <p class="actionbar">
-      <a href="/cards/new">Add a new card</a>
-    </p>
-  </div>
+  <p>
+    <a href="/todo">Add a new card</a>
+  </p>
+</div>
 
+<div class="section">
   {{ range .PaymentMethods }}
-  <div id="card-{{ .ID }}" class="subsection">
-    <hr /><br /><br />
-    <h5>{{ .Label }}</h5>
-    <p>
-      {{ .Last4 }}
-      &nbsp;·&nbsp;
-      {{ .ExpMonth }} / {{ .ExpYear }}
-      &nbsp;·&nbsp;
-      {{ .Brand }}
-    </p>
-    <p>
-      {{ .MonthlyEstimate }} monthly
-      &nbsp;·&nbsp;
-      {{ .YearlyEstimate }} yearly
-    </p>
-    <br />
-    <p class="actionbar">
-      <label for="delete-card-{{ .ID }}">Delete</label>
-    </p>
-
-    <form class="hidden" method="post">
-      <input type="hidden" name="_method" value="delete" />
-      <input type="hidden" name="id" value="{{ .ID }}" />
-      <input id="delete-card-{{ .ID }}" type="submit" value="Delete" />
-    </form>
-  </div>
+  {{ template "card-content" . }}
   {{ end }}
 </div>
+{{ end }}
+
+{{ define "card-content" }}
+<div class="card-content">
+  <br /><br />
+  <details id="card-{{ .ID }}">
+    <summary>
+      {{ template "card-summary" . }}
+    </summary>
+
+    <br />
+
+    <div>
+      <p class="actionbar">
+        <a href="/todo">Delete card</a>
+      </p>
+    </div>
+
+    <br />
+
+    <div>
+      <p class="actionbar">
+        <a href="/todo">Add a new subscription</a>
+      </p>
+    </div>
+
+    <br />
+
+    <ul>
+      {{ if .Subscriptions }}
+      {{ range .Subscriptions }}
+      <hr /><br />
+      {{ template "subscription" . }}
+      <br />
+      {{ end }}
+      {{ else }}
+      <li class="subscription">
+        <hr /><br />
+        <p><em>No subscriptions</em></p>
+        <br />
+      {{ end }}
+    </ul>
+  </details>
+  <br /><br />
+</div>
+{{ end }}
+
+{{ define "card-summary" }}
+<h4>{{ .Label }}</h4>
+<br /><br />
+<p>
+  {{ .Last4 }}
+  &nbsp;·&nbsp;
+  {{ .ExpMonth }} / {{ .ExpYear }}
+  &nbsp;·&nbsp;
+  {{ .Brand }}
+</p>
+<p>
+  {{ .MonthlyEstimate }} monthly
+  &nbsp;·&nbsp;
+  {{ .YearlyEstimate }} yearly
+</p>
+{{ end }}
+
+{{ define "subscription" }}
+<li id="sub-{{ .ID }}">
+  <p><strong>{{ .Label }}</strong></p>
+  <p>
+    {{ .Amount }} &nbsp;·&nbsp; {{ .Frequency }}
+  </p>
+  <p class="actionbar">
+    {{ if .Provider }}
+    <a href="{{ .Provider }}">Unsubscribe</a>
+    &nbsp;·&nbsp;
+    {{ end }}
+    <a href="/todo">Delete</a>
+  </p>
+</li>
 {{ end }}
