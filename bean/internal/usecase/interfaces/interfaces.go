@@ -17,8 +17,7 @@ type SubscriptionDataSource interface {
 		period entity.SubscriptionPeriod,
 	) (*entity.Subscription, error)
 
-	FindByID(userID string, id string) (*entity.SubscriptionWithPaymentMethod, error)
-	FindByUserID(userID string) ([]*entity.SubscriptionWithPaymentMethod, error)
+	FindByID(userID string, id string) (*entity.Subscription, error)
 
 	Delete(userID string, id string) error
 }
