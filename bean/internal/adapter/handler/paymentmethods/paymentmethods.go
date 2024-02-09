@@ -76,9 +76,14 @@ func (h *handler) makeMethodViewData(pm *entity.PaymentMethodWithSubscriptions) 
 	monthlyDollars, monthlyCents := estimates.Monthly/100, estimates.Monthly%100
 	yearlyDollars, yearlyCents := estimates.Yearly/100, estimates.Yearly%100
 
+	label := method.Label
+	if label == "" {
+		label = fmt.Sprintf("Card %s", method.Last4)
+	}
+
 	return entity.PaymentMethodViewData{
 		ID:       method.ID,
-		Label:    method.Label,
+		Label:    label,
 		Last4:    method.Last4,
 		Brand:    string(method.Brand),
 		ExpMonth: method.ExpMonth,

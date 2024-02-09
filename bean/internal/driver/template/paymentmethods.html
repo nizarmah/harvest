@@ -151,13 +151,15 @@ hr {
 
 {{ define "subscription" }}
 <li id="sub-{{ .ID }}">
+  {{ if .Label }}
   <p><strong>{{ .Label }}</strong></p>
+  {{ end }}
   <p>
     {{ .Amount }} &nbsp;·&nbsp; {{ .Frequency }}
   </p>
   <p class="actionbar">
     {{ if .Provider }}
-    <a href="{{ .Provider }}">Unsubscribe</a>
+    <a target="_blank" href="{{ .Provider }}">Unsubscribe</a>
     &nbsp;·&nbsp;
     {{ end }}
     <a href="/todo">Delete</a>
