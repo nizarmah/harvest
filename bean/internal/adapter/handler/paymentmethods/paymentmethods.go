@@ -47,35 +47,30 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) makeViewData(paymentMethods []*entity.PaymentMethodWithSubscriptions) *entity.PaymentMethodsViewData {
-	viewdata := make([]entity.PaymentMethodViewData, 0, len(paymentMethods))
+	methods := make([]entity.PaymentMethodViewData, 0, len(paymentMethods))
 	monthly, yearly := 0, 0
 
 	for _, method := range paymentMethods {
-		viewdata = append(viewdata, h.makeMethodViewData(method))
-
 		estimates := h.estimator.GetEstimates(method.Subscriptions)
 
 		monthly += estimates.Monthly
 		yearly += estimates.Yearly
+
+		methods = append(methods, makeMethodViewData(method, estimates))
 	}
 
-	monthlyDollars, monthlyCents := monthly/100, monthly%100
-	yearlyDollars, yearlyCents := yearly/100, yearly%100
-
 	return &entity.PaymentMethodsViewData{
-		PaymentMethods:  viewdata,
-		MonthlyEstimate: fmt.Sprintf("$%d.%02d", monthlyDollars, monthlyCents),
-		YearlyEstimate:  fmt.Sprintf("$%d.%02d", yearlyDollars, yearlyCents),
+		PaymentMethods:  methods,
+		MonthlyEstimate: toDollarsString(monthly),
+		YearlyEstimate:  toDollarsString(yearly),
 	}
 }
 
-func (h *handler) makeMethodViewData(pm *entity.PaymentMethodWithSubscriptions) entity.PaymentMethodViewData {
+func makeMethodViewData(
+	pm *entity.PaymentMethodWithSubscriptions,
+	estimates *entity.Estimates,
+) entity.PaymentMethodViewData {
 	method, subs := pm.PaymentMethod, pm.Subscriptions
-
-	estimates := h.estimator.GetEstimates(subs)
-
-	monthlyDollars, monthlyCents := estimates.Monthly/100, estimates.Monthly%100
-	yearlyDollars, yearlyCents := estimates.Yearly/100, estimates.Yearly%100
 
 	label := method.Label
 	if label == "" {
@@ -90,28 +85,23 @@ func (h *handler) makeMethodViewData(pm *entity.PaymentMethodWithSubscriptions) 
 		ExpMonth: method.ExpMonth,
 		ExpYear:  method.ExpYear,
 
-		MonthlyEstimate: fmt.Sprintf("$%d.%02d", monthlyDollars, monthlyCents),
-		YearlyEstimate:  fmt.Sprintf("$%d.%02d", yearlyDollars, yearlyCents),
+		MonthlyEstimate: toDollarsString(estimates.Monthly),
+		YearlyEstimate:  toDollarsString(estimates.Yearly),
 
-		Subscriptions: h.makeSubsViewData(subs),
+		Subscriptions: makeSubsViewData(subs),
 	}
 }
 
-func (h *handler) makeSubsViewData(subs []*entity.Subscription) []entity.SubscriptionViewData {
-	viewdata := make([]entity.SubscriptionViewData, 0, len(subs))
-
-	for _, sub := range subs {
-		viewdata = append(viewdata, h.makeSubViewData(sub))
+func makeSubsViewData(subscriptions []*entity.Subscription) []entity.SubscriptionViewData {
+	subs := make([]entity.SubscriptionViewData, 0, len(subscriptions))
+	for _, sub := range subscriptions {
+		subs = append(subs, makeSubViewData(sub))
 	}
 
-	return viewdata
+	return subs
 }
 
-func (h *handler) makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewData {
-	dollars, cents := subscription.Amount/100, subscription.Amount%100
-
-	frequency := makeFrequency(subscription.Interval, subscription.Period)
-
+func makeSubViewData(subscription *entity.Subscription) entity.SubscriptionViewData {
 	label := subscription.Label
 	provider := subscription.Provider
 
@@ -124,15 +114,24 @@ func (h *handler) makeSubViewData(subscription *entity.Subscription) entity.Subs
 		ID:        subscription.ID,
 		Label:     label,
 		Provider:  provider,
-		Amount:    fmt.Sprintf("$%d.%02d", dollars, cents),
-		Frequency: frequency,
+		Amount:    toDollarsString(subscription.Amount),
+		Frequency: toFrequencyString(subscription.Interval, subscription.Period),
 	}
 }
 
-func makeFrequency(interval int, period entity.SubscriptionPeriod) string {
+func toFrequencyString(interval int, period entity.SubscriptionPeriod) string {
 	if interval == 1 {
 		return fmt.Sprintf("Every %s", period)
 	}
 
 	return fmt.Sprintf("Every %d %ss", interval, period)
+}
+
+func toDollarsString(amount int) string {
+	dollars, cents := toDollars(amount)
+	return fmt.Sprintf("$%d.%02d", dollars, cents)
+}
+
+func toDollars(amount int) (int, int) {
+	return amount / 100, amount % 100
 }
