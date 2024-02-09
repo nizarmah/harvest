@@ -22,8 +22,8 @@ var (
 		"login.html",
 	}
 
-	PaymentMethodsTemplate = []string{
+	HomeTemplate = []string{
 		baseTemplate,
-		"paymentmethods.html",
+		"home.html",
 	}
 )

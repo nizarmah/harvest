@@ -14,16 +14,16 @@ type LoginViewData struct {
 	Email string
 }
 
-// --- View Data --- Payment Methods ---
+// --- View Data --- Home ---
 
-type PaymentMethodsViewData struct {
-	PaymentMethods []PaymentMethodViewData
+type HomeViewData struct {
+	PaymentMethods []PaymentMethod
 
 	MonthlyEstimate string
 	YearlyEstimate  string
 }
 
-type PaymentMethodViewData struct {
+type PaymentMethod struct {
 	ID string
 
 	Label    string
@@ -35,10 +35,10 @@ type PaymentMethodViewData struct {
 	MonthlyEstimate string
 	YearlyEstimate  string
 
-	Subscriptions []SubscriptionViewData
+	Subscriptions []Subscription
 }
 
-type SubscriptionViewData struct {
+type Subscription struct {
 	ID string
 
 	Label     string
