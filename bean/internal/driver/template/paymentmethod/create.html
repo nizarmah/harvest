@@ -1,0 +1,90 @@
+{{ define "navbar" }}
+<a target="_blank" href="https://todo-stripe-link">Subscription</a>
+&nbsp;·&nbsp;
+<a href="/logout">Logout</a>
+{{ end }}
+
+{{ define "content" }}
+<div class="section">
+  <div class="subsection">
+    <h4>New card</h4>
+
+    <br />
+
+    <form name="new" method="post">
+      <input
+        type="hidden"
+        name="csrf"
+        value="todo"
+      />
+
+      <label for="label">Label</label>
+      <input
+        id="label"
+        type="text"
+        name="label"
+        maxlength="255"
+        placeholder="Netflix"
+      />
+
+      <label for="provider">Provider</label>
+      <input
+        id="provider"
+        type="url"
+        name="provider"
+        maxlength="255"
+        placeholder="https://netflix.com"
+      />
+
+      <label for="last4">Last 4</label>
+      <input
+        id="last4"
+        type="text"
+        name="last4"
+        minlength="4"
+        maxlength="4"
+        required
+        placeholder="4242"
+      />
+
+      <label for="brand">Brand</label>
+      <select id="brand" name="brand" required>
+        <option value="visa">Visa</option>
+        <option value="mastercard">Mastercard</option>
+        <option value="amex">Amex</option>
+      </select>
+
+      <label for="exp_month">Expiration month</label>
+      <input
+        id="exp_month"
+        type="number"
+        name="exp_month"
+        min="1"
+        max="12"
+        required
+        placeholder="12"
+      />
+
+      <label for="exp_year">Expiration year</label>
+      <input
+        id="exp_year"
+        type="number"
+        name="exp_year"
+        min="2000"
+        max="2150"
+        required
+        placeholder="2028"
+      />
+
+      <br />
+      <input type="submit" value="Add card" />
+    </form>
+
+    <br /><br />
+
+    <p class="actionbar">
+      <a href="/home">Cancel</a>
+    </p>
+  </div>
+</div>
+{{ end }}

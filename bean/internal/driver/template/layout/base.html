@@ -89,6 +89,7 @@
         display: block;
       }
 
+      select,
       input {
         font-size: 0.9em;
         line-height: 1.6;
@@ -98,12 +99,16 @@
         display: block;
       }
 
+      select,
       input:not(:last-child) {
         margin-bottom: 1em;
       }
 
+      select,
+      input[type="url"],
       input[type="text"],
       input[type="email"],
+      input[type="number"],
       input[type="password"] {
         background-color: #e8e9eb;
         border-radius: 4px;
@@ -112,8 +117,21 @@
         padding: 0.3em 0.6em;
       }
 
+      select {
+        /** with select the padding is included in the width/height */
+        height: calc(1.6em + 0.6em);
+        width: calc(min(18em, calc(100% - 1.2em)) + 1.2em);
+
+        padding: 0.3em 0.6em;
+
+        cursor: pointer;
+      }
+
+      label + select,
+      label + input[type="url"],
       label + input[type="text"],
       label + input[type="email"],
+      label + input[type="number"],
       label + input[type="password"] {
         margin-top: 0.6em;
       }

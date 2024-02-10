@@ -10,6 +10,7 @@ import (
 	homeHandler "harvest/bean/internal/adapter/handler/home"
 	landingHandler "harvest/bean/internal/adapter/handler/landing"
 	loginHandler "harvest/bean/internal/adapter/handler/login"
+	paymentMethodHandler "harvest/bean/internal/adapter/handler/paymentmethod"
 
 	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
 	"harvest/bean/internal/driver/postgres"
@@ -18,6 +19,7 @@ import (
 	homeVD "harvest/bean/internal/driver/view/home"
 	landingVD "harvest/bean/internal/driver/view/landing"
 	loginVD "harvest/bean/internal/driver/view/login"
+	paymentMethodVD "harvest/bean/internal/driver/view/paymentmethod"
 )
 
 func main() {
@@ -62,7 +64,14 @@ func main() {
 	homeView, err := homeVD.New(template.FS, template.HomeTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating payment methods view: %v", err),
+			fmt.Errorf("error creating home view: %v", err),
+		)
+	}
+
+	createPaymentMethodView, err := paymentMethodVD.New(template.FS, template.CreatePaymentMethodTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating create payment method view: %v", err),
 		)
 	}
 
@@ -78,6 +87,8 @@ func main() {
 		},
 		homeView,
 	))
+
+	s.Route("/cards/new", paymentMethodHandler.New(createPaymentMethodView))
 
 	s.Listen(":8080")
 }
