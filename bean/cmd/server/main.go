@@ -45,7 +45,12 @@ func main() {
 	}
 	defer db.Close()
 
+	estimator := estimatorUC.UseCase{}
+
 	paymentMethodRepo := paymentMethodDS.New(db)
+	paymentMethods := paymentMethodUC.UseCase{
+		PaymentMethods: paymentMethodRepo,
+	}
 
 	landingView, err := landingVD.New(template.FS, template.LandingTemplate)
 	if err != nil {
@@ -81,14 +86,15 @@ func main() {
 	s.Route("/get-started", loginHandler.New(loginView))
 
 	s.Route("/home", homeHandler.New(
-		estimatorUC.UseCase{},
-		paymentMethodUC.UseCase{
-			PaymentMethods: paymentMethodRepo,
-		},
+		estimator,
+		paymentMethods,
 		homeView,
 	))
 
-	s.Route("/cards/new", paymentMethodHandler.New(createPaymentMethodView))
+	s.Route("/cards/new", paymentMethodHandler.New(
+		paymentMethods,
+		createPaymentMethodView,
+	))
 
 	s.Listen(":8080")
 }

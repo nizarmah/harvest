@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -82,6 +83,17 @@ type LoginToken struct {
 
 	CreatedAt time.Time
 	ExpiresAt time.Time
+}
+
+// --- Errors ---
+
+type Error struct {
+	Label   string
+	Message string
+}
+
+func (e *Error) Error() string {
+	return fmt.Sprintf("%s: %s", e.Label, e.Message)
 }
 
 // --- Misc ---

@@ -49,4 +49,16 @@ type Subscription struct {
 
 // --- View Data --- Payment Method ---
 
-type CreatePaymentMethodViewData struct{}
+type CreatePaymentMethodViewData struct {
+	Error string
+
+	Form CreatePaymentMethodForm
+}
+
+type CreatePaymentMethodForm struct {
+	Label    string
+	Last4    string
+	Brand    string
+	ExpMonth int
+	ExpYear  int
+}
