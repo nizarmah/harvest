@@ -46,3 +46,7 @@ type Subscription struct {
 	Amount    string
 	Frequency string
 }
+
+// --- View Data --- Payment Method ---
+
+type CreatePaymentMethodViewData struct{}
