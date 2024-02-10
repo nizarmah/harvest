@@ -11,6 +11,12 @@
 
     <br />
 
+    {{ if .Error }}
+    <p>{{ .Error }}</p>
+    {{ end }}
+
+    <br />
+
     <form name="new" method="post">
       <input
         type="hidden"
@@ -24,16 +30,10 @@
         type="text"
         name="label"
         maxlength="255"
-        placeholder="Netflix"
-      />
-
-      <label for="provider">Provider</label>
-      <input
-        id="provider"
-        type="url"
-        name="provider"
-        maxlength="255"
-        placeholder="https://netflix.com"
+        placeholder="Virtual card"
+        {{ if .Form.Label }}
+        value="{{ .Form.Label }}"
+        {{ end }}
       />
 
       <label for="last4">Last 4</label>
@@ -45,13 +45,35 @@
         maxlength="4"
         required
         placeholder="4242"
+        {{ if .Form.Last4 }}
+        value="{{ .Form.Last4 }}"
+        {{ end }}
       />
 
       <label for="brand">Brand</label>
-      <select id="brand" name="brand" required>
-        <option value="visa">Visa</option>
-        <option value="mastercard">Mastercard</option>
-        <option value="amex">Amex</option>
+      <select
+        id="brand"
+        name="brand"
+        required
+      >
+        <option
+          value="visa"
+          {{ if eq .Form.Brand "visa" }}
+          selected
+          {{ end }}
+        >Visa</option>
+        <option
+          value="mastercard"
+          {{ if eq .Form.Brand "mastercard" }}
+          selected
+          {{ end }}
+        >Mastercard</option>
+        <option
+          value="amex"
+          {{ if eq .Form.Brand "amex" }}
+          selected
+          {{ end }}
+        >Amex</option>
       </select>
 
       <label for="exp_month">Expiration month</label>
@@ -63,6 +85,9 @@
         max="12"
         required
         placeholder="12"
+        {{ if .Form.ExpMonth }}
+        value="{{ .Form.ExpMonth }}"
+        {{ end }}
       />
 
       <label for="exp_year">Expiration year</label>
@@ -74,6 +99,9 @@
         max="2150"
         required
         placeholder="2028"
+        {{ if .Form.ExpYear }}
+        value="{{ .Form.ExpYear }}"
+        {{ end }}
       />
 
       <br />
