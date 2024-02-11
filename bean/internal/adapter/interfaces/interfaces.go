@@ -18,3 +18,5 @@ type HomeView View[viewmodel.HomeViewData]
 
 type CreatePaymentMethodView View[viewmodel.CreatePaymentMethodViewData]
 type DeletePaymentMethodView View[viewmodel.DeletePaymentMethodViewData]
+
+type CreateSubscriptionView View[viewmodel.CreateSubscriptionViewData]
