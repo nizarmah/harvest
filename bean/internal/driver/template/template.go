@@ -40,4 +40,9 @@ var (
 		"paymentmethod/item.html",
 		"paymentmethod/delete.html",
 	}
+
+	CreateSubscriptionTemplate = []string{
+		baseTemplate,
+		"subscription/create.html",
+	}
 )

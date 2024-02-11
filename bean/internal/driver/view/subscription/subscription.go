@@ -1,4 +1,4 @@
-package home
+package subscription
 
 import (
 	"harvest/bean/internal/entity/viewmodel"
@@ -6,4 +6,4 @@ import (
 	"harvest/bean/internal/driver/view"
 )
 
-var New = view.New[viewmodel.HomeViewData]
+var NewCreate = view.New[viewmodel.CreateSubscriptionViewData]

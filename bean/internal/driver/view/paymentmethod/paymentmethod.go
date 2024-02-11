@@ -1,4 +1,4 @@
-package login
+package paymentmethod
 
 import (
 	"harvest/bean/internal/entity/viewmodel"

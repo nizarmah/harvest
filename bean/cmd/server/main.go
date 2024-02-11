@@ -5,14 +5,17 @@ import (
 
 	estimatorUC "harvest/bean/internal/usecase/estimator"
 	paymentMethodUC "harvest/bean/internal/usecase/paymentmethod"
+	subscriptionUC "harvest/bean/internal/usecase/subscription"
 
 	envAdapter "harvest/bean/internal/adapter/env"
 	homeHandler "harvest/bean/internal/adapter/handler/home"
 	landingHandler "harvest/bean/internal/adapter/handler/landing"
 	loginHandler "harvest/bean/internal/adapter/handler/login"
 	paymentMethodHandler "harvest/bean/internal/adapter/handler/paymentmethod"
+	subscriptionHandler "harvest/bean/internal/adapter/handler/subscription"
 
 	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
+	subscriptionDS "harvest/bean/internal/driver/datasource/subscription"
 	"harvest/bean/internal/driver/postgres"
 	"harvest/bean/internal/driver/server"
 	"harvest/bean/internal/driver/template"
@@ -20,6 +23,7 @@ import (
 	landingVD "harvest/bean/internal/driver/view/landing"
 	loginVD "harvest/bean/internal/driver/view/login"
 	paymentMethodVD "harvest/bean/internal/driver/view/paymentmethod"
+	subscriptionVD "harvest/bean/internal/driver/view/subscription"
 )
 
 func main() {
@@ -49,6 +53,12 @@ func main() {
 
 	paymentMethodRepo := paymentMethodDS.New(db)
 	paymentMethods := paymentMethodUC.UseCase{
+		PaymentMethods: paymentMethodRepo,
+	}
+
+	subscriptionRepo := subscriptionDS.New(db)
+	subscriptions := subscriptionUC.UseCase{
+		Subscriptions:  subscriptionRepo,
 		PaymentMethods: paymentMethodRepo,
 	}
 
@@ -87,6 +97,13 @@ func main() {
 		)
 	}
 
+	createSubscriptionView, err := subscriptionVD.NewCreate(template.FS, template.CreateSubscriptionTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating create subscription view: %v", err),
+		)
+	}
+
 	s := server.New()
 
 	s.Route("/", landingHandler.New(landingView))
@@ -107,6 +124,13 @@ func main() {
 
 	s.Route("/cards/new", paymentMethodCRUD.Create)
 	s.Route("/cards/del", paymentMethodCRUD.Delete)
+
+	subscriptionsCRUD := subscriptionHandler.New(
+		subscriptions,
+		createSubscriptionView,
+	)
+
+	s.Route("/subs/new", subscriptionsCRUD.Create)
 
 	s.Listen(":8080")
 }

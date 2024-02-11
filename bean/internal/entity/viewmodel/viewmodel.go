@@ -1,5 +1,35 @@
 package viewmodel
 
+// --- View Models ---
+
+// --- View Models --- Payment Method ---
+
+type PaymentMethod struct {
+	ID string
+
+	Label    string
+	Last4    string
+	Brand    string
+	ExpMonth int
+	ExpYear  int
+
+	MonthlyEstimate string
+	YearlyEstimate  string
+
+	Subscriptions []Subscription
+}
+
+// --- View Models --- Subscription ---
+
+type Subscription struct {
+	ID string
+
+	Label     string
+	Provider  string
+	Amount    string
+	Frequency string
+}
+
 // --- View Data ---
 
 type ViewData interface{}
@@ -23,30 +53,6 @@ type HomeViewData struct {
 	YearlyEstimate  string
 }
 
-type PaymentMethod struct {
-	ID string
-
-	Label    string
-	Last4    string
-	Brand    string
-	ExpMonth int
-	ExpYear  int
-
-	MonthlyEstimate string
-	YearlyEstimate  string
-
-	Subscriptions []Subscription
-}
-
-type Subscription struct {
-	ID string
-
-	Label     string
-	Provider  string
-	Amount    string
-	Frequency string
-}
-
 // --- View Data --- Payment Method ---
 
 type CreatePaymentMethodViewData struct {
@@ -66,3 +72,7 @@ type CreatePaymentMethodForm struct {
 	ExpMonth int
 	ExpYear  int
 }
+
+// --- View Data --- Subscription ---
+
+type CreateSubscriptionViewData struct{}
