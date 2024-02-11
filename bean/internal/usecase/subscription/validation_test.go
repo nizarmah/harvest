@@ -64,6 +64,10 @@ func TestValidateInterval(t *testing.T) {
 		if err := validateInterval(0); err == nil {
 			t.Error("expected error, got nil")
 		}
+
+		if err := validateInterval(366); err == nil {
+			t.Error("expected error, got nil")
+		}
 	})
 }
 

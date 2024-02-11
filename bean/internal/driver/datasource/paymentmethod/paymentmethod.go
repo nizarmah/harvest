@@ -121,6 +121,10 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWi
 		}
 	}
 
+	if method.ID == "" {
+		return nil, nil
+	}
+
 	return &model.PaymentMethodWithSubscriptions{
 		PaymentMethod: method,
 		Subscriptions: subs,
