@@ -9,6 +9,7 @@ import (
 	estimatorUC "harvest/bean/internal/usecase/estimator"
 	"harvest/bean/internal/usecase/paymentmethod"
 
+	"harvest/bean/internal/adapter/handler/shared"
 	"harvest/bean/internal/adapter/interfaces"
 )
 
@@ -46,13 +47,13 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		totalMonthly += estimates.Monthly
 		totalYearly += estimates.Yearly
 
-		methodsVM = append(methodsVM, toPaymentMethodViewModel(method, estimates))
+		methodsVM = append(methodsVM, shared.ToPaymentMethodViewModel(method, estimates))
 	}
 
 	err = h.view.Render(w, &viewmodel.HomeViewData{
 		PaymentMethods:  methodsVM,
-		MonthlyEstimate: toDollarsString(totalMonthly),
-		YearlyEstimate:  toDollarsString(totalYearly),
+		MonthlyEstimate: shared.ToDollarsString(totalMonthly),
+		YearlyEstimate:  shared.ToDollarsString(totalYearly),
 	})
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
