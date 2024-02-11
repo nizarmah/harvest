@@ -75,4 +75,18 @@ type CreatePaymentMethodForm struct {
 
 // --- View Data --- Subscription ---
 
-type CreateSubscriptionViewData struct{}
+type CreateSubscriptionViewData struct {
+	Error string
+
+	Form CreateSubscriptionForm
+}
+
+type CreateSubscriptionForm struct {
+	PaymentMethodID string
+
+	Label    string
+	Provider string
+	Amount   string
+	Interval string
+	Period   string
+}
