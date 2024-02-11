@@ -55,6 +55,12 @@ type CreatePaymentMethodViewData struct {
 	Form CreatePaymentMethodForm
 }
 
+type DeletePaymentMethodViewData struct {
+	Error string
+
+	PaymentMethod PaymentMethod
+}
+
 type CreatePaymentMethodForm struct {
 	Label    string
 	Last4    string

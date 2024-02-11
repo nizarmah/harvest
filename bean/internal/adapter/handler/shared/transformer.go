@@ -1,4 +1,4 @@
-package home
+package shared
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"harvest/bean/internal/entity/viewmodel"
 )
 
-func toPaymentMethodViewModel(
+func ToPaymentMethodViewModel(
 	pm *model.PaymentMethodWithSubscriptions,
 	estimates *model.Estimates,
 ) viewmodel.PaymentMethod {
@@ -27,8 +27,8 @@ func toPaymentMethodViewModel(
 		ExpMonth: method.ExpMonth,
 		ExpYear:  method.ExpYear,
 
-		MonthlyEstimate: toDollarsString(estimates.Monthly),
-		YearlyEstimate:  toDollarsString(estimates.Yearly),
+		MonthlyEstimate: ToDollarsString(estimates.Monthly),
+		YearlyEstimate:  ToDollarsString(estimates.Yearly),
 
 		Subscriptions: toSubscriptionsViewModel(subs),
 	}
@@ -56,7 +56,7 @@ func toSubscriptionViewModel(subscription *model.Subscription) viewmodel.Subscri
 		ID:        subscription.ID,
 		Label:     label,
 		Provider:  provider,
-		Amount:    toDollarsString(subscription.Amount),
+		Amount:    ToDollarsString(subscription.Amount),
 		Frequency: toFrequencyString(subscription.Interval, subscription.Period),
 	}
 }
@@ -69,7 +69,7 @@ func toFrequencyString(interval int, period model.SubscriptionPeriod) string {
 	return fmt.Sprintf("Every %d %ss", interval, period)
 }
 
-func toDollarsString(amount int) string {
+func ToDollarsString(amount int) string {
 	dollars, cents := toDollars(amount)
 	return fmt.Sprintf("$%d.%02d", dollars, cents)
 }

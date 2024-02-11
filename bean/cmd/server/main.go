@@ -73,10 +73,17 @@ func main() {
 		)
 	}
 
-	createPaymentMethodView, err := paymentMethodVD.New(template.FS, template.CreatePaymentMethodTemplate)
+	createPaymentMethodView, err := paymentMethodVD.NewCreate(template.FS, template.CreatePaymentMethodTemplate)
 	if err != nil {
 		panic(
 			fmt.Errorf("error creating create payment method view: %v", err),
+		)
+	}
+
+	deletePaymentMethodView, err := paymentMethodVD.NewDelete(template.FS, template.DeletePaymentMethodTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating delete payment method view: %v", err),
 		)
 	}
 
@@ -91,10 +98,15 @@ func main() {
 		homeView,
 	))
 
-	s.Route("/cards/new", paymentMethodHandler.New(
+	paymentMethodCRUD := paymentMethodHandler.New(
+		estimator,
 		paymentMethods,
 		createPaymentMethodView,
-	))
+		deletePaymentMethodView,
+	)
+
+	s.Route("/cards/new", paymentMethodCRUD.Create)
+	s.Route("/cards/del", paymentMethodCRUD.Delete)
 
 	s.Listen(":8080")
 }

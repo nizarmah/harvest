@@ -6,4 +6,5 @@ import (
 	"harvest/bean/internal/driver/view"
 )
 
-var New = view.New[viewmodel.CreatePaymentMethodViewData]
+var NewCreate = view.New[viewmodel.CreatePaymentMethodViewData]
+var NewDelete = view.New[viewmodel.DeletePaymentMethodViewData]

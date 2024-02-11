@@ -17,3 +17,4 @@ type LoginView View[viewmodel.LoginViewData]
 type HomeView View[viewmodel.HomeViewData]
 
 type CreatePaymentMethodView View[viewmodel.CreatePaymentMethodViewData]
+type DeletePaymentMethodView View[viewmodel.DeletePaymentMethodViewData]
