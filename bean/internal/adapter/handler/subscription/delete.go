@@ -1,0 +1,59 @@
+package subscription
+
+import (
+	"fmt"
+	"net/http"
+
+	"harvest/bean/internal/entity/viewmodel"
+
+	"harvest/bean/internal/usecase/subscription"
+
+	"harvest/bean/internal/adapter/interfaces"
+)
+
+type deleteHandler struct {
+	subscriptions subscription.UseCase
+
+	view interfaces.DeleteSubscriptionView
+}
+
+func newDeleteHandler(
+	sub subscription.UseCase,
+	view interfaces.DeleteSubscriptionView,
+) http.Handler {
+	return &deleteHandler{
+		subscriptions: sub,
+		view:          view,
+	}
+}
+
+func (h *deleteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		h.get(w, r)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		h.post(w, r)
+		return
+	}
+
+	w.WriteHeader(http.StatusMethodNotAllowed)
+	fmt.Fprintf(w, "Method not allowed")
+}
+
+func (h *deleteHandler) get(w http.ResponseWriter, r *http.Request) {
+	h.render(w, &viewmodel.DeleteSubscriptionViewData{})
+}
+
+func (h *deleteHandler) post(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+func (h *deleteHandler) render(w http.ResponseWriter, data *viewmodel.DeleteSubscriptionViewData) {
+	err := h.view.Render(w, data)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+}

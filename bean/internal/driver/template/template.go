@@ -45,4 +45,9 @@ var (
 		baseTemplate,
 		"subscription/create.html",
 	}
+	DeleteSubscriptionTemplate = []string{
+		baseTemplate,
+		"subscription/item.html",
+		"subscription/delete.html",
+	}
 )

@@ -20,3 +20,4 @@ type CreatePaymentMethodView View[viewmodel.CreatePaymentMethodViewData]
 type DeletePaymentMethodView View[viewmodel.DeletePaymentMethodViewData]
 
 type CreateSubscriptionView View[viewmodel.CreateSubscriptionViewData]
+type DeleteSubscriptionView View[viewmodel.DeleteSubscriptionViewData]
