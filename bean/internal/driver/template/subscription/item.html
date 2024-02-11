@@ -1,0 +1,11 @@
+{{ define "subscription-item" }}
+<li id="sub-{{ .ID }}">
+  {{ if .Label }}
+  <p><strong>{{ .Label }}</strong></p>
+  {{ end }}
+  <p>
+    {{ .Amount }} &nbsp;·&nbsp; {{ .Frequency }}
+  </p>
+  {{ template "subscription-item-actions" . }}
+</li>
+{{ end }}

@@ -1,0 +1,49 @@
+{{ define "paymentmethod-item" }}
+<div class="pm-container">
+  <br /><br />
+  <details id="pm-{{ .ID }}">
+    <summary>
+      {{ template "paymentmethod-summary" . }}
+    </summary>
+
+    <br />
+
+    {{ template "paymentmethod-item-actions" . }}
+
+    <br />
+
+    <ul>
+      {{ if .Subscriptions }}
+      {{ range .Subscriptions }}
+      <hr /><br />
+      {{ template "subscription-item" . }}
+      <br />
+      {{ end }}
+      {{ else }}
+      <li class="subscription">
+        <hr /><br />
+        <p><em>No subscriptions</em></p>
+        <br />
+      {{ end }}
+    </ul>
+  </details>
+  <br /><br />
+</div>
+{{ end }}
+
+{{ define "paymentmethod-summary" }}
+<h4>{{ .Label }}</h4>
+<br /><br />
+<p>
+  {{ .Last4 }}
+  &nbsp;·&nbsp;
+  {{ .ExpMonth }} / {{ .ExpYear }}
+  &nbsp;·&nbsp;
+  {{ .Brand }}
+</p>
+<p>
+  {{ .MonthlyEstimate }} monthly
+  &nbsp;·&nbsp;
+  {{ .YearlyEstimate }} yearly
+</p>
+{{ end }}

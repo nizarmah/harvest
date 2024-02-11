@@ -145,6 +145,51 @@
         padding: 0;
       }
 
+      summary > h1,
+      summary > h2,
+      summary > h3,
+      summary > h4,
+      summary > h5 {
+        display: inline;
+
+        margin-left: 0.5em;
+
+        cursor: pointer;
+      }
+
+      ul {
+        list-style: none;
+
+        padding: 0;
+        margin: 0;
+      }
+
+      hr {
+        opacity: 0.4;
+      }
+
+      nav {
+        font-size: 0.9em;
+        font-weight: bold;
+      }
+
+      footer {
+        font-size: 0.9rem;
+        font-weight: bold;
+
+        color: #063437;
+      }
+
+      header h1,
+      header h6,
+      footer p {
+        margin: 0;
+      }
+
+      header h6 {
+        font-weight: normal;
+      }
+
       .hidden {
         display: none;
       }
@@ -167,15 +212,6 @@
         margin-bottom: 5rem;
       }
 
-      .header h6 {
-        font-weight: normal;
-      }
-
-      .navbar {
-        font-size: 0.9em;
-        font-weight: bold;
-      }
-
       .actionbar {
         font-size: 0.9em;
       }
@@ -189,32 +225,52 @@
         display: inline-block;
       }
 
-      .footer {
-        font-size: 0.9rem;
-        font-weight: bold;
-
-        color: #063437;
+      .pm-container {
+        position: relative;
       }
 
-      .header h1,
-      .header h6,
-      .footer p {
-        margin: 0;
+      .pm-container:nth-of-type(odd)::before {
+        content: "";
+
+        background-color: #f9f9f9;
+
+        width: 100vw;
+        height: 100%;
+
+        position: absolute;
+        z-index: -1;
+
+        top: 0;
+        /*
+          * The left value is calculated as follows.
+          * 
+          * We know the container width is min(100%, 36em).
+          * 
+          * Thus, we know the area outside the container.
+          * That is 100vw - min(100%, 36em).
+          * 
+          * But that area is to the left and right of the container.
+          * The container is centered, so they are equal. 
+          * So, we split it in half.
+          * 
+          * Then, we subtract that from 0rem to get the negative value.
+          */
+        left: calc(0rem - calc((100vw - min(100%, 36em)) / 2));
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="section header">
+      <header class="section">
         <div class="subsection">
           <h1>bean</h1>
           <h6>/biːn/</h6>
         </div>
 
-        <div class="subsection navbar">{{ template "navbar" . }}</div>
-      </div>
+        <nav class="subsection">{{ template "navbar" . }}</nav>
+      </header>
       <div class="section content">{{ template "content" . }}</div>
-      <div class="section footer">
+      <footer class="section">
         <p>
           <a target="_blank" href="https://whatis277.com">277</a>
           &nbsp;·&nbsp;
@@ -224,7 +280,7 @@
             >GitHub</a
           >
         </p>
-      </div>
+      </footer>
     </div>
   </body>
 </html>
