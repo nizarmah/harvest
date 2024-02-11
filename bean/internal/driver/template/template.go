@@ -5,7 +5,7 @@ import (
 )
 
 //go:embed *.html layout/*.html
-//go:embed paymentmethod/*.html
+//go:embed paymentmethod/*.html subscription/*.html
 var FS embed.FS
 
 const (
@@ -25,11 +25,19 @@ var (
 
 	HomeTemplate = []string{
 		baseTemplate,
+		"subscription/item.html",
+		"paymentmethod/item.html",
 		"home.html",
 	}
 
 	CreatePaymentMethodTemplate = []string{
 		baseTemplate,
 		"paymentmethod/create.html",
+	}
+	DeletePaymentMethodTemplate = []string{
+		baseTemplate,
+		"subscription/item.html",
+		"paymentmethod/item.html",
+		"paymentmethod/delete.html",
 	}
 )

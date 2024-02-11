@@ -1,0 +1,55 @@
+{{ define "navbar" }}
+<a target="_blank" href="https://todo-stripe-link">Subscription</a>
+&nbsp;·&nbsp;
+<a href="/logout">Logout</a>
+{{ end }}
+
+{{ define "content" }}
+<div class="section">
+  <div class="subsection">
+    <h4>Delete card</h4>
+
+    <br />
+
+    <p>
+      Are you sure you want to delete this card?
+      <br />
+      It will remove all subscriptions associated with it.
+    </p>
+
+    <p>This action cannot be undone.</p>
+  </div>
+
+  <div class="subsection">
+    {{ template "paymentmethod-item" .PaymentMethod }}
+  </div>
+
+  <div class="subsection">
+    <form name="new" method="post">
+      <input
+        type="hidden"
+        name="csrf"
+        value="todo"
+      />
+
+      <input
+        type="hidden"
+        name="id"
+        value="{{ .PaymentMethod.ID }}"
+      />
+
+      <br />
+      <input type="submit" value="Delete card" />
+    </form>
+
+    <br /><br />
+
+    <p class="actionbar">
+      <a href="/home">Cancel</a>
+    </p>
+  </div>
+</div>
+{{ end }}
+
+{{ define "paymentmethod-item-actions" }}{{ end }}
+{{ define "subscription-item-actions" }}{{ end }}
