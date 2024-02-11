@@ -7,15 +7,17 @@ import (
 func getSubscriptionEstimates(sub *model.Subscription) *model.Estimates {
 	e := &model.Estimates{}
 
+	amount := sub.Amount / sub.Interval
+
 	switch sub.Period {
 	case model.SubscriptionPeriodDaily:
-		e = getEstimatesFromDaily(sub.Amount)
+		e = getEstimatesFromDaily(amount)
 	case model.SubscriptionPeriodWeekly:
-		e = getEstimatesFromWeekly(sub.Amount)
+		e = getEstimatesFromWeekly(amount)
 	case model.SubscriptionPeriodMonthly:
-		e = getEstimatesFromMonthly(sub.Amount)
+		e = getEstimatesFromMonthly(amount)
 	case model.SubscriptionPeriodYearly:
-		e = getEstimatesFromYearly(sub.Amount)
+		e = getEstimatesFromYearly(amount)
 	}
 
 	return e
