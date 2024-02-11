@@ -54,7 +54,7 @@ func (h *deleteHandler) get(w http.ResponseWriter, r *http.Request) {
 		"10000000-0000-0000-0000-000000000001",
 		subID,
 	)
-	if err != nil {
+	if err != nil || sub == nil {
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 		return
 	}
@@ -65,6 +65,17 @@ func (h *deleteHandler) get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *deleteHandler) post(w http.ResponseWriter, r *http.Request) {
+	subID := r.FormValue("id")
+	if subID == "" {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		return
+	}
+
+	h.subscriptions.Delete(
+		"10000000-0000-0000-0000-000000000001",
+		subID,
+	)
+
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
