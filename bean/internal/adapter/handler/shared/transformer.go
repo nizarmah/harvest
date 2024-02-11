@@ -37,13 +37,13 @@ func ToPaymentMethodViewModel(
 func toSubscriptionsViewModel(subscriptions []*model.Subscription) []viewmodel.Subscription {
 	subs := make([]viewmodel.Subscription, 0, len(subscriptions))
 	for _, sub := range subscriptions {
-		subs = append(subs, toSubscriptionViewModel(sub))
+		subs = append(subs, ToSubscriptionViewModel(sub))
 	}
 
 	return subs
 }
 
-func toSubscriptionViewModel(subscription *model.Subscription) viewmodel.Subscription {
+func ToSubscriptionViewModel(subscription *model.Subscription) viewmodel.Subscription {
 	label := subscription.Label
 	provider := subscription.Provider
 

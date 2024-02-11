@@ -67,6 +67,15 @@ func (u *UseCase) Create(
 	return subscription, nil
 }
 
+func (u *UseCase) Get(userID string, subscriptionID string) (*model.Subscription, error) {
+	subscription, err := u.Subscriptions.FindByID(userID, subscriptionID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get subscription: %w", err)
+	}
+
+	return subscription, nil
+}
+
 func (u *UseCase) Delete(userID string, subscriptionID string) error {
 	if err := u.Subscriptions.Delete(userID, subscriptionID); err != nil {
 		return fmt.Errorf("failed to delete subscription: %w", err)
