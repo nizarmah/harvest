@@ -5,5 +5,52 @@
 {{ end }}
 
 {{ define "content" }}
-todo
+<div class="section">
+  <div class="subsection">
+    <h4>Delete subscription</h4>
+
+    <br />
+
+    <p>
+      Are you sure you want to delete this subscription?
+    </p>
+
+    <p>This action cannot be undone.</p>
+  </div>
+
+  <div class="subsection">
+    <div class="colored-bg">
+      <br />
+      {{ template "subscription-item" .Subscription }}
+      <br />
+    </div>
+  </div>
+
+  <div class="subsection">
+    <form name="del" method="post">
+      <input
+        type="hidden"
+        name="csrf"
+        value="todo"
+      />
+
+      <input
+        type="hidden"
+        name="id"
+        value="{{ .Subscription.ID }}"
+      />
+
+      <br />
+      <input type="submit" value="Delete subscription" />
+    </form>
+
+    <br /><br />
+
+    <p class="actionbar">
+      <a href="/home">Cancel</a>
+    </p>
+  </div>
+</div>
 {{ end }}
+
+{{ define "subscription-item-actions" }}{{ end }}

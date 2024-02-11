@@ -1,5 +1,5 @@
 {{ define "paymentmethod-item" }}
-<div class="pm-container">
+<div class="colored-bg">
   <br /><br />
   <details id="pm-{{ .ID }}">
     <summary>
@@ -16,7 +16,9 @@
       {{ if .Subscriptions }}
       {{ range .Subscriptions }}
       <hr /><br />
-      {{ template "subscription-item" . }}
+      <li>
+        {{ template "subscription-item" . }}
+      </li>
       <br />
       {{ end }}
       {{ else }}

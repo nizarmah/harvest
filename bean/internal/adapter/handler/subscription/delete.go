@@ -8,6 +8,7 @@ import (
 
 	"harvest/bean/internal/usecase/subscription"
 
+	"harvest/bean/internal/adapter/handler/shared"
 	"harvest/bean/internal/adapter/interfaces"
 )
 
@@ -43,7 +44,24 @@ func (h *deleteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *deleteHandler) get(w http.ResponseWriter, r *http.Request) {
-	h.render(w, &viewmodel.DeleteSubscriptionViewData{})
+	subID := r.FormValue("id")
+	if subID == "" {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		return
+	}
+
+	sub, err := h.subscriptions.Get(
+		"10000000-0000-0000-0000-000000000001",
+		subID,
+	)
+	if err != nil {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		return
+	}
+
+	h.render(w, &viewmodel.DeleteSubscriptionViewData{
+		Subscription: shared.ToSubscriptionViewModel(sub),
+	})
 }
 
 func (h *deleteHandler) post(w http.ResponseWriter, r *http.Request) {

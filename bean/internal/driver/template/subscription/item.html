@@ -1,5 +1,5 @@
 {{ define "subscription-item" }}
-<li id="sub-{{ .ID }}">
+<div id="sub-{{ .ID }}">
   {{ if .Label }}
   <p><strong>{{ .Label }}</strong></p>
   {{ end }}
@@ -7,5 +7,5 @@
     {{ .Amount }} &nbsp;·&nbsp; {{ .Frequency }}
   </p>
   {{ template "subscription-item-actions" . }}
-</li>
+</div>
 {{ end }}
