@@ -35,6 +35,10 @@ func validateInterval(interval int) error {
 		return fmt.Errorf("interval must be greater than 0")
 	}
 
+	if interval > 365 {
+		return fmt.Errorf("interval must be less than 366")
+	}
+
 	return nil
 }
 

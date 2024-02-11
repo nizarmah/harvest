@@ -86,7 +86,7 @@ type CreateSubscriptionForm struct {
 
 	Label    string
 	Provider string
-	Amount   string
-	Interval string
+	Amount   float32
+	Interval int
 	Period   string
 }
