@@ -9,8 +9,6 @@ import (
 	"harvest/bean/internal/usecase/interfaces"
 
 	"harvest/bean/internal/driver/postgres"
-
-	"github.com/jackc/pgx/v5"
 )
 
 type dataSource struct {
@@ -71,10 +69,6 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWi
 			userID, id,
 		)
 
-	if err == pgx.ErrNoRows {
-		return nil, nil
-	}
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to find payment method: %w", err)
 	}
@@ -119,6 +113,10 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWi
 		if sub.ID != "" {
 			subs = append(subs, sub)
 		}
+	}
+
+	if method.ID == "" {
+		return nil, nil
 	}
 
 	return &model.PaymentMethodWithSubscriptions{
