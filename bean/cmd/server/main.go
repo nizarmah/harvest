@@ -104,6 +104,13 @@ func main() {
 		)
 	}
 
+	deleteSubscriptionView, err := subscriptionVD.NewDelete(template.FS, template.DeleteSubscriptionTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating delete subscription view: %v", err),
+		)
+	}
+
 	s := server.New()
 
 	s.Route("/", landingHandler.New(landingView))
@@ -128,9 +135,11 @@ func main() {
 	subscriptionsCRUD := subscriptionHandler.New(
 		subscriptions,
 		createSubscriptionView,
+		deleteSubscriptionView,
 	)
 
 	s.Route("/subs/new", subscriptionsCRUD.Create)
+	s.Route("/subs/del", subscriptionsCRUD.Delete)
 
 	s.Listen(":8080")
 }

@@ -16,9 +16,10 @@ type crudHandler struct {
 func New(
 	sub subscription.UseCase,
 	createView interfaces.CreateSubscriptionView,
+	deleteView interfaces.DeleteSubscriptionView,
 ) crudHandler {
 	return crudHandler{
 		Create: newCreateHandler(sub, createView),
-		Delete: nil,
+		Delete: newDeleteHandler(sub, deleteView),
 	}
 }

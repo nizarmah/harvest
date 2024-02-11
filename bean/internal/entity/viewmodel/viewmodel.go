@@ -81,6 +81,10 @@ type CreateSubscriptionViewData struct {
 	Form CreateSubscriptionForm
 }
 
+type DeleteSubscriptionViewData struct {
+	Subscription Subscription
+}
+
 type CreateSubscriptionForm struct {
 	PaymentMethodID string
 

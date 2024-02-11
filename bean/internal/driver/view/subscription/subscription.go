@@ -7,3 +7,4 @@ import (
 )
 
 var NewCreate = view.New[viewmodel.CreateSubscriptionViewData]
+var NewDelete = view.New[viewmodel.DeleteSubscriptionViewData]
