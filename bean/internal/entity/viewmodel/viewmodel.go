@@ -56,8 +56,6 @@ type CreatePaymentMethodViewData struct {
 }
 
 type DeletePaymentMethodViewData struct {
-	Error string
-
 	PaymentMethod PaymentMethod
 }
 
