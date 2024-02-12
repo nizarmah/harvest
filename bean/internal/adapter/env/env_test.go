@@ -12,6 +12,11 @@ func TestEnv(t *testing.T) {
 	os.Setenv("DB_USERNAME", "db_username")
 	os.Setenv("DB_PASSWORD", "db_password")
 
+	os.Setenv("SMTP_HOST", "smtp_host")
+	os.Setenv("SMTP_PORT", "smtp_port")
+	os.Setenv("SMTP_USERNAME", "smtp_username")
+	os.Setenv("SMTP_PASSWORD", "smtp_password")
+
 	env, err := New()
 
 	if err != nil {
@@ -36,5 +41,21 @@ func TestEnv(t *testing.T) {
 
 	if env.DB.Password != "db_password" {
 		t.Errorf("expected: %s, got: %s", "db_password", env.DB.Password)
+	}
+
+	if env.SMTP.Host != "smtp_host" {
+		t.Errorf("expected: %s, got: %s", "smtp_host", env.SMTP.Host)
+	}
+
+	if env.SMTP.Port != "smtp_port" {
+		t.Errorf("expected: %s, got: %s", "smtp_port", env.SMTP.Port)
+	}
+
+	if env.SMTP.Username != "smtp_username" {
+		t.Errorf("expected: %s, got: %s", "smtp_username", env.SMTP.Username)
+	}
+
+	if env.SMTP.Password != "smtp_password" {
+		t.Errorf("expected: %s, got: %s", "smtp_password", env.SMTP.Password)
 	}
 }

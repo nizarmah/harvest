@@ -63,5 +63,5 @@ type Hasher interface {
 }
 
 type Emailer interface {
-	Send(email string, subject string, body string) error
+	Send(from string, to string, subject string, body string) error
 }
