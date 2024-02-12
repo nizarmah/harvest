@@ -11,13 +11,13 @@ import (
 )
 
 type UseCase struct {
-	sender string
+	Sender string
 
-	users  interfaces.UserDataSource
-	tokens interfaces.LoginTokenDataSource
+	Users  interfaces.UserDataSource
+	Tokens interfaces.LoginTokenDataSource
 
-	hasher  interfaces.Hasher
-	emailer interfaces.Emailer
+	Hasher  interfaces.Hasher
+	Emailer interfaces.Emailer
 }
 
 func (u *UseCase) SendEmail(email string) error {
@@ -31,25 +31,21 @@ func (u *UseCase) SendEmail(email string) error {
 	}
 
 	password := rand.String()
-	hash, err := u.hasher.Hash(password)
+	hash, err := u.Hasher.Hash(password)
 	if err != nil {
 		return fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	token, err := u.tokens.Create(email, hash)
+	token, err := u.Tokens.Create(email, hash)
 	if err != nil {
 		return fmt.Errorf("failed to create token: %w", err)
 	}
 
-	if err = u.emailer.Send(
-		u.sender,
+	if err = u.Emailer.Send(
+		u.Sender,
 		email,
-		"Login to Bean",
-		fmt.Sprintf(
-			("Use the following link to login to Bean:\n"+
-				"https://localhost:8080/login?i=%s&p=%s"),
-			token.ID, password,
-		),
+		"Login",
+		buildEmailBody(token.ID, password),
 	); err != nil {
 		return fmt.Errorf("failed to send email: %w", err)
 	}
@@ -58,17 +54,12 @@ func (u *UseCase) SendEmail(email string) error {
 }
 
 func (u *UseCase) Login(id string, password string) (*model.User, error) {
-	hash, err := u.hasher.Hash(password)
-	if err != nil {
-		return nil, fmt.Errorf("failed to hash password: %w", err)
-	}
-
-	token, err := u.tokens.FindUnexpired(id)
+	token, err := u.Tokens.FindUnexpired(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find token: %w", err)
 	}
 
-	if err := u.hasher.Compare(hash, token.HashedToken); err != nil {
+	if err := u.Hasher.Compare(token.HashedToken, password); err != nil {
 		return nil, fmt.Errorf("failed to compare password: %w", err)
 	}
 
@@ -77,13 +68,13 @@ func (u *UseCase) Login(id string, password string) (*model.User, error) {
 		return nil, fmt.Errorf("failed to find or create user: %w", err)
 	}
 
-	u.tokens.Delete(token.ID)
+	u.Tokens.Delete(token.ID)
 
 	return user, nil
 }
 
 func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
-	user, err := u.users.FindByEmail(email)
+	user, err := u.Users.FindByEmail(email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
@@ -92,10 +83,27 @@ func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
 		return user, nil
 	}
 
-	user, err = u.users.Create(email)
+	user, err = u.Users.Create(email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	return user, nil
+}
+
+func buildEmailBody(tokenID, password string) string {
+	return fmt.Sprintf(
+		("Hello." +
+			"\r\n\r\n" +
+			"Use this link to login to Bean:" +
+			"\r\n" +
+			"https://localhost:8080/login?i=%s&p=%s" +
+			"\r\n\r\n" +
+			"This link will expire in 10 minutes." +
+			"\r\n" +
+			"If you did not request this, don't worry." +
+			"\r\n\r\n" +
+			"Cheers."),
+		tokenID, password,
+	)
 }
