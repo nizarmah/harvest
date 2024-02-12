@@ -1,4 +1,4 @@
-package landing
+package login
 
 import (
 	"fmt"
@@ -38,7 +38,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 func (h *handler) render(w http.ResponseWriter, r *http.Request, data *viewmodel.LoginViewData) {
