@@ -9,6 +9,7 @@ import (
 	subscriptionUC "harvest/bean/internal/usecase/subscription"
 
 	envAdapter "harvest/bean/internal/adapter/env"
+	authHandler "harvest/bean/internal/adapter/handler/auth"
 	homeHandler "harvest/bean/internal/adapter/handler/home"
 	landingHandler "harvest/bean/internal/adapter/handler/landing"
 	loginHandler "harvest/bean/internal/adapter/handler/login"
@@ -137,6 +138,8 @@ func main() {
 	s := server.New()
 
 	s.Route("/", landingHandler.New(landingView))
+
+	s.Route("/auth", authHandler.New(passwordlessAuth))
 	s.Route("/get-started", loginHandler.New(
 		passwordlessAuth,
 		loginView,

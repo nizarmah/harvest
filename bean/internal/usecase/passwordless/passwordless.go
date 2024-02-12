@@ -59,7 +59,11 @@ func (u *UseCase) Login(id string, password string) (*model.User, error) {
 		return nil, fmt.Errorf("failed to find token: %w", err)
 	}
 
-	if err := u.Hasher.Compare(token.HashedToken, password); err != nil {
+	if token == nil {
+		return nil, fmt.Errorf("token not found")
+	}
+
+	if err := u.Hasher.Compare(password, token.HashedToken); err != nil {
 		return nil, fmt.Errorf("failed to compare password: %w", err)
 	}
 
@@ -97,7 +101,7 @@ func buildEmailBody(tokenID, password string) string {
 			"\r\n\r\n" +
 			"Use this link to login to Bean:" +
 			"\r\n" +
-			"https://localhost:8080/login?i=%s&p=%s" +
+			"http://localhost:8080/auth?i=%s&p=%s" +
 			"\r\n\r\n" +
 			"This link will expire in 10 minutes." +
 			"\r\n" +
