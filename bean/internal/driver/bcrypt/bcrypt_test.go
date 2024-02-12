@@ -34,7 +34,7 @@ func TestCompare(t *testing.T) {
 		t.Fatalf("error: %s", err)
 	}
 
-	err = hasher.Compare(hashed, "wrong")
+	err = hasher.Compare("wrong", hashed)
 	if err == nil {
 		t.Fatal("error: expected error, got nil")
 	}
