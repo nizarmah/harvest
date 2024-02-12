@@ -10,6 +10,19 @@ A subscription tracker for the rest of us.
 ### Development
 
 * Bean: http://localhost:8080
+* SMTP: http://localhost:8025
+
+## Dependencies
+
+### Development
+
+* Postgres: Database
+* MailHog: SMTP server
+
+### Production
+
+* Postgres: Database
+* Postmark: SMTP server
 
 ## Guide
 

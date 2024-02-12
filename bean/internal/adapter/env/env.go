@@ -26,6 +26,26 @@ func New() (*Env, error) {
 		return nil, err
 	}
 
+	smtpHost, err := lookup("SMTP_HOST")
+	if err != nil {
+		return nil, err
+	}
+
+	smtpPort, err := lookup("SMTP_PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	smtpUsername, err := lookup("SMTP_USERNAME")
+	if err != nil {
+		return nil, err
+	}
+
+	smtpPassword, err := lookup("SMTP_PASSWORD")
+	if err != nil {
+		return nil, err
+	}
+
 	return &Env{
 		DB: &DB{
 			Name:     dbName,
@@ -33,6 +53,12 @@ func New() (*Env, error) {
 			Port:     dbPort,
 			Username: dbUsername,
 			Password: dbPassword,
+		},
+		SMTP: &SMTP{
+			Host:     smtpHost,
+			Port:     smtpPort,
+			Username: smtpUsername,
+			Password: smtpPassword,
 		},
 	}, nil
 }

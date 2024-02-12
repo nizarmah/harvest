@@ -11,6 +11,8 @@ import (
 )
 
 type UseCase struct {
+	sender string
+
 	users  interfaces.UserDataSource
 	tokens interfaces.LoginTokenDataSource
 
@@ -40,6 +42,7 @@ func (u *UseCase) SendEmail(email string) error {
 	}
 
 	if err = u.emailer.Send(
+		u.sender,
 		email,
 		"Login to Bean",
 		fmt.Sprintf(
