@@ -58,10 +58,10 @@ type LoginTokenDataSource interface {
 // --- Misc ---
 
 type Hasher interface {
-	Hash(string) (string, error)
-	Compare(string, string) error
+	Hash(input string) (string, error)
+	Compare(input, hashed string) error
 }
 
 type Emailer interface {
-	Send(from string, to string, subject string, body string) error
+	Send(from, to, subject, body string) error
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	estimatorUC "harvest/bean/internal/usecase/estimator"
+	"harvest/bean/internal/usecase/passwordless"
 	paymentMethodUC "harvest/bean/internal/usecase/paymentmethod"
 	subscriptionUC "harvest/bean/internal/usecase/subscription"
 
@@ -14,10 +15,14 @@ import (
 	paymentMethodHandler "harvest/bean/internal/adapter/handler/paymentmethod"
 	subscriptionHandler "harvest/bean/internal/adapter/handler/subscription"
 
+	"harvest/bean/internal/driver/bcrypt"
 	paymentMethodDS "harvest/bean/internal/driver/datasource/paymentmethod"
 	subscriptionDS "harvest/bean/internal/driver/datasource/subscription"
+	tokenDS "harvest/bean/internal/driver/datasource/token"
+	userDS "harvest/bean/internal/driver/datasource/user"
 	"harvest/bean/internal/driver/postgres"
 	"harvest/bean/internal/driver/server"
+	"harvest/bean/internal/driver/smtp"
 	"harvest/bean/internal/driver/template"
 	homeVD "harvest/bean/internal/driver/view/home"
 	landingVD "harvest/bean/internal/driver/view/landing"
@@ -49,6 +54,14 @@ func main() {
 	}
 	defer db.Close()
 
+	hasher := bcrypt.New()
+	emailer := smtp.New(&smtp.Config{
+		Host:     env.SMTP.Host,
+		Port:     env.SMTP.Port,
+		Username: env.SMTP.Username,
+		Password: env.SMTP.Password,
+	})
+
 	estimator := estimatorUC.UseCase{}
 
 	paymentMethodRepo := paymentMethodDS.New(db)
@@ -60,6 +73,16 @@ func main() {
 	subscriptions := subscriptionUC.UseCase{
 		Subscriptions:  subscriptionRepo,
 		PaymentMethods: paymentMethodRepo,
+	}
+
+	tokenRepo := tokenDS.New(db)
+	userRepo := userDS.New(db)
+	passwordlessAuth := passwordless.UseCase{
+		Sender:  "Bean <support@whatisbean.com>",
+		Users:   userRepo,
+		Tokens:  tokenRepo,
+		Hasher:  hasher,
+		Emailer: emailer,
 	}
 
 	landingView, err := landingVD.New(template.FS, template.LandingTemplate)
@@ -114,7 +137,10 @@ func main() {
 	s := server.New()
 
 	s.Route("/", landingHandler.New(landingView))
-	s.Route("/get-started", loginHandler.New(loginView))
+	s.Route("/get-started", loginHandler.New(
+		passwordlessAuth,
+		loginView,
+	))
 
 	s.Route("/home", homeHandler.New(
 		estimator,
