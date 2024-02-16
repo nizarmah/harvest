@@ -6,6 +6,8 @@ import (
 )
 
 func TestEnv(t *testing.T) {
+	os.Setenv("BASE_URL", "base_url")
+
 	os.Setenv("DB_NAME", "db_name")
 	os.Setenv("DB_HOST", "db_host")
 	os.Setenv("DB_PORT", "db_port")
@@ -21,6 +23,10 @@ func TestEnv(t *testing.T) {
 
 	if err != nil {
 		t.Fatalf("error: %s", err)
+	}
+
+	if env.BaseURL != "base_url" {
+		t.Errorf("expected: %s, got: %s", "base_url", env.BaseURL)
 	}
 
 	if env.DB.Name != "db_name" {
