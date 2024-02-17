@@ -18,6 +18,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       smtp:
         condition: service_started
 
@@ -40,6 +42,20 @@ services:
     volumes:
       - mailhog-data:/var/lib/mailhog
 
+  redis:
+    <<: *common
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+
   postgres:
     <<: *common
     image: postgres:latest
@@ -60,4 +76,5 @@ services:
 
 volumes:
   postgres-data:
+  redis-data:
   mailhog-data:

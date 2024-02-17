@@ -27,6 +27,6 @@ func New(builder *DSNBuilder) (*DB, error) {
 	}, nil
 }
 
-func (ds *DB) Close() {
-	ds.Pool.Close()
+func (db *DB) Close() {
+	db.Pool.Close()
 }
