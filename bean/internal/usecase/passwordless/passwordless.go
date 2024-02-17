@@ -11,7 +11,9 @@ import (
 )
 
 type UseCase struct {
-	Sender string
+	Sender    string
+	BaseURL   string
+	AuthRoute string
 
 	Users  interfaces.UserDataSource
 	Tokens interfaces.LoginTokenDataSource
@@ -45,7 +47,7 @@ func (u *UseCase) SendEmail(email string) error {
 		u.Sender,
 		email,
 		"Login",
-		buildEmailBody(token.ID, password),
+		u.buildEmailBody(token.ID, password),
 	); err != nil {
 		return fmt.Errorf("failed to send email: %w", err)
 	}
@@ -95,19 +97,25 @@ func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
 	return user, nil
 }
 
-func buildEmailBody(tokenID, password string) string {
+func (u *UseCase) buildEmailBody(tokenID, password string) string {
+	authUrl := fmt.Sprintf(
+		"%s%s?i=%s&p=%s",
+		u.BaseURL, u.AuthRoute,
+		tokenID, password,
+	)
+
 	return fmt.Sprintf(
 		("Hello." +
 			"\r\n\r\n" +
 			"Use this link to login to Bean:" +
 			"\r\n" +
-			"http://localhost:8080/auth?i=%s&p=%s" +
+			"%s" +
 			"\r\n\r\n" +
 			"This link will expire in 10 minutes." +
 			"\r\n" +
 			"If you did not request this, don't worry." +
 			"\r\n\r\n" +
 			"Cheers."),
-		tokenID, password,
+		authUrl,
 	)
 }

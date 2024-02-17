@@ -1,6 +1,8 @@
 package env
 
 type Env struct {
+	BaseURL string
+
 	DB   *DB
 	SMTP *SMTP
 }

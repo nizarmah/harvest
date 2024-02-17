@@ -76,14 +76,17 @@ func main() {
 		PaymentMethods: paymentMethodRepo,
 	}
 
+	authRoute := "/auth"
 	tokenRepo := tokenDS.New(db)
 	userRepo := userDS.New(db)
 	passwordlessAuth := passwordless.UseCase{
-		Sender:  "Bean <support@whatisbean.com>",
-		Users:   userRepo,
-		Tokens:  tokenRepo,
-		Hasher:  hasher,
-		Emailer: emailer,
+		Sender:    "Bean <support@whatisbean.com>",
+		BaseURL:   env.BaseURL,
+		AuthRoute: authRoute,
+		Users:     userRepo,
+		Tokens:    tokenRepo,
+		Hasher:    hasher,
+		Emailer:   emailer,
 	}
 
 	landingView, err := landingVD.New(template.FS, template.LandingTemplate)
@@ -139,7 +142,7 @@ func main() {
 
 	s.Route("/", landingHandler.New(landingView))
 
-	s.Route("/auth", authHandler.New(passwordlessAuth))
+	s.Route(authRoute, authHandler.New(passwordlessAuth))
 	s.Route("/get-started", loginHandler.New(
 		passwordlessAuth,
 		loginView,

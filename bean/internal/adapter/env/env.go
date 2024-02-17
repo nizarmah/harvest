@@ -1,6 +1,11 @@
 package env
 
 func New() (*Env, error) {
+	baseURL, err := lookup("BASE_URL")
+	if err != nil {
+		return nil, err
+	}
+
 	dbName, err := lookup("DB_NAME")
 	if err != nil {
 		return nil, err
@@ -47,6 +52,7 @@ func New() (*Env, error) {
 	}
 
 	return &Env{
+		BaseURL: baseURL,
 		DB: &DB{
 			Name:     dbName,
 			Host:     dbHost,
