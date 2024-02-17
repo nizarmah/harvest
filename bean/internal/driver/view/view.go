@@ -6,9 +6,9 @@ import (
 	"html/template"
 	"net/http"
 
-	"harvest/bean/internal/entity/viewmodel"
+	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
-	"harvest/bean/internal/adapter/interfaces"
+	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
 type Base[T viewmodel.ViewData] struct {

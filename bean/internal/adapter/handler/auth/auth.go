@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"harvest/bean/internal/usecase/passwordless"
+	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
 )
 
 type handler struct {

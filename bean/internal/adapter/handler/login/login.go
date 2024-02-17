@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"harvest/bean/internal/entity/viewmodel"
+	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
-	"harvest/bean/internal/usecase/passwordless"
+	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
 
-	"harvest/bean/internal/adapter/interfaces"
+	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
 type handler struct {

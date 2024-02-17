@@ -3,9 +3,9 @@ package user
 import (
 	"testing"
 
-	"harvest/bean/internal/usecase/interfaces"
+	"github.com/whatis277/harvest/bean/internal/usecase/interfaces"
 
-	"harvest/bean/internal/driver/postgres/postgrestest"
+	"github.com/whatis277/harvest/bean/internal/driver/postgres/postgrestest"
 )
 
 var (

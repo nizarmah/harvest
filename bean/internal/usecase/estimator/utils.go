@@ -1,7 +1,7 @@
 package userdash
 
 import (
-	"harvest/bean/internal/entity/model"
+	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
 func getSubscriptionEstimates(sub *model.Subscription) *model.Estimates {

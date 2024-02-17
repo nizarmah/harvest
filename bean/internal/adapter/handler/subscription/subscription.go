@@ -3,9 +3,9 @@ package subscription
 import (
 	"net/http"
 
-	"harvest/bean/internal/usecase/subscription"
+	"github.com/whatis277/harvest/bean/internal/usecase/subscription"
 
-	"harvest/bean/internal/adapter/interfaces"
+	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
 type crudHandler struct {

@@ -1,4 +1,4 @@
-module harvest
+module github.com/whatis277/harvest
 
 go 1.21.5
 

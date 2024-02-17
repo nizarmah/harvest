@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"harvest/bean/internal/driver/postgres"
+	"github.com/whatis277/harvest/bean/internal/driver/postgres"
 )
 
 func DBTest(t *testing.T) *postgres.DB {
