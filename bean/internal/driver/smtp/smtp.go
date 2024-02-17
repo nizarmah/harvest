@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/smtp"
 
-	"harvest/bean/internal/usecase/interfaces"
+	"github.com/whatis277/harvest/bean/internal/usecase/interfaces"
 )
 
 type client struct {

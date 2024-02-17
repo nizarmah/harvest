@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"harvest/bean/internal/entity/viewmodel"
+	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
-	"harvest/bean/internal/usecase/subscription"
+	"github.com/whatis277/harvest/bean/internal/usecase/subscription"
 
-	"harvest/bean/internal/adapter/handler/shared"
-	"harvest/bean/internal/adapter/interfaces"
+	"github.com/whatis277/harvest/bean/internal/adapter/handler/shared"
+	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
 type deleteHandler struct {

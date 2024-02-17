@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"harvest/bean/internal/adapter/interfaces"
+	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
 type handler struct {

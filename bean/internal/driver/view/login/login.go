@@ -1,9 +1,9 @@
 package login
 
 import (
-	"harvest/bean/internal/entity/viewmodel"
+	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
-	"harvest/bean/internal/driver/view"
+	"github.com/whatis277/harvest/bean/internal/driver/view"
 )
 
 var New = view.New[viewmodel.LoginViewData]
