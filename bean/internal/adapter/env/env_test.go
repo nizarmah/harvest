@@ -14,6 +14,11 @@ func TestEnv(t *testing.T) {
 	os.Setenv("DB_USERNAME", "db_username")
 	os.Setenv("DB_PASSWORD", "db_password")
 
+	os.Setenv("CACHE_HOST", "cache_host")
+	os.Setenv("CACHE_PORT", "cache_port")
+	os.Setenv("CACHE_USERNAME", "cache_username")
+	os.Setenv("CACHE_PASSWORD", "cache_password")
+
 	os.Setenv("SMTP_HOST", "smtp_host")
 	os.Setenv("SMTP_PORT", "smtp_port")
 	os.Setenv("SMTP_USERNAME", "smtp_username")
@@ -47,6 +52,22 @@ func TestEnv(t *testing.T) {
 
 	if env.DB.Password != "db_password" {
 		t.Errorf("expected: %s, got: %s", "db_password", env.DB.Password)
+	}
+
+	if env.Cache.Host != "cache_host" {
+		t.Errorf("expected: %s, got: %s", "cache_host", env.Cache.Host)
+	}
+
+	if env.Cache.Port != "cache_port" {
+		t.Errorf("expected: %s, got: %s", "cache_port", env.Cache.Port)
+	}
+
+	if env.Cache.Username != "cache_username" {
+		t.Errorf("expected: %s, got: %s", "cache_username", env.Cache.Username)
+	}
+
+	if env.Cache.Password != "cache_password" {
+		t.Errorf("expected: %s, got: %s", "cache_password", env.Cache.Password)
 	}
 
 	if env.SMTP.Host != "smtp_host" {

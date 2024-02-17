@@ -31,6 +31,26 @@ func New() (*Env, error) {
 		return nil, err
 	}
 
+	cacheHost, err := lookup("CACHE_HOST")
+	if err != nil {
+		return nil, err
+	}
+
+	cachePort, err := lookup("CACHE_PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	cacheUsername, err := lookup("CACHE_USERNAME")
+	if err != nil {
+		return nil, err
+	}
+
+	cachePassword, err := lookup("CACHE_PASSWORD")
+	if err != nil {
+		return nil, err
+	}
+
 	smtpHost, err := lookup("SMTP_HOST")
 	if err != nil {
 		return nil, err
@@ -59,6 +79,12 @@ func New() (*Env, error) {
 			Port:     dbPort,
 			Username: dbUsername,
 			Password: dbPassword,
+		},
+		Cache: &Cache{
+			Host:     cacheHost,
+			Port:     cachePort,
+			Username: cacheUsername,
+			Password: cachePassword,
 		},
 		SMTP: &SMTP{
 			Host:     smtpHost,
