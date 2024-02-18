@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -82,6 +83,25 @@ type LoginToken struct {
 
 	CreatedAt time.Time
 	ExpiresAt time.Time
+}
+
+// --- Cache ---
+
+// --- Cache --- Session ---
+
+type Session struct {
+	ID     string
+	UserID string
+
+	HashedToken string
+}
+
+func (s *Session) MarshalBinary() ([]byte, error) {
+	return json.Marshal(s)
+}
+
+func (s *Session) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, s)
 }
 
 // --- Misc ---
