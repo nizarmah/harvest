@@ -94,6 +94,10 @@ type Session struct {
 	UserID string
 
 	HashedToken string
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	ExpiresAt time.Time
 }
 
 func (s *Session) MarshalBinary() ([]byte, error) {

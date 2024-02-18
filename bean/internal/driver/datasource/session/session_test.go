@@ -51,6 +51,23 @@ func create(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) {
 			t.Errorf("expected hashed token: %s, got: %s", "hashed-token", session.HashedToken)
 		}
 
+		if session.CreatedAt.IsZero() {
+			t.Error("expected created at, got zero value")
+		}
+
+		if session.UpdatedAt.IsZero() {
+			t.Error("expected updated at, got zero value")
+		}
+
+		if session.ExpiresAt.IsZero() {
+			t.Error("expected expires at, got zero value")
+		}
+
+		duration := session.ExpiresAt.Sub(session.CreatedAt)
+		if duration != 10*time.Second {
+			t.Errorf("expected expires at to be 10 seconds after created at, got: %s", duration)
+		}
+
 		ttl := cache.Client.TTL(context.Background(), session.ID).Val()
 		if ttl != 10*time.Second {
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
@@ -114,14 +131,24 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 			t.Fatalf("failed to create session: %s", err)
 		}
 
+		duration := session.ExpiresAt.Sub(session.UpdatedAt)
+		if duration != 10*time.Second {
+			t.Errorf("expected expires at to be 10 seconds after updated at, got: %s", duration)
+		}
+
 		ttl := cache.Client.TTL(context.Background(), session.ID).Val()
 		if ttl != 10*time.Second {
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
 		}
 
-		err = ds.Refresh(session.ID, 20*time.Second)
+		session, err = ds.Refresh(session.ID, 20*time.Second)
 		if err != nil {
 			t.Fatalf("failed to refresh session: %s", err)
+		}
+
+		duration = session.ExpiresAt.Sub(session.UpdatedAt)
+		if duration != 20*time.Second {
+			t.Errorf("expected expires at to be 20 seconds after updated at, got: %s", duration)
 		}
 
 		ttl = cache.Client.TTL(context.Background(), session.ID).Val()
@@ -135,8 +162,13 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 	})
 
 	t.Run("missing_session", func(t *testing.T) {
-		if err := ds.Refresh("missing-id", 20*time.Second); err != nil {
-			t.Fatalf("failed to refresh session: %s", err)
+		session, err := ds.Refresh("missing-id", 20*time.Second)
+		if err == nil {
+			t.Fatalf("expected error, got nil")
+		}
+
+		if session != nil {
+			t.Errorf("expected nil session, got: %v", session)
 		}
 	})
 }
