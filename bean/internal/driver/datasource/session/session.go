@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-  "github.com/whatis277/harvest/bean/internal/entity/model"
+	"github.com/whatis277/harvest/bean/internal/entity/model"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/interfaces"
 
