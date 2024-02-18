@@ -62,7 +62,7 @@ type SessionDataSource interface {
 
 	FindByID(id string) (*model.Session, error)
 
-	Refresh(id string, duration time.Duration) error
+	Refresh(id string, duration time.Duration) (*model.Session, error)
 
 	Delete(id string) error
 }
