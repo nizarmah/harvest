@@ -41,13 +41,13 @@ func (h *handler) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sesssionBin, err := sessionToken.MarshalBinary()
+	sessionBin, err := sessionToken.MarshalBinary()
 	if err != nil {
 		http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 		return
 	}
 
-	sessionVal := base64.StdEncoding.EncodeToString([]byte(sesssionBin))
+	sessionVal := base64.StdEncoding.EncodeToString([]byte(sessionBin))
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    sessionVal,
