@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"time"
+
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
@@ -51,6 +53,16 @@ type LoginTokenDataSource interface {
 	Create(email string, hashedToken string) (*model.LoginToken, error)
 
 	FindUnexpired(id string) (*model.LoginToken, error)
+
+	Delete(id string) error
+}
+
+type SessionDataSource interface {
+	Create(userID string, hashedToken string, duration time.Duration) (*model.Session, error)
+
+	FindByID(id string) (*model.Session, error)
+
+	Refresh(id string, duration time.Duration) error
 
 	Delete(id string) error
 }
