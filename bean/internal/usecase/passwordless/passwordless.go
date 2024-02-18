@@ -2,6 +2,7 @@ package passwordless
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 
@@ -15,8 +16,9 @@ type UseCase struct {
 	BaseURL   string
 	AuthRoute string
 
-	Users  interfaces.UserDataSource
-	Tokens interfaces.LoginTokenDataSource
+	Users    interfaces.UserDataSource
+	Tokens   interfaces.LoginTokenDataSource
+	Sessions interfaces.SessionDataSource
 
 	Hasher  interfaces.Hasher
 	Emailer interfaces.Emailer
@@ -55,7 +57,7 @@ func (u *UseCase) SendEmail(email string) error {
 	return nil
 }
 
-func (u *UseCase) Login(id string, password string) (*model.User, error) {
+func (u *UseCase) Login(id string, password string) (*model.SessionToken, error) {
 	token, err := u.Tokens.FindUnexpired(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find token: %w", err)
@@ -74,9 +76,20 @@ func (u *UseCase) Login(id string, password string) (*model.User, error) {
 		return nil, fmt.Errorf("failed to find or create user: %w", err)
 	}
 
+	session, err := u.Sessions.Create(user.ID, token.HashedToken, 14*24*time.Hour)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create session: %w", err)
+	}
+
+	sessionToken := &model.SessionToken{
+		ID:        session.ID,
+		Token:     password,
+		ExpiresAt: session.ExpiresAt,
+	}
+
 	u.Tokens.Delete(token.ID)
 
-	return user, nil
+	return sessionToken, nil
 }
 
 func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {

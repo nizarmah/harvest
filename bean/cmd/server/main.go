@@ -18,10 +18,12 @@ import (
 
 	"github.com/whatis277/harvest/bean/internal/driver/bcrypt"
 	paymentMethodDS "github.com/whatis277/harvest/bean/internal/driver/datasource/paymentmethod"
+	sessionDS "github.com/whatis277/harvest/bean/internal/driver/datasource/session"
 	subscriptionDS "github.com/whatis277/harvest/bean/internal/driver/datasource/subscription"
 	tokenDS "github.com/whatis277/harvest/bean/internal/driver/datasource/token"
 	userDS "github.com/whatis277/harvest/bean/internal/driver/datasource/user"
 	"github.com/whatis277/harvest/bean/internal/driver/postgres"
+	"github.com/whatis277/harvest/bean/internal/driver/redis"
 	"github.com/whatis277/harvest/bean/internal/driver/server"
 	"github.com/whatis277/harvest/bean/internal/driver/smtp"
 	"github.com/whatis277/harvest/bean/internal/driver/template"
@@ -55,6 +57,19 @@ func main() {
 	}
 	defer db.Close()
 
+	cache, err := redis.New(&redis.Config{
+		Host:     env.Cache.Host,
+		Port:     env.Cache.Port,
+		Username: env.Cache.Username,
+		Password: env.Cache.Password,
+	})
+	if err != nil {
+		panic(
+			fmt.Errorf("error connecting cache: %v", err),
+		)
+	}
+	defer cache.Close()
+
 	hasher := bcrypt.New()
 	emailer := smtp.New(&smtp.Config{
 		Host:     env.SMTP.Host,
@@ -79,12 +94,14 @@ func main() {
 	authRoute := "/auth"
 	tokenRepo := tokenDS.New(db)
 	userRepo := userDS.New(db)
+	sessionRepo := sessionDS.New(cache)
 	passwordlessAuth := passwordless.UseCase{
 		Sender:    "Bean <support@whatisbean.com>",
 		BaseURL:   env.BaseURL,
 		AuthRoute: authRoute,
 		Users:     userRepo,
 		Tokens:    tokenRepo,
+		Sessions:  sessionRepo,
 		Hasher:    hasher,
 		Emailer:   emailer,
 	}
