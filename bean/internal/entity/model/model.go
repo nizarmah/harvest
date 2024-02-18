@@ -90,14 +90,14 @@ type LoginToken struct {
 // --- Cache --- Session ---
 
 type Session struct {
-	ID     string
-	UserID string
+	ID     string `json:"id"`
+	UserID string `json:"user_id"`
 
-	HashedToken string
+	HashedToken string `json:"hashed_token"`
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	ExpiresAt time.Time
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 func (s *Session) MarshalBinary() ([]byte, error) {
@@ -105,6 +105,26 @@ func (s *Session) MarshalBinary() ([]byte, error) {
 }
 
 func (s *Session) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, s)
+}
+
+// --- Cookie ---
+
+// --- Cookie --- Session Token ---
+
+type SessionToken struct {
+	ID string `json:"id"`
+
+	Token string `json:"token"`
+
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+func (s *SessionToken) MarshalBinary() ([]byte, error) {
+	return json.Marshal(s)
+}
+
+func (s *SessionToken) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, s)
 }
 

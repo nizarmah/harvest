@@ -14,7 +14,7 @@ func CacheTest(t *testing.T) *redis.Cache {
 		t.Skip("skipping integration test, set env var INTEGRATION=1")
 	}
 
-	cache, err := redis.New(&redis.Options{
+	cache, err := redis.New(&redis.Config{
 		Host:     "redis",
 		Port:     "6379",
 		Username: "default",

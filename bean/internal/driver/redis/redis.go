@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type Options struct {
+type Config struct {
 	Host     string
 	Port     string
 	Username string
@@ -19,14 +19,14 @@ type Cache struct {
 	Client *redis.Client
 }
 
-func New(opts *Options) (*Cache, error) {
-	addr := fmt.Sprintf("%s:%s", opts.Host, opts.Port)
+func New(cfg *Config) (*Cache, error) {
+	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 
 	client := redis.NewClient(
 		&redis.Options{
 			Addr:     addr,
-			Username: opts.Username,
-			Password: opts.Password,
+			Username: cfg.Username,
+			Password: cfg.Password,
 		},
 	)
 	if client == nil {

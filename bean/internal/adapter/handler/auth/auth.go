@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"net/http"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
@@ -34,11 +35,27 @@ func (h *handler) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.auth.Login(id, password)
+	sessionToken, err := h.auth.Login(id, password)
 	if err != nil {
 		http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 		return
 	}
+
+	sesssionBin, err := sessionToken.MarshalBinary()
+	if err != nil {
+		http.Redirect(w, r, "/get-started", http.StatusSeeOther)
+		return
+	}
+
+	sessionVal := base64.StdEncoding.EncodeToString([]byte(sesssionBin))
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session",
+		Value:    sessionVal,
+		Expires:  sessionToken.ExpiresAt,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   true,
+	})
 
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
