@@ -8,10 +8,10 @@ import (
 	paymentMethodUC "github.com/whatis277/harvest/bean/internal/usecase/paymentmethod"
 	subscriptionUC "github.com/whatis277/harvest/bean/internal/usecase/subscription"
 
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/app"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/marketing"
 	envAdapter "github.com/whatis277/harvest/bean/internal/adapter/env"
-	homeHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/home"
 	paymentMethodHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/paymentmethod"
 	subscriptionHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/subscription"
 
@@ -162,20 +162,23 @@ func main() {
 		LoginView: loginView,
 	}
 
+	appController := app.Controller{
+		Estimator:      estimator,
+		PaymentMethods: paymentMethods,
+
+		HomeView: homeView,
+	}
+
 	s := server.New()
 
-	s.Route("/", marketingController.LandingPage())
+	s.Route("GET /{$}", marketingController.LandingPage())
 
 	s.Route("GET /auth/{id}/{password}", authControler.Authorize())
 
 	s.Route("GET /get-started", authControler.LoginPage())
 	s.Route("POST /get-started", authControler.LoginForm())
 
-	s.Route("/home", homeHandler.New(
-		estimator,
-		paymentMethods,
-		homeView,
-	))
+	s.Route("GET /home", appController.HomePage())
 
 	paymentMethodCRUD := paymentMethodHandler.New(
 		estimator,

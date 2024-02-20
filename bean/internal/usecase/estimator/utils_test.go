@@ -1,4 +1,4 @@
-package userdash
+package estimator
 
 import (
 	"testing"
