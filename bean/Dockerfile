@@ -1,5 +1,5 @@
 # use official go image
-FROM golang:1.21.5-alpine
+FROM golang:1.22.0-alpine
 
 # set working dir
 WORKDIR /go/src
