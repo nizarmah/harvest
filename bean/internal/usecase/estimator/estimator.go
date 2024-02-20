@@ -1,4 +1,4 @@
-package userdash
+package estimator
 
 import (
 	"github.com/whatis277/harvest/bean/internal/entity/model"
