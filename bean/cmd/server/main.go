@@ -9,9 +9,9 @@ import (
 	subscriptionUC "github.com/whatis277/harvest/bean/internal/usecase/subscription"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/marketing"
 	envAdapter "github.com/whatis277/harvest/bean/internal/adapter/env"
 	homeHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/home"
-	landingHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/landing"
 	paymentMethodHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/paymentmethod"
 	subscriptionHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/subscription"
 
@@ -152,6 +152,10 @@ func main() {
 		)
 	}
 
+	marketingController := marketing.Controller{
+		LandingView: landingView,
+	}
+
 	authControler := auth.Controller{
 		Passwordless: passwordlessAuth,
 
@@ -160,7 +164,7 @@ func main() {
 
 	s := server.New()
 
-	s.Route("/", landingHandler.New(landingView))
+	s.Route("/", marketingController.LandingPage())
 
 	s.Route("GET /auth/{id}/{password}", authControler.Authorize())
 
