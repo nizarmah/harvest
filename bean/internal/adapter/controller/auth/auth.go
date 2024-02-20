@@ -4,10 +4,14 @@ import (
 	"net/http"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
+
+	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
 type Controller struct {
 	Passwordless passwordless.UseCase
+
+	LoginView interfaces.LoginView
 }
 
 func (c *Controller) Authorize() http.HandlerFunc {

@@ -12,7 +12,6 @@ import (
 	envAdapter "github.com/whatis277/harvest/bean/internal/adapter/env"
 	homeHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/home"
 	landingHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/landing"
-	loginHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/login"
 	paymentMethodHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/paymentmethod"
 	subscriptionHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/subscription"
 
@@ -155,6 +154,8 @@ func main() {
 
 	authControler := auth.Controller{
 		Passwordless: passwordlessAuth,
+
+		LoginView: loginView,
 	}
 
 	s := server.New()
@@ -163,10 +164,8 @@ func main() {
 
 	s.Route("GET /auth/{id}/{password}", authControler.Authorize())
 
-	s.Route("/get-started", loginHandler.New(
-		passwordlessAuth,
-		loginView,
-	))
+	s.Route("GET /get-started", authControler.LoginPage())
+	s.Route("POST /get-started", authControler.LoginForm())
 
 	s.Route("/home", homeHandler.New(
 		estimator,
