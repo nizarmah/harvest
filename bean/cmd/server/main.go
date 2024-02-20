@@ -8,8 +8,8 @@ import (
 	paymentMethodUC "github.com/whatis277/harvest/bean/internal/usecase/paymentmethod"
 	subscriptionUC "github.com/whatis277/harvest/bean/internal/usecase/subscription"
 
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
 	envAdapter "github.com/whatis277/harvest/bean/internal/adapter/env"
-	authHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/auth"
 	homeHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/home"
 	landingHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/landing"
 	loginHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/login"
@@ -91,19 +91,17 @@ func main() {
 		PaymentMethods: paymentMethodRepo,
 	}
 
-	authRoute := "/auth"
 	tokenRepo := tokenDS.New(db)
 	userRepo := userDS.New(db)
 	sessionRepo := sessionDS.New(cache)
 	passwordlessAuth := passwordless.UseCase{
-		Sender:    "Bean <support@whatisbean.com>",
-		BaseURL:   env.BaseURL,
-		AuthRoute: authRoute,
-		Users:     userRepo,
-		Tokens:    tokenRepo,
-		Sessions:  sessionRepo,
-		Hasher:    hasher,
-		Emailer:   emailer,
+		Sender:   "Bean <support@whatisbean.com>",
+		BaseURL:  env.BaseURL,
+		Users:    userRepo,
+		Tokens:   tokenRepo,
+		Sessions: sessionRepo,
+		Hasher:   hasher,
+		Emailer:  emailer,
 	}
 
 	landingView, err := landingVD.New(template.FS, template.LandingTemplate)
@@ -155,11 +153,16 @@ func main() {
 		)
 	}
 
+	authControler := auth.Controller{
+		Passwordless: passwordlessAuth,
+	}
+
 	s := server.New()
 
 	s.Route("/", landingHandler.New(landingView))
 
-	s.Route(authRoute, authHandler.New(passwordlessAuth))
+	s.Route("GET /auth/{id}/{password}", authControler.Authorize())
+
 	s.Route("/get-started", loginHandler.New(
 		passwordlessAuth,
 		loginView,

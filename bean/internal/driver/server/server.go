@@ -10,8 +10,8 @@ func New() *Server {
 	}
 }
 
-func (s *Server) Route(path string, handler http.Handler) {
-	s.mux.Handle(path, handler)
+func (s *Server) Route(pattern string, handler http.Handler) {
+	s.mux.Handle(pattern, handler)
 }
 
 func (s *Server) Listen(addr string) error {

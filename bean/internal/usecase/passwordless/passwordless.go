@@ -12,9 +12,8 @@ import (
 )
 
 type UseCase struct {
-	Sender    string
-	BaseURL   string
-	AuthRoute string
+	Sender  string
+	BaseURL string
 
 	Users    interfaces.UserDataSource
 	Tokens   interfaces.LoginTokenDataSource
@@ -112,8 +111,8 @@ func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
 
 func (u *UseCase) buildEmailBody(tokenID, password string) string {
 	authUrl := fmt.Sprintf(
-		"%s%s?i=%s&p=%s",
-		u.BaseURL, u.AuthRoute,
+		"%s/auth/%s/%s",
+		u.BaseURL,
 		tokenID, password,
 	)
 
