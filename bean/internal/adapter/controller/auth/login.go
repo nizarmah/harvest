@@ -33,7 +33,7 @@ func (c *Controller) LoginForm() http.HandlerFunc {
 			return
 		}
 
-		err := c.Passwordless.SendEmail(email)
+		err := c.Passwordless.Login(email)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
