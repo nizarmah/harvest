@@ -94,16 +94,16 @@ func (ds *dataSource) FindByID(id string) (*model.Session, error) {
 	return session, nil
 }
 
-func (ds *dataSource) Refresh(session *model.Session, duration time.Duration) (*model.Session, error) {
+func (ds *dataSource) Refresh(session *model.Session, duration time.Duration) error {
 	session.UpdatedAt = time.Now()
 	session.ExpiresAt = session.UpdatedAt.Add(duration)
 
 	err := ds.cache.Client.Set(context.Background(), session.ID, session, duration).Err()
 	if err != nil {
-		return nil, fmt.Errorf("failed to refresh session in cache: %w", err)
+		return fmt.Errorf("failed to refresh session in cache: %w", err)
 	}
 
-	return session, nil
+	return nil
 }
 
 func (ds *dataSource) Delete(id string) error {

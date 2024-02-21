@@ -105,7 +105,7 @@ func (u *UseCase) Authenticate(sessionToken *model.SessionToken) (*model.Session
 		return nil, fmt.Errorf("failed to compare session token: %w", err)
 	}
 
-	session, err = u.Sessions.Refresh(session, 14*24*time.Hour)
+	err = u.Sessions.Refresh(session, 14*24*time.Hour)
 	if err != nil {
 		return nil, fmt.Errorf("failed to refresh session: %w", err)
 	}

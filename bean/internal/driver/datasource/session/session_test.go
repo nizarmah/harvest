@@ -141,7 +141,7 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
 		}
 
-		session, err = ds.Refresh(session, 20*time.Second)
+		err = ds.Refresh(session, 20*time.Second)
 		if err != nil {
 			t.Fatalf("failed to refresh session: %s", err)
 		}
