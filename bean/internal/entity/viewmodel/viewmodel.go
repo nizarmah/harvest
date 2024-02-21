@@ -22,7 +22,8 @@ type PaymentMethod struct {
 // --- View Models --- Subscription ---
 
 type Subscription struct {
-	ID string
+	ID              string
+	PaymentMethodID string
 
 	Label     string
 	Provider  string

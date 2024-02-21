@@ -10,10 +10,10 @@ import (
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/paymentmethod"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/subscription"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/marketing"
 	envAdapter "github.com/whatis277/harvest/bean/internal/adapter/env"
-	subscriptionHandler "github.com/whatis277/harvest/bean/internal/adapter/handler/subscription"
 
 	"github.com/whatis277/harvest/bean/internal/driver/bcrypt"
 	paymentMethodDS "github.com/whatis277/harvest/bean/internal/driver/datasource/paymentmethod"
@@ -177,6 +177,13 @@ func main() {
 		DeleteView: deletePaymentMethodView,
 	}
 
+	subsController := subscription.Controller{
+		Subscriptions: subscriptions,
+
+		CreateView: createSubscriptionView,
+		DeleteView: deleteSubscriptionView,
+	}
+
 	s := server.New()
 
 	s.Route("GET /{$}", marketingController.LandingPage())
@@ -194,14 +201,11 @@ func main() {
 	s.Route("GET /cards/{id}/del", pmsController.DeletePage())
 	s.Route("POST /cards/{id}/del", pmsController.DeleteForm())
 
-	subscriptionsCRUD := subscriptionHandler.New(
-		subscriptions,
-		createSubscriptionView,
-		deleteSubscriptionView,
-	)
+	s.Route("GET /cards/{pm_id}/subs/new", subsController.CreatePage())
+	s.Route("POST /cards/{pm_id}/subs/new", subsController.CreateForm())
 
-	s.Route("/subs/new", subscriptionsCRUD.Create)
-	s.Route("/subs/del", subscriptionsCRUD.Delete)
+	s.Route("GET /cards/{pm_id}/subs/{id}/del", subsController.DeletePage())
+	s.Route("POST /cards/{pm_id}/subs/{id}/del", subsController.DeleteForm())
 
 	s.Listen(":8080")
 }

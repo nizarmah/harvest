@@ -42,7 +42,7 @@
 
 <div>
   <p class="actionbar">
-    <a href="/subs/new?pm={{ .ID }}">Add a new subscription</a>
+    <a href="/cards/{{ .ID }}/subs/new">Add a new subscription</a>
   </p>
 </div>
 {{ end }}
@@ -53,7 +53,7 @@
   <a target="_blank" href="{{ .Provider }}">Unsubscribe</a>
   &nbsp;·&nbsp;
   {{ end }}
-  <a href="/subs/del?id={{ .ID }}">Delete</a>
+  <a href="/cards/{{ .PaymentMethodID }}/subs/{{ .ID }}/del">Delete</a>
 </p>
 {{ end }}
 

@@ -53,11 +53,12 @@ func ToSubscriptionViewModel(subscription *model.Subscription) viewmodel.Subscri
 	}
 
 	return viewmodel.Subscription{
-		ID:        subscription.ID,
-		Label:     label,
-		Provider:  provider,
-		Amount:    ToDollarsString(subscription.Amount),
-		Frequency: toFrequencyString(subscription.Interval, subscription.Period),
+		ID:              subscription.ID,
+		PaymentMethodID: subscription.PaymentMethodID,
+		Label:           label,
+		Provider:        provider,
+		Amount:          ToDollarsString(subscription.Amount),
+		Frequency:       toFrequencyString(subscription.Interval, subscription.Period),
 	}
 }
 
