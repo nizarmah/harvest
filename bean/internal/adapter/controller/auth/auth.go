@@ -45,6 +45,12 @@ func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 
 func (c *Controller) Authorize() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		sessionToken, _ := getSessionToken(r)
+		if sessionToken != nil {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return
+		}
+
 		id, password := r.PathValue("id"), r.PathValue("password")
 		if id == "" || password == "" {
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
