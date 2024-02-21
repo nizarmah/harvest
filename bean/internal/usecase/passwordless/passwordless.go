@@ -76,12 +76,12 @@ func (u *UseCase) Authorize(id string, password string) (*model.SessionToken, er
 
 	csrfToken, err := generateRandomPassword()
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate password: %w", err)
+		return nil, fmt.Errorf("failed to generate csrf token: %w", err)
 	}
 
 	csrfHash, err := u.Hasher.Hash(csrfToken)
 	if err != nil {
-		return nil, fmt.Errorf("failed to hash password: %w", err)
+		return nil, fmt.Errorf("failed to hash csrf token: %w", err)
 	}
 
 	session, err := u.Sessions.Create(user.ID, csrfHash, 14*24*time.Hour)
