@@ -10,8 +10,12 @@ func New() *Server {
 	}
 }
 
+func (s *Server) Use(middleware func(http.Handler) http.HandlerFunc) {
+	s.middlewares = append(s.middlewares, middleware)
+}
+
 func (s *Server) Route(pattern string, handler http.Handler) {
-	s.mux.Handle(pattern, handler)
+	s.mux.Handle(pattern, applyMiddleware(handler, s.middlewares))
 }
 
 func (s *Server) Listen(addr string) error {
