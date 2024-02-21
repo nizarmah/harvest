@@ -141,7 +141,7 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
 		}
 
-		session, err = ds.Refresh(session.ID, 20*time.Second)
+		session, err = ds.Refresh(session, 20*time.Second)
 		if err != nil {
 			t.Fatalf("failed to refresh session: %s", err)
 		}
@@ -158,17 +158,6 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 
 		if err = ds.Delete(session.ID); err != nil {
 			t.Fatalf("failed to delete session: %s", err)
-		}
-	})
-
-	t.Run("missing_session", func(t *testing.T) {
-		session, err := ds.Refresh("missing-id", 20*time.Second)
-		if err == nil {
-			t.Fatalf("expected error, got nil")
-		}
-
-		if session != nil {
-			t.Errorf("expected nil session, got: %v", session)
 		}
 	})
 }
