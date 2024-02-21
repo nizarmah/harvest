@@ -28,13 +28,11 @@ func (c *Controller) Authorize() http.HandlerFunc {
 			return
 		}
 
-		cookie, err := createSessionCookie(sessionToken)
+		err = addSessionTokenCookie(w, sessionToken)
 		if err != nil {
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
-
-		http.SetCookie(w, cookie)
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
