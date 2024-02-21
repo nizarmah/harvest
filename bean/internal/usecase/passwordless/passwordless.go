@@ -91,6 +91,49 @@ func (u *UseCase) Login(id string, password string) (*model.SessionToken, error)
 	return sessionToken, nil
 }
 
+func (u *UseCase) Authenticate(sessionToken *model.SessionToken) (*model.Session, error) {
+	session, err := u.Sessions.FindByID(sessionToken.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find session: %w", err)
+	}
+
+	if session == nil {
+		return nil, fmt.Errorf("session not found")
+	}
+
+	if err := u.Hasher.Compare(sessionToken.Token, session.HashedToken); err != nil {
+		return nil, fmt.Errorf("failed to compare session token: %w", err)
+	}
+
+	err = u.Sessions.Refresh(session, 14*24*time.Hour)
+	if err != nil {
+		return nil, fmt.Errorf("failed to refresh session: %w", err)
+	}
+
+	sessionToken.ExpiresAt = session.ExpiresAt
+
+	return session, nil
+}
+
+func (u *UseCase) Logout(sessionToken *model.SessionToken) error {
+	session, err := u.Sessions.FindByID(sessionToken.ID)
+	if err != nil {
+		return fmt.Errorf("failed to find session: %w", err)
+	}
+
+	if session == nil {
+		return fmt.Errorf("session not found")
+	}
+
+	if err := u.Hasher.Compare(sessionToken.Token, session.HashedToken); err != nil {
+		return fmt.Errorf("failed to compare session token: %w", err)
+	}
+
+	u.Sessions.Delete(session.ID)
+
+	return nil
+}
+
 func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
 	user, err := u.Users.FindByEmail(email)
 	if err != nil {
