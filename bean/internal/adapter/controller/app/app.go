@@ -10,6 +10,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/usecase/paymentmethod"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/shared"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
 	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
@@ -22,7 +23,9 @@ type Controller struct {
 
 func (c *Controller) HomePage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		methods, err := c.PaymentMethods.List("10000000-0000-0000-0000-000000000001")
+		session := auth.SessionFromContext(r.Context())
+
+		methods, err := c.PaymentMethods.List(session.UserID)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return

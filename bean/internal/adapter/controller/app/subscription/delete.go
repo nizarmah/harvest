@@ -7,6 +7,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/shared"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
 )
 
 func (c *Controller) DeletePage() http.HandlerFunc {
@@ -17,10 +18,9 @@ func (c *Controller) DeletePage() http.HandlerFunc {
 			return
 		}
 
-		sub, err := c.Subscriptions.Get(
-			"10000000-0000-0000-0000-000000000001",
-			subID,
-		)
+		session := auth.SessionFromContext(r.Context())
+
+		sub, err := c.Subscriptions.Get(session.UserID, subID)
 		if err != nil || sub == nil {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return
@@ -40,10 +40,9 @@ func (c *Controller) DeleteForm() http.HandlerFunc {
 			return
 		}
 
-		c.Subscriptions.Delete(
-			"10000000-0000-0000-0000-000000000001",
-			subID,
-		)
+		session := auth.SessionFromContext(r.Context())
+
+		c.Subscriptions.Delete(session.UserID, subID)
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
