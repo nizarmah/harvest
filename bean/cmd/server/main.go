@@ -186,12 +186,18 @@ func main() {
 
 	s := server.New()
 
+	// Unauthenticated routes
+
 	s.Route("GET /{$}", marketingController.LandingPage())
 
 	s.Route("GET /auth/{id}/{password}", authControler.Authorize())
 
 	s.Route("GET /get-started", authControler.LoginPage())
 	s.Route("POST /get-started", authControler.LoginForm())
+
+	// Authenticated routes
+
+	s.Use(authControler.Authenticate)
 
 	s.Route("GET /home", appController.HomePage())
 
