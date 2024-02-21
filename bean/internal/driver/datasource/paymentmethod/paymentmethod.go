@@ -58,7 +58,8 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWi
 				" payment_methods.id, payment_methods.user_id," +
 				" payment_methods.label, payment_methods.last4, payment_methods.brand, payment_methods.exp_month, payment_methods.exp_year," +
 				" payment_methods.created_at, payment_methods.updated_at," +
-				" subscriptions.id, subscriptions.label, subscriptions.provider," +
+				" subscriptions.id, subscriptions.payment_method_id," +
+				"subscriptions.label, subscriptions.provider," +
 				" subscriptions.amount, subscriptions.interval, subscriptions.period" +
 				" FROM payment_methods" +
 				" LEFT JOIN subscriptions" +
@@ -80,19 +81,21 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWi
 
 	for rows.Next() {
 		var (
-			subID       *string
-			subLabel    *string
-			subProvider *string
-			subAmount   *int
-			subInterval *int
-			subPeriod   *string
+			subID              *string
+			subPaymentMethodID *string
+			subLabel           *string
+			subProvider        *string
+			subAmount          *int
+			subInterval        *int
+			subPeriod          *string
 		)
 
 		err = rows.Scan(
 			&method.ID, &method.UserID,
 			&method.Label, &method.Last4, &method.Brand, &method.ExpMonth, &method.ExpYear,
 			&method.CreatedAt, &method.UpdatedAt,
-			&subID, &subLabel, &subProvider,
+			&subID, &subPaymentMethodID,
+			&subLabel, &subProvider,
 			&subAmount, &subInterval, &subPeriod,
 		)
 
@@ -103,6 +106,7 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWi
 		sub := &model.Subscription{}
 		if subID != nil {
 			sub.ID = *subID
+			sub.PaymentMethodID = *subPaymentMethodID
 			sub.Label = *subLabel
 			sub.Provider = *subProvider
 			sub.Amount = *subAmount
@@ -133,7 +137,8 @@ func (ds *dataSource) FindByUserID(userID string) ([]*model.PaymentMethodWithSub
 				" payment_methods.id, payment_methods.user_id," +
 				" payment_methods.label, payment_methods.last4, payment_methods.brand, payment_methods.exp_month, payment_methods.exp_year," +
 				" payment_methods.created_at, payment_methods.updated_at," +
-				" subscriptions.id, subscriptions.label, subscriptions.provider," +
+				" subscriptions.id, subscriptions.payment_method_id," +
+				" subscriptions.label, subscriptions.provider," +
 				" subscriptions.amount, subscriptions.interval, subscriptions.period" +
 				" FROM payment_methods" +
 				" LEFT JOIN subscriptions" +
@@ -159,19 +164,21 @@ func (ds *dataSource) FindByUserID(userID string) ([]*model.PaymentMethodWithSub
 	for rows.Next() {
 		method := &model.PaymentMethod{}
 		var (
-			subID       *string
-			subLabel    *string
-			subProvider *string
-			subAmount   *int
-			subInterval *int
-			subPeriod   *string
+			subID              *string
+			subPaymentMethodID *string
+			subLabel           *string
+			subProvider        *string
+			subAmount          *int
+			subInterval        *int
+			subPeriod          *string
 		)
 
 		err = rows.Scan(
 			&method.ID, &method.UserID,
 			&method.Label, &method.Last4, &method.Brand, &method.ExpMonth, &method.ExpYear,
 			&method.CreatedAt, &method.UpdatedAt,
-			&subID, &subLabel, &subProvider,
+			&subID, &subPaymentMethodID,
+			&subLabel, &subProvider,
 			&subAmount, &subInterval, &subPeriod,
 		)
 
@@ -182,6 +189,7 @@ func (ds *dataSource) FindByUserID(userID string) ([]*model.PaymentMethodWithSub
 		sub := &model.Subscription{}
 		if subID != nil {
 			sub.ID = *subID
+			sub.PaymentMethodID = *subPaymentMethodID
 			sub.Label = *subLabel
 			sub.Provider = *subProvider
 			sub.Amount = *subAmount
