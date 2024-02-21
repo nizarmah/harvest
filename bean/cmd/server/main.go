@@ -199,6 +199,8 @@ func main() {
 
 	s.Use(authControler.Authenticate)
 
+	s.Route("GET /logout", authControler.Logout())
+
 	s.Route("GET /home", appController.HomePage())
 
 	s.Route("GET /cards/new", pmsController.CreatePage())
