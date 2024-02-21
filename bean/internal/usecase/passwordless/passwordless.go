@@ -23,17 +23,16 @@ type UseCase struct {
 	Emailer interfaces.Emailer
 }
 
-func (u *UseCase) SendEmail(email string) error {
+func (u *UseCase) Login(email string) error {
 	if err := validateEmail(email); err != nil {
 		return fmt.Errorf("failed to validate email: %w", err)
 	}
 
-	rand, err := uuid.NewRandom()
+	password, err := generateRandomPassword()
 	if err != nil {
 		return fmt.Errorf("failed to generate password: %w", err)
 	}
 
-	password := rand.String()
 	hash, err := u.Hasher.Hash(password)
 	if err != nil {
 		return fmt.Errorf("failed to hash password: %w", err)
@@ -56,7 +55,7 @@ func (u *UseCase) SendEmail(email string) error {
 	return nil
 }
 
-func (u *UseCase) Login(id string, password string) (*model.SessionToken, error) {
+func (u *UseCase) Authorize(id string, password string) (*model.SessionToken, error) {
 	token, err := u.Tokens.FindUnexpired(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find token: %w", err)
@@ -75,14 +74,24 @@ func (u *UseCase) Login(id string, password string) (*model.SessionToken, error)
 		return nil, fmt.Errorf("failed to find or create user: %w", err)
 	}
 
-	session, err := u.Sessions.Create(user.ID, token.HashedToken, 14*24*time.Hour)
+	csrfToken, err := generateRandomPassword()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate csrf token: %w", err)
+	}
+
+	csrfHash, err := u.Hasher.Hash(csrfToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash csrf token: %w", err)
+	}
+
+	session, err := u.Sessions.Create(user.ID, csrfHash, 14*24*time.Hour)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create session: %w", err)
 	}
 
 	sessionToken := &model.SessionToken{
 		ID:        session.ID,
-		Token:     password,
+		Token:     csrfToken,
 		ExpiresAt: session.ExpiresAt,
 	}
 
@@ -160,4 +169,13 @@ func (u *UseCase) buildEmailBody(tokenID, password string) string {
 			"Cheers."),
 		authUrl,
 	)
+}
+
+func generateRandomPassword() (string, error) {
+	rand, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+
+	return rand.String(), nil
 }

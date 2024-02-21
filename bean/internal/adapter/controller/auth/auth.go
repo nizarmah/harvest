@@ -57,7 +57,7 @@ func (c *Controller) Authorize() http.HandlerFunc {
 			return
 		}
 
-		sessionToken, err := c.Passwordless.Login(id, password)
+		sessionToken, err := c.Passwordless.Authorize(id, password)
 		if err != nil {
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
