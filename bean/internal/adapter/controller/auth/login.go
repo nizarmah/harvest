@@ -9,6 +9,12 @@ import (
 
 func (c *Controller) LoginPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		sessionToken, _ := getSessionToken(r)
+		if sessionToken != nil {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return
+		}
+
 		c.renderLogin(w, &viewmodel.LoginViewData{})
 	}
 }
