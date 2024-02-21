@@ -32,6 +32,7 @@ func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 
 		err = addSessionTokenCookie(w, sessionToken)
 		if err != nil {
+			removeSessionTokenCookie(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
@@ -58,6 +59,7 @@ func (c *Controller) Authorize() http.HandlerFunc {
 
 		err = addSessionTokenCookie(w, sessionToken)
 		if err != nil {
+			removeSessionTokenCookie(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
