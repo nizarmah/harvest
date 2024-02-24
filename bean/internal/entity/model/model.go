@@ -85,6 +85,15 @@ type LoginToken struct {
 	ExpiresAt time.Time
 }
 
+// --- Database --- Membership ---
+
+type Membership struct {
+	UserID string
+
+	CreatedAt time.Time
+	ExpiresAt *time.Time
+}
+
 // --- Cache ---
 
 // --- Cache --- Session ---
