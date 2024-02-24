@@ -57,6 +57,16 @@ type LoginTokenDataSource interface {
 	Delete(id string) error
 }
 
+type MembershipDataSource interface {
+	Create(userID string, createdAt time.Time) (*model.Membership, error)
+
+	Find(userID string) (*model.Membership, error)
+
+	Update(userID string, expiresAt time.Time) (*model.Membership, error)
+
+	Delete(userID string) error
+}
+
 type SessionDataSource interface {
 	Create(userID string, hashedToken string, duration time.Duration) (*model.Session, error)
 
