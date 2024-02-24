@@ -16,6 +16,7 @@ import (
 	envAdapter "github.com/whatis277/harvest/bean/internal/adapter/env"
 
 	"github.com/whatis277/harvest/bean/internal/driver/bcrypt"
+	"github.com/whatis277/harvest/bean/internal/driver/buymeacoffee"
 	paymentMethodDS "github.com/whatis277/harvest/bean/internal/driver/datasource/paymentmethod"
 	sessionDS "github.com/whatis277/harvest/bean/internal/driver/datasource/session"
 	subscriptionDS "github.com/whatis277/harvest/bean/internal/driver/datasource/subscription"
@@ -184,6 +185,10 @@ func main() {
 		DeleteView: deleteSubscriptionView,
 	}
 
+	bmcController := buymeacoffee.Controller{
+		WebhookSecret: env.BuyMeACoffee.WebhookSecret,
+	}
+
 	s := server.New()
 
 	// Unauthenticated routes
@@ -194,6 +199,8 @@ func main() {
 
 	s.Route("GET /get-started", authControler.LoginPage())
 	s.Route("POST /get-started", authControler.LoginForm())
+
+	s.Route("POST /webhooks/buymeacoffee", bmcController.Webhook())
 
 	// Authenticated routes
 

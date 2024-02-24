@@ -71,6 +71,11 @@ func New() (*Env, error) {
 		return nil, err
 	}
 
+	bmcWebhookSecret, err := lookup("BMC_WEBHOOK_SECRET")
+	if err != nil {
+		return nil, err
+	}
+
 	return &Env{
 		BaseURL: baseURL,
 		DB: &DB{
@@ -91,6 +96,9 @@ func New() (*Env, error) {
 			Port:     smtpPort,
 			Username: smtpUsername,
 			Password: smtpPassword,
+		},
+		BuyMeACoffee: &BuyMeACoffee{
+			WebhookSecret: bmcWebhookSecret,
 		},
 	}, nil
 }
