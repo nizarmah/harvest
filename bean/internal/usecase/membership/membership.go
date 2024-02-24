@@ -38,6 +38,10 @@ func (u *UseCase) Cancel(userID string, expiresAt time.Time) (*model.Membership,
 		return nil, fmt.Errorf("failed to update membership: %v", err)
 	}
 
+	if membership == nil {
+		return nil, fmt.Errorf("membership not found")
+	}
+
 	return membership, nil
 }
 
