@@ -7,6 +7,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/estimator"
+	"github.com/whatis277/harvest/bean/internal/usecase/membership"
 	"github.com/whatis277/harvest/bean/internal/usecase/paymentmethod"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/shared"
@@ -17,8 +18,10 @@ import (
 type Controller struct {
 	Estimator      estimator.UseCase
 	PaymentMethods paymentmethod.UseCase
+	Memberships    membership.UseCase
 
-	HomeView interfaces.HomeView
+	HomeView       interfaces.HomeView
+	OnboardingView interfaces.OnboardingView
 }
 
 func (c *Controller) HomePage() http.HandlerFunc {
@@ -56,6 +59,18 @@ func (c *Controller) HomePage() http.HandlerFunc {
 
 func (c *Controller) OnboardingPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Onboarding page")
+		session := auth.SessionFromContext(r.Context())
+
+		isMember, _ := c.Memberships.Validate(session.UserID)
+		if isMember {
+			http.Redirect(w, r, "/home", http.StatusFound)
+			return
+		}
+
+		err := c.OnboardingView.Render(w, nil)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+			return
+		}
 	}
 }

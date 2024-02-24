@@ -13,8 +13,11 @@ type View[T any] interface {
 }
 
 type LandingView View[viewmodel.LandingViewData]
+
 type LoginView View[viewmodel.LoginViewData]
+
 type HomeView View[viewmodel.HomeViewData]
+type OnboardingView View[viewmodel.OnboardingViewData]
 
 type CreatePaymentMethodView View[viewmodel.CreatePaymentMethodViewData]
 type DeletePaymentMethodView View[viewmodel.DeletePaymentMethodViewData]

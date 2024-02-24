@@ -30,6 +30,11 @@ var (
 		"home.html",
 	}
 
+	OnboardingTemplate = []string{
+		baseTemplate,
+		"onboarding.html",
+	}
+
 	CreatePaymentMethodTemplate = []string{
 		baseTemplate,
 		"paymentmethod/create.html",

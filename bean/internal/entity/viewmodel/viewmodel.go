@@ -54,6 +54,10 @@ type HomeViewData struct {
 	YearlyEstimate  string
 }
 
+// --- View Data --- Onboarding ---
+
+type OnboardingViewData struct{}
+
 // --- View Data --- Payment Method ---
 
 type CreatePaymentMethodViewData struct {
