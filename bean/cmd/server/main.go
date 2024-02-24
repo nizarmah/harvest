@@ -29,7 +29,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/driver/server"
 	"github.com/whatis277/harvest/bean/internal/driver/smtp"
 	"github.com/whatis277/harvest/bean/internal/driver/template"
-	homeVD "github.com/whatis277/harvest/bean/internal/driver/view/home"
+	appVD "github.com/whatis277/harvest/bean/internal/driver/view/app"
 	landingVD "github.com/whatis277/harvest/bean/internal/driver/view/landing"
 	loginVD "github.com/whatis277/harvest/bean/internal/driver/view/login"
 	paymentMethodVD "github.com/whatis277/harvest/bean/internal/driver/view/paymentmethod"
@@ -127,10 +127,17 @@ func main() {
 		)
 	}
 
-	homeView, err := homeVD.New(template.FS, template.HomeTemplate)
+	homeView, err := appVD.NewHome(template.FS, template.HomeTemplate)
 	if err != nil {
 		panic(
 			fmt.Errorf("error creating home view: %v", err),
+		)
+	}
+
+	onboardingView, err := appVD.NewOnboarding(template.FS, template.OnboardingTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating onboarding view: %v", err),
 		)
 	}
 
@@ -176,8 +183,10 @@ func main() {
 	appController := app.Controller{
 		Estimator:      estimator,
 		PaymentMethods: paymentMethods,
+		Memberships:    memberships,
 
-		HomeView: homeView,
+		HomeView:       homeView,
+		OnboardingView: onboardingView,
 	}
 
 	pmsController := paymentmethod.Controller{
@@ -210,13 +219,13 @@ func main() {
 	s.Route("GET /get-started", authController.LoginPage())
 	s.Route("POST /get-started", authController.LoginForm())
 
-	s.Route("GET /onboarding", appController.OnboardingPage())
-
 	s.Route("POST /webhooks/buymeacoffee", bmcController.Webhook())
 
 	// Authenticated routes
 
 	s.Use(authController.Authenticate)
+
+	s.Route("GET /onboarding", appController.OnboardingPage())
 
 	s.Route("GET /logout", authController.Logout())
 

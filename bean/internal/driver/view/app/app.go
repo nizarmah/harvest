@@ -1,4 +1,4 @@
-package home
+package app
 
 import (
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
@@ -6,4 +6,5 @@ import (
 	"github.com/whatis277/harvest/bean/internal/driver/view"
 )
 
-var New = view.New[viewmodel.HomeViewData]
+var NewHome = view.New[viewmodel.HomeViewData]
+var NewOnboarding = view.New[viewmodel.OnboardingViewData]
