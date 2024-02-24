@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	estimatorUC "github.com/whatis277/harvest/bean/internal/usecase/estimator"
-	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
+	membershipUC "github.com/whatis277/harvest/bean/internal/usecase/membership"
+	passwordlessUC "github.com/whatis277/harvest/bean/internal/usecase/passwordless"
 	paymentMethodUC "github.com/whatis277/harvest/bean/internal/usecase/paymentmethod"
 	subscriptionUC "github.com/whatis277/harvest/bean/internal/usecase/subscription"
 
@@ -17,6 +18,7 @@ import (
 
 	"github.com/whatis277/harvest/bean/internal/driver/bcrypt"
 	"github.com/whatis277/harvest/bean/internal/driver/buymeacoffee"
+	membershipDS "github.com/whatis277/harvest/bean/internal/driver/datasource/membership"
 	paymentMethodDS "github.com/whatis277/harvest/bean/internal/driver/datasource/paymentmethod"
 	sessionDS "github.com/whatis277/harvest/bean/internal/driver/datasource/session"
 	subscriptionDS "github.com/whatis277/harvest/bean/internal/driver/datasource/subscription"
@@ -94,7 +96,7 @@ func main() {
 	tokenRepo := tokenDS.New(db)
 	userRepo := userDS.New(db)
 	sessionRepo := sessionDS.New(cache)
-	passwordlessAuth := passwordless.UseCase{
+	passwordlessAuth := passwordlessUC.UseCase{
 		Sender:   "Bean <support@whatisbean.com>",
 		BaseURL:  env.BaseURL,
 		Users:    userRepo,
@@ -102,6 +104,13 @@ func main() {
 		Sessions: sessionRepo,
 		Hasher:   hasher,
 		Emailer:  emailer,
+	}
+
+	membershipRepo := membershipDS.New(db)
+	memberships := membershipUC.UseCase{
+		Bypass:      false,
+		Users:       userRepo,
+		Memberships: membershipRepo,
 	}
 
 	landingView, err := landingVD.New(template.FS, template.LandingTemplate)
@@ -157,8 +166,9 @@ func main() {
 		LandingView: landingView,
 	}
 
-	authControler := auth.Controller{
+	authController := auth.Controller{
 		Passwordless: passwordlessAuth,
+		Memberships:  memberships,
 
 		LoginView: loginView,
 	}
@@ -195,18 +205,22 @@ func main() {
 
 	s.Route("GET /{$}", marketingController.LandingPage())
 
-	s.Route("GET /auth/{id}/{password}", authControler.Authorize())
+	s.Route("GET /auth/{id}/{password}", authController.Authorize())
 
-	s.Route("GET /get-started", authControler.LoginPage())
-	s.Route("POST /get-started", authControler.LoginForm())
+	s.Route("GET /get-started", authController.LoginPage())
+	s.Route("POST /get-started", authController.LoginForm())
+
+	s.Route("GET /onboarding", appController.OnboardingPage())
 
 	s.Route("POST /webhooks/buymeacoffee", bmcController.Webhook())
 
 	// Authenticated routes
 
-	s.Use(authControler.Authenticate)
+	s.Use(authController.Authenticate)
 
-	s.Route("GET /logout", authControler.Logout())
+	s.Route("GET /logout", authController.Logout())
+
+	s.Use(authController.CheckMembership)
 
 	s.Route("GET /home", appController.HomePage())
 

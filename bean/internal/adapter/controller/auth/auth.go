@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 
+	"github.com/whatis277/harvest/bean/internal/usecase/membership"
 	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
@@ -10,6 +11,7 @@ import (
 
 type Controller struct {
 	Passwordless passwordless.UseCase
+	Memberships  membership.UseCase
 
 	LoginView interfaces.LoginView
 }
