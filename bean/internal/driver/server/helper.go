@@ -8,8 +8,8 @@ func applyMiddleware(
 	handler http.Handler,
 	middlewares []func(http.Handler) http.HandlerFunc,
 ) http.Handler {
-	for _, middleware := range middlewares {
-		handler = middleware(handler)
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		handler = middlewares[i](handler)
 	}
 
 	return handler

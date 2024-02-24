@@ -53,3 +53,9 @@ func (c *Controller) HomePage() http.HandlerFunc {
 		}
 	}
 }
+
+func (c *Controller) OnboardingPage() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Onboarding page")
+	}
+}
