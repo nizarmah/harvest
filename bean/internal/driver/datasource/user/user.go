@@ -9,8 +9,6 @@ import (
 	"github.com/whatis277/harvest/bean/internal/usecase/interfaces"
 
 	"github.com/whatis277/harvest/bean/internal/driver/postgres"
-
-	"github.com/jackc/pgx/v5"
 )
 
 type dataSource struct {
@@ -54,7 +52,7 @@ func (ds *dataSource) FindById(id string) (*model.User, error) {
 		).
 		Scan(&user.ID, &user.Email, &user.CreatedAt, &user.UpdatedAt)
 
-	if err == pgx.ErrNoRows {
+	if err == postgres.ErrNowRows {
 		return nil, nil
 	}
 
@@ -76,7 +74,7 @@ func (ds *dataSource) FindByEmail(email string) (*model.User, error) {
 		).
 		Scan(&user.ID, &user.Email, &user.CreatedAt, &user.UpdatedAt)
 
-	if err == pgx.ErrNoRows {
+	if err == postgres.ErrNowRows {
 		return nil, nil
 	}
 

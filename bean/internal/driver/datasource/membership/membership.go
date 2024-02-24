@@ -10,8 +10,6 @@ import (
 	"github.com/whatis277/harvest/bean/internal/usecase/interfaces"
 
 	"github.com/whatis277/harvest/bean/internal/driver/postgres"
-
-	"github.com/jackc/pgx/v5"
 )
 
 type dataSource struct {
@@ -65,7 +63,7 @@ func (ds *dataSource) Find(userID string) (*model.Membership, error) {
 			&membership.CreatedAt, &membership.ExpiresAt,
 		)
 
-	if err == pgx.ErrNoRows {
+	if err == postgres.ErrNowRows {
 		return nil, nil
 	}
 
@@ -93,7 +91,7 @@ func (ds *dataSource) Update(userID string, expiresAt time.Time) (*model.Members
 			&membership.CreatedAt, &membership.ExpiresAt,
 		)
 
-	if err == pgx.ErrNoRows {
+	if err == postgres.ErrNowRows {
 		return nil, nil
 	}
 
