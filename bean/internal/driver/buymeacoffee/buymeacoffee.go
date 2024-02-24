@@ -50,7 +50,7 @@ func (c *Controller) validateSignature(body []byte, signature string) (bool, err
 		return false, err
 	}
 
-	hex := hex.EncodeToString(digest.Sum(nil))
+	signatureHex := hex.EncodeToString(digest.Sum(nil))
 
-	return hex == signature, nil
+	return signatureHex == signature, nil
 }
