@@ -6,6 +6,8 @@ type Env struct {
 	DB    *DB
 	Cache *Cache
 	SMTP  *SMTP
+
+	BuyMeACoffee *BuyMeACoffee
 }
 
 type DB struct {
@@ -28,4 +30,8 @@ type SMTP struct {
 	Port     string
 	Username string
 	Password string
+}
+
+type BuyMeACoffee struct {
+	WebhookSecret string
 }

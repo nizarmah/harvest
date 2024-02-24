@@ -24,6 +24,8 @@ func TestEnv(t *testing.T) {
 	os.Setenv("SMTP_USERNAME", "smtp_username")
 	os.Setenv("SMTP_PASSWORD", "smtp_password")
 
+	os.Setenv("BMC_WEBHOOK_SECRET", "bmc_webhook_secret")
+
 	env, err := New()
 
 	if err != nil {
@@ -84,5 +86,9 @@ func TestEnv(t *testing.T) {
 
 	if env.SMTP.Password != "smtp_password" {
 		t.Errorf("expected: %s, got: %s", "smtp_password", env.SMTP.Password)
+	}
+
+	if env.BuyMeACoffee.WebhookSecret != "bmc_webhook_secret" {
+		t.Errorf("expected: %s, got: %s", "bmc_webhook_secret", env.BuyMeACoffee.WebhookSecret)
 	}
 }
