@@ -10,6 +10,8 @@ import (
 )
 
 type UseCase struct {
+	Bypass bool
+
 	Users       interfaces.UserDataSource
 	Memberships interfaces.MembershipDataSource
 }
@@ -46,6 +48,10 @@ func (u *UseCase) Cancel(userID string, expiresAt time.Time) (*model.Membership,
 }
 
 func (u *UseCase) Validate(userID string) (bool, error) {
+	if u.Bypass {
+		return true, nil
+	}
+
 	membership, err := u.Memberships.Find(userID)
 	if err != nil {
 		return false, fmt.Errorf("failed to find membership: %v", err)
