@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/whatis277/harvest/bean/internal/driver/postgres/postgrestest"
 	"github.com/whatis277/harvest/bean/internal/usecase/interfaces"
+
+	"github.com/whatis277/harvest/bean/internal/driver/postgres/postgrestest"
 )
 
 var (
@@ -137,6 +138,10 @@ func find(t *testing.T, ds interfaces.MembershipDataSource) {
 
 		if membership.ExpiresAt == nil {
 			t.Errorf("expected non-nil expires at, got nil")
+		}
+
+		if membership.ExpiresAt.IsZero() {
+			t.Errorf("expected non-zero expires at, got: %s", membership.ExpiresAt)
 		}
 	})
 
