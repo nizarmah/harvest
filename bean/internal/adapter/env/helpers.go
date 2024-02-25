@@ -13,3 +13,8 @@ func lookup(s string) (string, error) {
 
 	return v, nil
 }
+
+func lookupBool(s string) (bool, error) {
+	v, err := lookup(s)
+	return v == "true", err
+}
