@@ -4,12 +4,18 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"io"
 	"net/http"
+	"time"
+
+	"github.com/whatis277/harvest/bean/internal/usecase/membership"
 )
 
 type Controller struct {
 	WebhookSecret string
+
+	Memberships membership.UseCase
 }
 
 func (c *Controller) Webhook() http.HandlerFunc {
@@ -38,6 +44,23 @@ func (c *Controller) Webhook() http.HandlerFunc {
 			return
 		}
 
+		var event Event
+		err = json.Unmarshal(body, &event)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		switch event.Type {
+		case "membership.started":
+			c.membershipStarted(w, event)
+			return
+
+		case "membership.cancelled":
+			c.membershipCancelled(w, event)
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -53,4 +76,44 @@ func (c *Controller) validateSignature(body []byte, signature string) (bool, err
 	signatureHex := hex.EncodeToString(digest.Sum(nil))
 
 	return signatureHex == signature, nil
+}
+
+func (c *Controller) membershipStarted(w http.ResponseWriter, event Event) {
+	var data MembershipStartedData
+	err := json.Unmarshal(event.Data, &data)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	email := data.SupporterEmail
+	createdAt := time.Unix(data.CurrentPeriodStart, 0)
+
+	_, err = c.Memberships.Create(email, createdAt)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (c *Controller) membershipCancelled(w http.ResponseWriter, event Event) {
+	var data MembershipCancelledData
+	err := json.Unmarshal(event.Data, &data)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	email := data.SupporterEmail
+	expiresAt := time.Unix(data.CurrentPeriodEnd, 0)
+
+	_, err = c.Memberships.Cancel(email, expiresAt)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
