@@ -3,11 +3,17 @@ package env
 type Env struct {
 	BaseURL string
 
+	FeatureFlags *FeatureFlags
+
 	DB    *DB
 	Cache *Cache
 	SMTP  *SMTP
 
 	BuyMeACoffee *BuyMeACoffee
+}
+
+type FeatureFlags struct {
+	BypassMembership bool
 }
 
 type DB struct {

@@ -108,7 +108,7 @@ func main() {
 
 	membershipRepo := membershipDS.New(db)
 	memberships := membershipUC.UseCase{
-		Bypass:      false,
+		Bypass:      env.FeatureFlags.BypassMembership,
 		Users:       userRepo,
 		Memberships: membershipRepo,
 	}
