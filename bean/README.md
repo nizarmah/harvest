@@ -42,6 +42,8 @@ There are other documentations under `<dir>/README.md` where relevant.
 ### Run
 
 ```bash
+> touch bean/config/.env
+
 > docker compose up bean
 ```
 
