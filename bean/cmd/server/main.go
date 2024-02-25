@@ -206,6 +206,8 @@ func main() {
 
 	bmcController := buymeacoffee.Controller{
 		WebhookSecret: env.BuyMeACoffee.WebhookSecret,
+
+		Memberships: memberships,
 	}
 
 	s := server.New()

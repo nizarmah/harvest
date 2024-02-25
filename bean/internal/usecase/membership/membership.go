@@ -22,10 +22,6 @@ func (u *UseCase) Create(email string, createdAt time.Time) (*model.Membership, 
 		return nil, fmt.Errorf("failed to find or create user: %v", err)
 	}
 
-	if user == nil {
-		return nil, fmt.Errorf("user not found")
-	}
-
 	membership, err := u.Memberships.Create(user.ID, createdAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create membership: %v", err)
@@ -34,8 +30,17 @@ func (u *UseCase) Create(email string, createdAt time.Time) (*model.Membership, 
 	return membership, nil
 }
 
-func (u *UseCase) Cancel(userID string, expiresAt time.Time) (*model.Membership, error) {
-	membership, err := u.Memberships.Update(userID, expiresAt)
+func (u *UseCase) Cancel(email string, expiresAt time.Time) (*model.Membership, error) {
+	user, err := u.Users.FindByEmail(email)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user: %v", err)
+	}
+
+	if user == nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	membership, err := u.Memberships.Update(user.ID, expiresAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update membership: %v", err)
 	}
