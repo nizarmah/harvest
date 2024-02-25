@@ -17,9 +17,9 @@ type UseCase struct {
 }
 
 func (u *UseCase) Create(email string, createdAt time.Time) (*model.Membership, error) {
-	user, err := u.Users.FindByEmail(email)
+	user, err := u.findOrCreateUser(email)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user by email: %v", err)
+		return nil, fmt.Errorf("failed to find or create user: %v", err)
 	}
 
 	if user == nil {
@@ -66,4 +66,22 @@ func (u *UseCase) Validate(userID string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
+	user, err := u.Users.FindByEmail(email)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user: %w", err)
+	}
+
+	if user != nil {
+		return user, nil
+	}
+
+	user, err = u.Users.Create(email)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return user, nil
 }
