@@ -9,7 +9,7 @@ Instructions can help you test this.
 1. Expose the web app to the internet. We'll use `ngrok`.
 
     ```bash
-    ngrok http whatisbean.local:80 --host-header=rewrite
+    ngrok http 80
     ```
 
 2. Create a new webhook at https://www.buymeacoffee.com/webhooks

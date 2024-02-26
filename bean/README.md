@@ -60,7 +60,7 @@ There are other documentations under `<dir>/README.md` where relevant.
 ### Run
 
 ```bash
-> docker compose up caddy bean
+> docker compose up nginx bean
 ```
 
 ### Tests
