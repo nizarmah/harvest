@@ -8,9 +8,9 @@ Instructions can help you test this.
 
 1. Expose the web app to the internet. We'll use `ngrok`.
 
-```bash
-ngrok http 8080
-```
+    ```bash
+    ngrok http whatisbean.local:443 --host-header=rewrite
+    ```
 
 2. Create a new webhook at https://www.buymeacoffee.com/webhooks
 
