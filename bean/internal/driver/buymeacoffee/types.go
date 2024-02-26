@@ -5,8 +5,9 @@ import (
 )
 
 type Event struct {
-	Type string          `json:"type"`
-	Data json.RawMessage `json:"data"`
+	Type     string          `json:"type"`
+	LiveMode bool            `json:"live_mode"`
+	Data     json.RawMessage `json:"data"`
 }
 
 type MembershipStartedData struct {

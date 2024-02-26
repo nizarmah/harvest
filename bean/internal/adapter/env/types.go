@@ -40,5 +40,6 @@ type SMTP struct {
 }
 
 type BuyMeACoffee struct {
-	WebhookSecret string
+	AcceptTestEvents bool
+	WebhookSecret    string
 }
