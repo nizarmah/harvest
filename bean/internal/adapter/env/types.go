@@ -13,6 +13,7 @@ type Env struct {
 }
 
 type FeatureFlags struct {
+	BypassHTTPS      bool
 	BypassMembership bool
 }
 

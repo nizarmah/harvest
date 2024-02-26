@@ -8,10 +8,9 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
-const sessionCookieName = "__Host-session"
-
-func getSessionToken(r *http.Request) (*model.SessionToken, error) {
-	cookie, err := r.Cookie(sessionCookieName)
+func (c *Controller) getSessionToken(r *http.Request) (*model.SessionToken, error) {
+	cookie := c.sessionTokenCookie()
+	cookie, err := r.Cookie(cookie.Name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get session token: %w", err)
 	}
@@ -30,7 +29,7 @@ func getSessionToken(r *http.Request) (*model.SessionToken, error) {
 	return &token, nil
 }
 
-func addSessionTokenCookie(w http.ResponseWriter, token *model.SessionToken) error {
+func (c *Controller) createSessionToken(w http.ResponseWriter, token *model.SessionToken) error {
 	json, err := token.MarshalBinary()
 	if err != nil {
 		return fmt.Errorf("failed to marshal session token: %w", err)
@@ -38,27 +37,39 @@ func addSessionTokenCookie(w http.ResponseWriter, token *model.SessionToken) err
 
 	encoded := base64.StdEncoding.EncodeToString([]byte(json))
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     sessionCookieName,
-		Value:    encoded,
-		Expires:  token.ExpiresAt,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
-	})
+	cookie := c.sessionTokenCookie()
+
+	cookie.Value = encoded
+	cookie.Expires = token.ExpiresAt
+
+	http.SetCookie(w, cookie)
 
 	return nil
 }
 
-func removeSessionTokenCookie(w http.ResponseWriter) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     sessionCookieName,
-		Value:    "",
-		MaxAge:   -1,
+func (c *Controller) cleanupSessionToken(w http.ResponseWriter) {
+	cookie := c.sessionTokenCookie()
+	cookie.MaxAge = -1
+
+	http.SetCookie(w, cookie)
+}
+
+func (c *Controller) sessionTokenCookie() *http.Cookie {
+	if c.BypassHTTPS {
+		return &http.Cookie{
+			Name:     "session",
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   false,
+			SameSite: http.SameSiteLaxMode,
+		}
+	}
+
+	return &http.Cookie{
+		Name:     "__Host-session",
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
-	})
+	}
 }

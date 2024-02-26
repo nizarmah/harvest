@@ -174,6 +174,8 @@ func main() {
 	}
 
 	authController := auth.Controller{
+		BypassHTTPS: env.FeatureFlags.BypassHTTPS,
+
 		Passwordless: passwordlessAuth,
 		Memberships:  memberships,
 
