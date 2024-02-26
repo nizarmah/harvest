@@ -8,7 +8,7 @@ func (c *Controller) Logout() http.HandlerFunc {
 
 		c.Passwordless.Logout(session)
 
-		c.cleanSessionToken(w)
+		c.cleanupSessionToken(w)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}

@@ -47,7 +47,7 @@ func (c *Controller) createSessionToken(w http.ResponseWriter, token *model.Sess
 	return nil
 }
 
-func (c *Controller) cleanSessionToken(w http.ResponseWriter) {
+func (c *Controller) cleanupSessionToken(w http.ResponseWriter) {
 	cookie := c.sessionTokenCookie()
 	cookie.MaxAge = -1
 

@@ -22,21 +22,21 @@ func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sessionToken, err := c.getSessionToken(r)
 		if err != nil || sessionToken == nil {
-			c.cleanSessionToken(w)
+			c.cleanupSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
 
 		session, err := c.Passwordless.Authenticate(sessionToken)
 		if err != nil || session == nil {
-			c.cleanSessionToken(w)
+			c.cleanupSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
 
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
-			c.cleanSessionToken(w)
+			c.cleanupSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
@@ -69,7 +69,7 @@ func (c *Controller) Authorize() http.HandlerFunc {
 
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
-			c.cleanSessionToken(w)
+			c.cleanupSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
