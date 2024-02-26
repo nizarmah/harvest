@@ -81,6 +81,11 @@ func New() (*Env, error) {
 		return nil, err
 	}
 
+	bmcAcceptTestEvents, err := lookupBool("BMC_ACCEPT_TEST_EVENTS")
+	if err != nil {
+		return nil, err
+	}
+
 	bmcWebhookSecret, err := lookup("BMC_WEBHOOK_SECRET")
 	if err != nil {
 		return nil, err
@@ -112,7 +117,8 @@ func New() (*Env, error) {
 			Password: smtpPassword,
 		},
 		BuyMeACoffee: &BuyMeACoffee{
-			WebhookSecret: bmcWebhookSecret,
+			AcceptTestEvents: bmcAcceptTestEvents,
+			WebhookSecret:    bmcWebhookSecret,
 		},
 	}, nil
 }

@@ -13,7 +13,8 @@ import (
 )
 
 type Controller struct {
-	WebhookSecret string
+	AcceptTestEvents bool
+	WebhookSecret    string
 
 	Memberships membership.UseCase
 }
@@ -48,6 +49,11 @@ func (c *Controller) Webhook() http.HandlerFunc {
 		err = json.Unmarshal(body, &event)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if !event.LiveMode && !c.AcceptTestEvents {
+			w.WriteHeader(http.StatusOK)
 			return
 		}
 
