@@ -39,12 +39,28 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 ## Guides
 
-### Run
+### Setup
+
+1. Create a `.env` file in `bean/config`
+
+The defaults from `.env.example` will be used.
+So, it can be empty for now.
 
 ```bash
 > touch bean/config/.env
+```
 
-> docker compose up bean
+2. Add `whatisbean.local` to `/etc/hosts`
+
+```bash
+# whatisbean.com local
+127.0.0.1 whatisbean.local
+```
+
+### Run
+
+```bash
+> docker compose up caddy bean
 ```
 
 ### Tests

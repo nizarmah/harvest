@@ -1,0 +1,3 @@
+whatisbean.local {
+	reverse_proxy bean:8080
+}
