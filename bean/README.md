@@ -9,7 +9,7 @@ A subscription tracker for the rest of us.
 
 ### Development
 
-* Bean: http://localhost:8080
+* Bean: https://whatisbean.local
 * SMTP: http://localhost:8025
 
 ### Production
@@ -39,12 +39,28 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 ## Guides
 
+### Setup
+
+1. Create a `.env` file in `bean/config`
+
+    The defaults from `.env.example` will be used.
+    So, it can be empty for now.
+
+    ```bash
+    > touch bean/config/.env
+    ```
+
+2. Add `whatisbean.local` to `/etc/hosts`
+
+    ```bash
+    # whatisbean.com local
+    127.0.0.1 whatisbean.local
+    ```
+
 ### Run
 
 ```bash
-> touch bean/config/.env
-
-> docker compose up bean
+> docker compose up caddy bean
 ```
 
 ### Tests
@@ -57,7 +73,7 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 ### General flow
 
-1. Visit the landing page at http://localhost:8080/
+1. Visit the landing page at https://whatisbean.local/
 
 2. Click on "Get started" to sign up or login
 
@@ -68,7 +84,7 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 5. Open the email sent and click on the auth URL
 
-6. Ensure you're redirected to http://localhost:8080/home
+6. Ensure you're redirected to https://whatisbean.local/home
 
 7. Create a new card
 

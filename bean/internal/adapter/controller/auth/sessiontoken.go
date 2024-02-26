@@ -8,7 +8,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
-const sessionCookieName = "session"
+const sessionCookieName = "__Host-session"
 
 func getSessionToken(r *http.Request) (*model.SessionToken, error) {
 	cookie, err := r.Cookie(sessionCookieName)
@@ -45,7 +45,7 @@ func addSessionTokenCookie(w http.ResponseWriter, token *model.SessionToken) err
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 
 	return nil
@@ -59,6 +59,6 @@ func removeSessionTokenCookie(w http.ResponseWriter) {
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 }
