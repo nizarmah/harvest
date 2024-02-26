@@ -52,7 +52,8 @@ type UserDataSource interface {
 type LoginTokenDataSource interface {
 	Create(email string, hashedToken string) (*model.LoginToken, error)
 
-	FindUnexpired(id string) (*model.LoginToken, error)
+	FindUnexpiredByEmail(email string) (*model.LoginToken, error)
+	FindUnexpiredByID(id string) (*model.LoginToken, error)
 
 	Delete(id string) error
 }
