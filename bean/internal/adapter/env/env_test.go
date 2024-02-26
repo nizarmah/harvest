@@ -8,6 +8,7 @@ import (
 func TestEnv(t *testing.T) {
 	os.Setenv("BASE_URL", "base_url")
 
+	os.Setenv("BYPASS_HTTPS", "true")
 	os.Setenv("BYPASS_MEMBERSHIP", "true")
 
 	os.Setenv("DB_NAME", "db_name")
@@ -36,6 +37,10 @@ func TestEnv(t *testing.T) {
 
 	if env.BaseURL != "base_url" {
 		t.Errorf("expected: %s, got: %s", "base_url", env.BaseURL)
+	}
+
+	if env.FeatureFlags.BypassHTTPS != true {
+		t.Errorf("bypass https: expected: %t, got: %t", true, env.FeatureFlags.BypassHTTPS)
 	}
 
 	if env.FeatureFlags.BypassMembership != true {

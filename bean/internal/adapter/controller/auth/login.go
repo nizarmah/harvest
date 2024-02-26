@@ -9,7 +9,7 @@ import (
 
 func (c *Controller) LoginPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionToken, _ := getSessionToken(r)
+		sessionToken, _ := c.getSessionToken(r)
 		if sessionToken != nil {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return
@@ -21,7 +21,7 @@ func (c *Controller) LoginPage() http.HandlerFunc {
 
 func (c *Controller) LoginForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionToken, _ := getSessionToken(r)
+		sessionToken, _ := c.getSessionToken(r)
 		if sessionToken != nil {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return

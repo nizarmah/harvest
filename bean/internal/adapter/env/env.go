@@ -6,6 +6,11 @@ func New() (*Env, error) {
 		return nil, err
 	}
 
+	bypassHTTPS, err := lookupBool("BYPASS_HTTPS")
+	if err != nil {
+		return nil, err
+	}
+
 	bypassMembership, err := lookupBool("BYPASS_MEMBERSHIP")
 	if err != nil {
 		return nil, err
@@ -84,6 +89,7 @@ func New() (*Env, error) {
 	return &Env{
 		BaseURL: baseURL,
 		FeatureFlags: &FeatureFlags{
+			BypassHTTPS:      bypassHTTPS,
 			BypassMembership: bypassMembership,
 		},
 		DB: &DB{

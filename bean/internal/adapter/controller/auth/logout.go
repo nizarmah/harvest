@@ -8,7 +8,7 @@ func (c *Controller) Logout() http.HandlerFunc {
 
 		c.Passwordless.Logout(session)
 
-		removeSessionTokenCookie(w)
+		c.cleanSessionToken(w)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}

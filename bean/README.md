@@ -9,7 +9,7 @@ A subscription tracker for the rest of us.
 
 ### Development
 
-* Bean: https://whatisbean.local
+* Bean: http://whatisbean.local
 * SMTP: http://localhost:8025
 
 ### Production
@@ -73,7 +73,7 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 ### General flow
 
-1. Visit the landing page at https://whatisbean.local/
+1. Visit the landing page at http://whatisbean.local/
 
 2. Click on "Get started" to sign up or login
 
@@ -84,7 +84,7 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 5. Open the email sent and click on the auth URL
 
-6. Ensure you're redirected to https://whatisbean.local/home
+6. Ensure you're redirected to http://whatisbean.local/home
 
 7. Create a new card
 

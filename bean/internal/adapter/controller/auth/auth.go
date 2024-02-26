@@ -10,6 +10,8 @@ import (
 )
 
 type Controller struct {
+	BypassHTTPS bool
+
 	Passwordless passwordless.UseCase
 	Memberships  membership.UseCase
 
@@ -18,23 +20,23 @@ type Controller struct {
 
 func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionToken, err := getSessionToken(r)
+		sessionToken, err := c.getSessionToken(r)
 		if err != nil || sessionToken == nil {
-			removeSessionTokenCookie(w)
+			c.cleanSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
 
 		session, err := c.Passwordless.Authenticate(sessionToken)
 		if err != nil || session == nil {
-			removeSessionTokenCookie(w)
+			c.cleanSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
 
-		err = addSessionTokenCookie(w, sessionToken)
+		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
-			removeSessionTokenCookie(w)
+			c.cleanSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
@@ -47,7 +49,7 @@ func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 
 func (c *Controller) Authorize() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionToken, _ := getSessionToken(r)
+		sessionToken, _ := c.getSessionToken(r)
 		if sessionToken != nil {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return
@@ -65,9 +67,9 @@ func (c *Controller) Authorize() http.HandlerFunc {
 			return
 		}
 
-		err = addSessionTokenCookie(w, sessionToken)
+		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
-			removeSessionTokenCookie(w)
+			c.cleanSessionToken(w)
 			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
 			return
 		}
