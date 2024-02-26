@@ -77,19 +77,17 @@ services:
       timeout: 1s
       retries: 5
 
-  caddy:
+  nginx:
     <<: *common
-    image: caddy:latest
+    image: nginx:latest
     restart: always
     ports:
       - "80:80"
-      - "443:443"
     networks:
       - harvest
     volumes:
-      - ./shared/config/caddy:/etc/caddy
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./shared/config/nginx:/etc/nginx
+      - ./bean/config/nginx.conf:/etc/nginx/conf.d/bean.conf
 
 networks:
   harvest:
@@ -99,5 +97,3 @@ volumes:
   mailhog-data:
   redis-data:
   postgres-data:
-  caddy_data:
-  caddy_config:
