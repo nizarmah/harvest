@@ -28,17 +28,21 @@ func (u *UseCase) Login(email string) error {
 		return fmt.Errorf("failed to validate email: %w", err)
 	}
 
-	password, err := generateRandomPassword()
+	token, err := u.Tokens.FindUnexpiredByEmail(email)
+	if err != nil {
+		return fmt.Errorf("failed to find existing token: %w", err)
+	}
+
+	if token != nil {
+		return nil
+	}
+
+	password, hash, err := u.generatePassword()
 	if err != nil {
 		return fmt.Errorf("failed to generate password: %w", err)
 	}
 
-	hash, err := u.Hasher.Hash(password)
-	if err != nil {
-		return fmt.Errorf("failed to hash password: %w", err)
-	}
-
-	token, err := u.Tokens.Create(email, hash)
+	token, err = u.Tokens.Create(email, hash)
 	if err != nil {
 		return fmt.Errorf("failed to create token: %w", err)
 	}
@@ -56,7 +60,7 @@ func (u *UseCase) Login(email string) error {
 }
 
 func (u *UseCase) Authorize(id string, password string) (*model.SessionToken, error) {
-	token, err := u.Tokens.FindUnexpired(id)
+	token, err := u.Tokens.FindUnexpiredByID(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find token: %w", err)
 	}
@@ -74,14 +78,9 @@ func (u *UseCase) Authorize(id string, password string) (*model.SessionToken, er
 		return nil, fmt.Errorf("failed to find or create user: %w", err)
 	}
 
-	csrfToken, err := generateRandomPassword()
+	csrfToken, csrfHash, err := u.generatePassword()
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate csrf token: %w", err)
-	}
-
-	csrfHash, err := u.Hasher.Hash(csrfToken)
-	if err != nil {
-		return nil, fmt.Errorf("failed to hash csrf token: %w", err)
+		return nil, fmt.Errorf("failed to generate password: %w", err)
 	}
 
 	session, err := u.Sessions.Create(user.ID, csrfHash, 14*24*time.Hour)
@@ -171,11 +170,18 @@ func (u *UseCase) buildEmailBody(tokenID, password string) string {
 	)
 }
 
-func generateRandomPassword() (string, error) {
+func (u *UseCase) generatePassword() (string, string, error) {
 	rand, err := uuid.NewRandom()
 	if err != nil {
-		return "", err
+		return "", "", fmt.Errorf("failed to generate random: %w", err)
 	}
 
-	return rand.String(), nil
+	password := rand.String()
+
+	hash, err := u.Hasher.Hash(password)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	return password, hash, nil
 }

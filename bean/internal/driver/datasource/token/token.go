@@ -43,7 +43,30 @@ func (ds *dataSource) Create(email string, hashedToken string) (*model.LoginToke
 	return token, nil
 }
 
-func (ds *dataSource) FindUnexpired(id string) (*model.LoginToken, error) {
+func (ds *dataSource) FindUnexpiredByEmail(email string) (*model.LoginToken, error) {
+	token := &model.LoginToken{}
+
+	err := ds.db.Pool.
+		QueryRow(
+			context.Background(),
+			("SELECT * FROM login_tokens"+
+				" WHERE email = $1 AND expires_at > NOW()"),
+			email,
+		).
+		Scan(&token.ID, &token.Email, &token.HashedToken, &token.CreatedAt, &token.ExpiresAt)
+
+	if err == postgres.ErrNowRows {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find unexpired token: %w", err)
+	}
+
+	return token, nil
+}
+
+func (ds *dataSource) FindUnexpiredByID(id string) (*model.LoginToken, error) {
 	token := &model.LoginToken{}
 
 	err := ds.db.Pool.
