@@ -14,7 +14,7 @@ func (s *Server) Use(middleware func(http.Handler) http.HandlerFunc) {
 	s.middlewares = append(s.middlewares, middleware)
 }
 
-func (s *Server) Route(pattern string, handler http.Handler) {
+func (s *Server) Route(pattern string, handler http.HandlerFunc) {
 	s.mux.Handle(pattern, applyMiddleware(handler, s.middlewares))
 }
 
