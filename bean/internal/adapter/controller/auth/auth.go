@@ -24,21 +24,21 @@ func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 		sessionToken, err := c.getSessionToken(r)
 		if err != nil || sessionToken == nil {
 			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
 		session, err := c.Passwordless.Authenticate(sessionToken)
 		if err != nil || session == nil {
 			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
 			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
@@ -58,20 +58,20 @@ func (c *Controller) Authorize() http.HandlerFunc {
 
 		id, password := r.PathValue("id"), r.PathValue("password")
 		if id == "" || password == "" {
-			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
 		sessionToken, err := c.Passwordless.Authorize(id, password)
 		if err != nil {
-			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
 			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/get-started", http.StatusSeeOther)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
