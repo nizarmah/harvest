@@ -93,6 +93,11 @@ services:
     volumes:
       - ./shared/config/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./bean/config/nginx.conf:/etc/nginx/conf.d/bean.conf
+    healthcheck:
+      test: ["CMD-SHELL", "service nginx status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
   harvest:
