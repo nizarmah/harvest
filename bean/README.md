@@ -75,9 +75,9 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 1. Visit the landing page at http://whatisbean.local/
 
-2. Click on "Get started" to sign up or login
+2. Click on "Login" to login
 
-3. Enter your email address to sign up or login
+3. Enter your email address to login
     * Use `277@hey.com` for existing data
 
 4. Visit mailhog at http://localhost:8025/

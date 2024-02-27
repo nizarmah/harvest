@@ -52,7 +52,7 @@ func (u *UseCase) Cancel(email string, expiresAt time.Time) (*model.Membership, 
 	return membership, nil
 }
 
-func (u *UseCase) Validate(userID string) (bool, error) {
+func (u *UseCase) CheckByID(userID string) (bool, error) {
 	if u.Bypass {
 		return true, nil
 	}
@@ -71,6 +71,23 @@ func (u *UseCase) Validate(userID string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (u *UseCase) CheckByEmail(email string) (bool, error) {
+	if u.Bypass {
+		return true, nil
+	}
+
+	user, err := u.Users.FindByEmail(email)
+	if err != nil {
+		return false, fmt.Errorf("failed to find user: %v", err)
+	}
+
+	if user == nil {
+		return false, nil
+	}
+
+	return u.CheckByID(user.ID)
 }
 
 func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {

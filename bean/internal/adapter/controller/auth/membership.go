@@ -9,7 +9,7 @@ func (c *Controller) CheckMembership(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session := SessionFromContext(r.Context())
 
-		isMember, err := c.Memberships.Validate(session.UserID)
+		isMember, err := c.Memberships.CheckByID(session.UserID)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
