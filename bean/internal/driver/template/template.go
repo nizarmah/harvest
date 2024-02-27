@@ -23,6 +23,11 @@ var (
 		"login.html",
 	}
 
+	SignUpTemplate = []string{
+		baseTemplate,
+		"signup.html",
+	}
+
 	HomeTemplate = []string{
 		baseTemplate,
 		"subscription/item.html",

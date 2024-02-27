@@ -30,8 +30,8 @@ import (
 	"github.com/whatis277/harvest/bean/internal/driver/smtp"
 	"github.com/whatis277/harvest/bean/internal/driver/template"
 	appVD "github.com/whatis277/harvest/bean/internal/driver/view/app"
+	authVD "github.com/whatis277/harvest/bean/internal/driver/view/auth"
 	landingVD "github.com/whatis277/harvest/bean/internal/driver/view/landing"
-	loginVD "github.com/whatis277/harvest/bean/internal/driver/view/login"
 	paymentMethodVD "github.com/whatis277/harvest/bean/internal/driver/view/paymentmethod"
 	subscriptionVD "github.com/whatis277/harvest/bean/internal/driver/view/subscription"
 )
@@ -120,10 +120,17 @@ func main() {
 		)
 	}
 
-	loginView, err := loginVD.New(template.FS, template.LoginTemplate)
+	loginView, err := authVD.NewLogin(template.FS, template.LoginTemplate)
 	if err != nil {
 		panic(
 			fmt.Errorf("error creating login view: %v", err),
+		)
+	}
+
+	signUpView, err := authVD.NewSignup(template.FS, template.SignUpTemplate)
+	if err != nil {
+		panic(
+			fmt.Errorf("error creating signup view: %v", err),
 		)
 	}
 
@@ -179,7 +186,8 @@ func main() {
 		Passwordless: passwordlessAuth,
 		Memberships:  memberships,
 
-		LoginView: loginView,
+		LoginView:  loginView,
+		SignUpView: signUpView,
 	}
 
 	appController := app.Controller{
@@ -223,6 +231,8 @@ func main() {
 
 	s.Route("GET /login", authController.LoginPage())
 	s.Route("POST /login", authController.LoginForm())
+
+	s.Route("GET /signup", authController.SignupPage())
 
 	s.Route("POST /webhooks/buymeacoffee", bmcController.Webhook())
 

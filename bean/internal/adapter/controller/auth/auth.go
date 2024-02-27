@@ -15,7 +15,8 @@ type Controller struct {
 	Passwordless passwordless.UseCase
 	Memberships  membership.UseCase
 
-	LoginView interfaces.LoginView
+	LoginView  interfaces.LoginView
+	SignUpView interfaces.SignUpView
 }
 
 func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
