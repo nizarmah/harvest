@@ -7,4 +7,4 @@ import (
 )
 
 var NewHome = view.New[viewmodel.HomeViewData]
-var NewOnboarding = view.New[viewmodel.OnboardingViewData]
+var NewRenewPlan = view.New[viewmodel.RenewPlanViewData]

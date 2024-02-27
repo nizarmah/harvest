@@ -18,7 +18,7 @@ type LoginView View[viewmodel.LoginViewData]
 type SignUpView View[viewmodel.SignUpViewData]
 
 type HomeView View[viewmodel.HomeViewData]
-type OnboardingView View[viewmodel.OnboardingViewData]
+type RenewPlanView View[viewmodel.RenewPlanViewData]
 
 type CreatePaymentMethodView View[viewmodel.CreatePaymentMethodViewData]
 type DeletePaymentMethodView View[viewmodel.DeletePaymentMethodViewData]

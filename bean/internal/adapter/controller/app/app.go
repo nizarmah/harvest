@@ -20,8 +20,8 @@ type Controller struct {
 	PaymentMethods paymentmethod.UseCase
 	Memberships    membership.UseCase
 
-	HomeView       interfaces.HomeView
-	OnboardingView interfaces.OnboardingView
+	HomeView      interfaces.HomeView
+	RenewPlanView interfaces.RenewPlanView
 }
 
 func (c *Controller) HomePage() http.HandlerFunc {
@@ -57,7 +57,7 @@ func (c *Controller) HomePage() http.HandlerFunc {
 	}
 }
 
-func (c *Controller) OnboardingPage() http.HandlerFunc {
+func (c *Controller) RenewPlanPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session := auth.SessionFromContext(r.Context())
 
@@ -67,7 +67,7 @@ func (c *Controller) OnboardingPage() http.HandlerFunc {
 			return
 		}
 
-		err := c.OnboardingView.Render(w, nil)
+		err := c.RenewPlanView.Render(w, nil)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
