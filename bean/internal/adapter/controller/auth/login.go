@@ -39,20 +39,7 @@ func (c *Controller) LoginForm() http.HandlerFunc {
 			return
 		}
 
-		isMember, err := c.Memberships.CheckByEmail(email)
-		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
-		}
-
-		if !isMember {
-			c.renderLogin(w, &viewmodel.LoginViewData{
-				Email: email,
-			})
-			return
-		}
-
-		err = c.Passwordless.Login(email)
+		err := c.Passwordless.Login(email)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return

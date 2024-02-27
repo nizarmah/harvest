@@ -28,6 +28,15 @@ func (u *UseCase) Login(email string) error {
 		return fmt.Errorf("failed to validate email: %w", err)
 	}
 
+	user, err := u.Users.FindByEmail(email)
+	if err != nil {
+		return fmt.Errorf("failed to find user: %w", err)
+	}
+
+	if user == nil {
+		return nil
+	}
+
 	token, err := u.Tokens.FindUnexpiredByEmail(email)
 	if err != nil {
 		return fmt.Errorf("failed to find existing token: %w", err)
