@@ -61,7 +61,7 @@ func (c *Controller) OnboardingPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session := auth.SessionFromContext(r.Context())
 
-		isMember, _ := c.Memberships.Validate(session.UserID)
+		isMember, _ := c.Memberships.CheckByID(session.UserID)
 		if isMember {
 			http.Redirect(w, r, "/home", http.StatusFound)
 			return

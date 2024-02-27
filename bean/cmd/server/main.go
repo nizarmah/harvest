@@ -221,8 +221,8 @@ func main() {
 
 	s.Route("GET /auth/{id}/{password}", authController.Authorize())
 
-	s.Route("GET /get-started", authController.LoginPage())
-	s.Route("POST /get-started", authController.LoginForm())
+	s.Route("GET /login", authController.LoginPage())
+	s.Route("POST /login", authController.LoginForm())
 
 	s.Route("POST /webhooks/buymeacoffee", bmcController.Webhook())
 

@@ -1,7 +1,9 @@
 {{ define "navbar" }}
 <a href="/">About</a>
 &nbsp;·&nbsp;
-<a>Get started</a>
+<a href="/signup">Sign up</a>
+&nbsp;·&nbsp;
+<a>Login</a>
 {{ end }}
 
 {{ define "content" }}
@@ -9,10 +11,12 @@
   <div class="subsection">
   {{ if .Email }}
     <p>We sent a login link to <strong>{{ .Email }}</strong>.</p>
-    <p>Use it to login soon. It expires in 10 minutes.</p>
+    <br />
+    <p>Use it soon. It expires in 10 minutes.</p>
+    <p>We won't send new one until it expires.</p>
   {{ else }}
     <p>Enter your email and we'll send you a link to log in.</p>
-    <p>If you don't have an account, we'll create one for you.</p>
+    <p>We won't email a random person so <a href="/signup">sign up first</a>.</p>
   {{ end }}
   </div>
 
@@ -20,6 +24,7 @@
     <form name="login" method="post">
       <label for="email">Email</label>
       <input id="email" type="email" name="email" />
+      <input id="password" type="hidden" name="password" />
       <br />
       <input type="submit" value="Login" />
     </form>
