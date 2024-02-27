@@ -141,10 +141,10 @@ func main() {
 		)
 	}
 
-	onboardingView, err := appVD.NewOnboarding(template.FS, template.OnboardingTemplate)
+	renewPlanView, err := appVD.NewRenewPlan(template.FS, template.RenewPlanTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating onboarding view: %v", err),
+			fmt.Errorf("error creating renew plan view: %v", err),
 		)
 	}
 
@@ -195,8 +195,8 @@ func main() {
 		PaymentMethods: paymentMethods,
 		Memberships:    memberships,
 
-		HomeView:       homeView,
-		OnboardingView: onboardingView,
+		HomeView:      homeView,
+		RenewPlanView: renewPlanView,
 	}
 
 	pmsController := paymentmethod.Controller{
@@ -240,7 +240,7 @@ func main() {
 
 	s.Use(authController.Authenticate)
 
-	s.Route("GET /onboarding", appController.OnboardingPage())
+	s.Route("GET /renew-plan", appController.RenewPlanPage())
 
 	s.Route("GET /logout", authController.Logout())
 

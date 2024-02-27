@@ -16,7 +16,7 @@ func (c *Controller) CheckMembership(next http.Handler) http.HandlerFunc {
 		}
 
 		if !isMember {
-			http.Redirect(w, r, "/onboarding", http.StatusSeeOther)
+			http.Redirect(w, r, "/renew-plan", http.StatusSeeOther)
 			return
 		}
 

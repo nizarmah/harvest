@@ -35,9 +35,9 @@ var (
 		"home.html",
 	}
 
-	OnboardingTemplate = []string{
+	RenewPlanTemplate = []string{
 		baseTemplate,
-		"onboarding.html",
+		"renew-plan.html",
 	}
 
 	CreatePaymentMethodTemplate = []string{
