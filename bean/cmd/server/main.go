@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	estimatorUC "github.com/whatis277/harvest/bean/internal/usecase/estimator"
 	membershipUC "github.com/whatis277/harvest/bean/internal/usecase/membership"
@@ -223,6 +224,8 @@ func main() {
 	}
 
 	s := server.New()
+
+	s.Route("GET /health", func(w http.ResponseWriter, r *http.Request) {})
 
 	// Unauthenticated routes
 
