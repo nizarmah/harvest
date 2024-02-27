@@ -218,7 +218,8 @@ func main() {
 		AcceptTestEvents: env.BuyMeACoffee.AcceptTestEvents,
 		WebhookSecret:    env.BuyMeACoffee.WebhookSecret,
 
-		Memberships: memberships,
+		Passwordless: passwordlessAuth,
+		Memberships:  memberships,
 	}
 
 	s := server.New()
