@@ -10,13 +10,15 @@ import (
 	"time"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/membership"
+	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
 )
 
 type Controller struct {
 	AcceptTestEvents bool
 	WebhookSecret    string
 
-	Memberships membership.UseCase
+	Passwordless passwordless.UseCase
+	Memberships  membership.UseCase
 }
 
 func (c *Controller) Webhook() http.HandlerFunc {
@@ -96,6 +98,12 @@ func (c *Controller) membershipStarted(w http.ResponseWriter, event Event) {
 	createdAt := time.Unix(data.CurrentPeriodStart, 0)
 
 	_, err = c.Memberships.Create(email, createdAt)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = c.Passwordless.Login(email)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
