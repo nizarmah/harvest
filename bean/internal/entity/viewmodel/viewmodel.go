@@ -45,6 +45,10 @@ type LoginViewData struct {
 	Email string
 }
 
+// --- View Data --- Sign Up ---
+
+type SignUpViewData struct{}
+
 // --- View Data --- Home ---
 
 type HomeViewData struct {
