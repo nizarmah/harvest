@@ -1,6 +1,7 @@
 package paymentmethod
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/whatis277/harvest/bean/internal/entity/model"
@@ -13,6 +14,7 @@ type UseCase struct {
 }
 
 func (u *UseCase) Create(
+	ctx context.Context,
 	userID string,
 	label string,
 	last4 string,
@@ -40,7 +42,7 @@ func (u *UseCase) Create(
 		return nil, fmt.Errorf("invalid exp year: %w", err)
 	}
 
-	method, err := u.PaymentMethods.Create(userID, label, last4, brand, expMonth, expYear)
+	method, err := u.PaymentMethods.Create(ctx, userID, label, last4, brand, expMonth, expYear)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create payment method: %w", err)
 	}
@@ -48,8 +50,12 @@ func (u *UseCase) Create(
 	return method, nil
 }
 
-func (u *UseCase) Get(userID string, paymentMethodID string) (*model.PaymentMethodWithSubscriptions, error) {
-	method, err := u.PaymentMethods.FindByID(userID, paymentMethodID)
+func (u *UseCase) Get(
+	ctx context.Context,
+	userID string,
+	paymentMethodID string,
+) (*model.PaymentMethodWithSubscriptions, error) {
+	method, err := u.PaymentMethods.FindByID(ctx, userID, paymentMethodID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get payment method: %w", err)
 	}
@@ -57,8 +63,11 @@ func (u *UseCase) Get(userID string, paymentMethodID string) (*model.PaymentMeth
 	return method, nil
 }
 
-func (u *UseCase) List(userID string) ([]*model.PaymentMethodWithSubscriptions, error) {
-	methods, err := u.PaymentMethods.FindByUserID(userID)
+func (u *UseCase) List(
+	ctx context.Context,
+	userID string,
+) ([]*model.PaymentMethodWithSubscriptions, error) {
+	methods, err := u.PaymentMethods.FindByUserID(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list payment methods: %w", err)
 	}
@@ -66,8 +75,12 @@ func (u *UseCase) List(userID string) ([]*model.PaymentMethodWithSubscriptions, 
 	return methods, nil
 }
 
-func (u *UseCase) Delete(userID string, paymentMethodID string) error {
-	if err := u.PaymentMethods.Delete(userID, paymentMethodID); err != nil {
+func (u *UseCase) Delete(
+	ctx context.Context,
+	userID string,
+	paymentMethodID string,
+) error {
+	if err := u.PaymentMethods.Delete(ctx, userID, paymentMethodID); err != nil {
 		return fmt.Errorf("failed to delete payment method: %w", err)
 	}
 

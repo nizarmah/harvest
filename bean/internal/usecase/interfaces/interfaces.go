@@ -27,6 +27,7 @@ type SubscriptionDataSource interface {
 
 type PaymentMethodDataSource interface {
 	Create(
+		ctx context.Context,
 		userID string,
 		label string,
 		last4 string,
@@ -35,10 +36,21 @@ type PaymentMethodDataSource interface {
 		expYear int,
 	) (*model.PaymentMethod, error)
 
-	FindByID(userID string, id string) (*model.PaymentMethodWithSubscriptions, error)
-	FindByUserID(userID string) ([]*model.PaymentMethodWithSubscriptions, error)
+	FindByID(
+		ctx context.Context,
+		userID string,
+		id string,
+	) (*model.PaymentMethodWithSubscriptions, error)
+	FindByUserID(
+		ctx context.Context,
+		userID string,
+	) ([]*model.PaymentMethodWithSubscriptions, error)
 
-	Delete(userID string, id string) error
+	Delete(
+		ctx context.Context,
+		userID string,
+		id string,
+	) error
 }
 
 type UserDataSource interface {

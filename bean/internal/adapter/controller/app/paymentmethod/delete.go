@@ -18,9 +18,11 @@ func (c *Controller) DeletePage() http.HandlerFunc {
 			return
 		}
 
-		session := auth.SessionFromContext(r.Context())
+		ctx := r.Context()
 
-		pm, err := c.PaymentMethods.Get(session.UserID, id)
+		session := auth.SessionFromContext(ctx)
+
+		pm, err := c.PaymentMethods.Get(ctx, session.UserID, id)
 		if err != nil || pm == nil {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return
@@ -42,9 +44,11 @@ func (c *Controller) DeleteForm() http.HandlerFunc {
 			return
 		}
 
-		session := auth.SessionFromContext(r.Context())
+		ctx := r.Context()
 
-		c.PaymentMethods.Delete(session.UserID, id)
+		session := auth.SessionFromContext(ctx)
+
+		c.PaymentMethods.Delete(ctx, session.UserID, id)
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}

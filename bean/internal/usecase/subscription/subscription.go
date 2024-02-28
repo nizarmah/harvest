@@ -1,6 +1,7 @@
 package subscription
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/whatis277/harvest/bean/internal/entity/model"
@@ -14,6 +15,7 @@ type UseCase struct {
 }
 
 func (u *UseCase) Create(
+	ctx context.Context,
 	userID string,
 	paymentMethodID string,
 	label string,
@@ -42,7 +44,7 @@ func (u *UseCase) Create(
 		return nil, fmt.Errorf("invalid period: %w", err)
 	}
 
-	method, err := u.PaymentMethods.FindByID(userID, paymentMethodID)
+	method, err := u.PaymentMethods.FindByID(ctx, userID, paymentMethodID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get payment method: %w", err)
 	}
