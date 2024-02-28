@@ -1,6 +1,7 @@
 package membership
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -39,10 +40,13 @@ func TestDataSource(t *testing.T) {
 }
 
 func create(t *testing.T, ds interfaces.MembershipDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("new_membership", func(t *testing.T) {
 		createdAt := time.Now().Add(time.Hour).Truncate(time.Millisecond)
 
-		membership, err := ds.Create(newMember, createdAt)
+		membership, err := ds.Create(ctx, newMember, createdAt)
 		if err != nil {
 			t.Fatalf("failed to create membership: %s", err)
 		}
@@ -59,7 +63,7 @@ func create(t *testing.T, ds interfaces.MembershipDataSource) {
 			t.Errorf("expected nil expires at, got: %s", membership.ExpiresAt)
 		}
 
-		if err = ds.Delete(membership.UserID); err != nil {
+		if err = ds.Delete(ctx, membership.UserID); err != nil {
 			t.Fatalf("failed to cleanup membership: %s", err)
 		}
 	})
@@ -68,18 +72,18 @@ func create(t *testing.T, ds interfaces.MembershipDataSource) {
 		createdAt := time.Now().Add(time.Hour).Truncate(time.Millisecond)
 		expiresAt := createdAt.Add(time.Hour).Truncate(time.Millisecond)
 
-		membership, err := ds.Create(newMember, createdAt)
+		membership, err := ds.Create(ctx, newMember, createdAt)
 		if err != nil {
 			t.Fatalf("failed to create membership: %s", err)
 		}
 
-		membership, err = ds.Update(membership.UserID, expiresAt)
+		membership, err = ds.Update(ctx, membership.UserID, expiresAt)
 		if err != nil {
 			t.Fatalf("failed to update membership: %s", err)
 		}
 
 		newCreatedAt := createdAt.Add(time.Minute).Truncate(time.Millisecond)
-		membership, err = ds.Create(membership.UserID, newCreatedAt)
+		membership, err = ds.Create(ctx, membership.UserID, newCreatedAt)
 		if err != nil {
 			t.Fatalf("failed to create membership: %s", err)
 		}
@@ -96,15 +100,18 @@ func create(t *testing.T, ds interfaces.MembershipDataSource) {
 			t.Errorf("expected nil expires at, got: %s", membership.ExpiresAt)
 		}
 
-		if err = ds.Delete(membership.UserID); err != nil {
+		if err = ds.Delete(ctx, membership.UserID); err != nil {
 			t.Fatalf("failed to cleanup membership: %s", err)
 		}
 	})
 }
 
 func find(t *testing.T, ds interfaces.MembershipDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_membership", func(t *testing.T) {
-		membership, err := ds.Find(activeMember)
+		membership, err := ds.Find(ctx, activeMember)
 		if err != nil {
 			t.Fatalf("failed to find membership: %s", err)
 		}
@@ -123,7 +130,7 @@ func find(t *testing.T, ds interfaces.MembershipDataSource) {
 	})
 
 	t.Run("expired_membership", func(t *testing.T) {
-		membership, err := ds.Find(expiredMember)
+		membership, err := ds.Find(ctx, expiredMember)
 		if err != nil {
 			t.Fatalf("failed to find membership: %s", err)
 		}
@@ -146,7 +153,7 @@ func find(t *testing.T, ds interfaces.MembershipDataSource) {
 	})
 
 	t.Run("missing_membership", func(t *testing.T) {
-		membership, err := ds.Find(nonMember)
+		membership, err := ds.Find(ctx, nonMember)
 		if err != nil {
 			t.Fatalf("failed to find membership: %s", err)
 		}
@@ -158,16 +165,19 @@ func find(t *testing.T, ds interfaces.MembershipDataSource) {
 }
 
 func update(t *testing.T, ds interfaces.MembershipDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_membership", func(t *testing.T) {
 		createdAt := time.Now().Add(time.Hour).Truncate(time.Millisecond)
 		expiresAt := createdAt.Add(time.Hour).Truncate(time.Millisecond)
 
-		membership, err := ds.Create(newMember, createdAt)
+		membership, err := ds.Create(ctx, newMember, createdAt)
 		if err != nil {
 			t.Fatalf("failed to create membership: %s", err)
 		}
 
-		membership, err = ds.Update(membership.UserID, expiresAt)
+		membership, err = ds.Update(ctx, membership.UserID, expiresAt)
 		if err != nil {
 			t.Fatalf("failed to update membership: %s", err)
 		}
@@ -184,7 +194,7 @@ func update(t *testing.T, ds interfaces.MembershipDataSource) {
 			t.Errorf("expected expires at %s, got: %s", expiresAt, membership.ExpiresAt)
 		}
 
-		if err = ds.Delete(membership.UserID); err != nil {
+		if err = ds.Delete(ctx, membership.UserID); err != nil {
 			t.Fatalf("failed to cleanup membership: %s", err)
 		}
 	})
@@ -192,7 +202,7 @@ func update(t *testing.T, ds interfaces.MembershipDataSource) {
 	t.Run("missing_membership", func(t *testing.T) {
 		expiresAt := time.Now().Add(time.Hour)
 
-		membership, err := ds.Update(nonMember, expiresAt)
+		membership, err := ds.Update(ctx, nonMember, expiresAt)
 		if err != nil {
 			t.Fatalf("failed to update membership: %s", err)
 		}
@@ -204,17 +214,20 @@ func update(t *testing.T, ds interfaces.MembershipDataSource) {
 }
 
 func delete(t *testing.T, ds interfaces.MembershipDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_membership", func(t *testing.T) {
-		membership, err := ds.Create(newMember, time.Now())
+		membership, err := ds.Create(ctx, newMember, time.Now())
 		if err != nil {
 			t.Fatalf("failed to create membership: %s", err)
 		}
 
-		if err = ds.Delete(membership.UserID); err != nil {
+		if err = ds.Delete(ctx, membership.UserID); err != nil {
 			t.Fatalf("failed to delete membership: %s", err)
 		}
 
-		membership, err = ds.Find(membership.UserID)
+		membership, err = ds.Find(ctx, membership.UserID)
 		if err != nil {
 			t.Fatalf("failed to find membership: %s", err)
 		}
@@ -225,7 +238,7 @@ func delete(t *testing.T, ds interfaces.MembershipDataSource) {
 	})
 
 	t.Run("missing_membership", func(t *testing.T) {
-		err := ds.Delete(nonMember)
+		err := ds.Delete(ctx, nonMember)
 		if err != nil {
 			t.Fatalf("failed to delete membership: %s", err)
 		}

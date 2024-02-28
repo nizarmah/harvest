@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"context"
 	"time"
 
 	"github.com/whatis277/harvest/bean/internal/entity/model"
@@ -59,13 +60,27 @@ type LoginTokenDataSource interface {
 }
 
 type MembershipDataSource interface {
-	Create(userID string, createdAt time.Time) (*model.Membership, error)
+	Create(
+		ctx context.Context,
+		userID string,
+		createdAt time.Time,
+	) (*model.Membership, error)
 
-	Find(userID string) (*model.Membership, error)
+	Find(
+		ctx context.Context,
+		userID string,
+	) (*model.Membership, error)
 
-	Update(userID string, expiresAt time.Time) (*model.Membership, error)
+	Update(
+		ctx context.Context,
+		userID string,
+		expiresAt time.Time,
+	) (*model.Membership, error)
 
-	Delete(userID string) error
+	Delete(
+		ctx context.Context,
+		userID string,
+	) error
 }
 
 type SessionDataSource interface {

@@ -20,12 +20,16 @@ func New(db *postgres.DB) interfaces.MembershipDataSource {
 	return &dataSource{db}
 }
 
-func (ds *dataSource) Create(userID string, createdAt time.Time) (*model.Membership, error) {
+func (ds *dataSource) Create(
+	ctx context.Context,
+	userID string,
+	createdAt time.Time,
+) (*model.Membership, error) {
 	membership := &model.Membership{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("INSERT INTO memberships"+
 				" (user_id, created_at)"+
 				" VALUES ($1, $2)"+
@@ -48,12 +52,15 @@ func (ds *dataSource) Create(userID string, createdAt time.Time) (*model.Members
 	return membership, nil
 }
 
-func (ds *dataSource) Find(userID string) (*model.Membership, error) {
+func (ds *dataSource) Find(
+	ctx context.Context,
+	userID string,
+) (*model.Membership, error) {
 	membership := &model.Membership{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("SELECT * FROM memberships"+
 				" WHERE user_id = $1"),
 			userID,
@@ -74,12 +81,16 @@ func (ds *dataSource) Find(userID string) (*model.Membership, error) {
 	return membership, nil
 }
 
-func (ds *dataSource) Update(userID string, expiresAt time.Time) (*model.Membership, error) {
+func (ds *dataSource) Update(
+	ctx context.Context,
+	userID string,
+	expiresAt time.Time,
+) (*model.Membership, error) {
 	membership := &model.Membership{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("UPDATE memberships"+
 				" SET expires_at = $2"+
 				" WHERE user_id = $1"+
@@ -102,10 +113,13 @@ func (ds *dataSource) Update(userID string, expiresAt time.Time) (*model.Members
 	return membership, nil
 }
 
-func (ds *dataSource) Delete(userID string) error {
+func (ds *dataSource) Delete(
+	ctx context.Context,
+	userID string,
+) error {
 	_, err := ds.db.Pool.
 		Exec(
-			context.Background(),
+			ctx,
 			"DELETE FROM memberships WHERE user_id = $1",
 			userID,
 		)
