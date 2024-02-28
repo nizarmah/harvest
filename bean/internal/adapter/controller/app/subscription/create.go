@@ -30,6 +30,10 @@ func (c *Controller) CreateForm() http.HandlerFunc {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
+		if session == nil {
+			http.Redirect(w, r, "/logout", http.StatusFound)
+			return
+		}
 
 		_, err := c.Subscriptions.Create(
 			ctx,

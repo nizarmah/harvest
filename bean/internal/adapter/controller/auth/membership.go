@@ -10,6 +10,10 @@ func (c *Controller) CheckMembership(next http.Handler) http.HandlerFunc {
 		ctx := r.Context()
 
 		session := SessionFromContext(ctx)
+		if session == nil {
+			http.Redirect(w, r, "/logout", http.StatusFound)
+			return
+		}
 
 		isMember, err := c.Memberships.CheckByID(ctx, session.UserID)
 		if err != nil {

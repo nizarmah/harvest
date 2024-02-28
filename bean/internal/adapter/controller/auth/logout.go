@@ -7,11 +7,12 @@ func (c *Controller) Logout() http.HandlerFunc {
 		ctx := r.Context()
 
 		session := SessionFromContext(ctx)
-
-		c.Passwordless.Logout(ctx, session)
+		if session != nil {
+			c.Passwordless.Logout(ctx, session)
+		}
 
 		c.cleanupSessionToken(w)
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
