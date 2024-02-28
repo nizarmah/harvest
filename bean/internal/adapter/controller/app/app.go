@@ -29,6 +29,10 @@ func (c *Controller) HomePage() http.HandlerFunc {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
+		if session == nil {
+			http.Redirect(w, r, "/logout", http.StatusFound)
+			return
+		}
 
 		methods, err := c.PaymentMethods.List(ctx, session.UserID)
 		if err != nil {
@@ -64,6 +68,10 @@ func (c *Controller) RenewPlanPage() http.HandlerFunc {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
+		if session == nil {
+			http.Redirect(w, r, "/logout", http.StatusFound)
+			return
+		}
 
 		isMember, _ := c.Memberships.CheckByID(ctx, session.UserID)
 		if isMember {

@@ -21,6 +21,10 @@ func (c *Controller) DeletePage() http.HandlerFunc {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
+		if session == nil {
+			http.Redirect(w, r, "/logout", http.StatusFound)
+			return
+		}
 
 		pm, err := c.PaymentMethods.Get(ctx, session.UserID, id)
 		if err != nil || pm == nil {
@@ -47,6 +51,10 @@ func (c *Controller) DeleteForm() http.HandlerFunc {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
+		if session == nil {
+			http.Redirect(w, r, "/logout", http.StatusFound)
+			return
+		}
 
 		c.PaymentMethods.Delete(ctx, session.UserID, id)
 
