@@ -1,7 +1,9 @@
 package user
 
 import (
+	"context"
 	"testing"
+	"time"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/interfaces"
 
@@ -35,8 +37,11 @@ func TestDataSource(t *testing.T) {
 }
 
 func create(t *testing.T, ds interfaces.UserDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("new_user", func(t *testing.T) {
-		user, err := ds.Create("action-create")
+		user, err := ds.Create(ctx, "action-create")
 		if err != nil {
 			t.Fatalf("failed to create user: %s", err)
 		}
@@ -53,30 +58,33 @@ func create(t *testing.T, ds interfaces.UserDataSource) {
 			t.Error("expected creation time, got zero time")
 		}
 
-		if err = ds.Delete(user.ID); err != nil {
+		if err = ds.Delete(ctx, user.ID); err != nil {
 			t.Fatalf("failed to cleanup user: %s", err)
 		}
 	})
 
 	t.Run("existing_user", func(t *testing.T) {
-		user, err := ds.Create("action-reject")
+		user, err := ds.Create(ctx, "action-reject")
 		if err != nil {
 			t.Fatalf("failed to create user: %s", err)
 		}
 
-		if _, err = ds.Create("action-reject"); err == nil {
+		if _, err = ds.Create(ctx, "action-reject"); err == nil {
 			t.Errorf("expected error, got nil")
 		}
 
-		if err = ds.Delete(user.ID); err != nil {
+		if err = ds.Delete(ctx, user.ID); err != nil {
 			t.Fatalf("failed to cleanup user: %s", err)
 		}
 	})
 }
 
 func findById(t *testing.T, ds interfaces.UserDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_user", func(t *testing.T) {
-		user, err := ds.FindById(userID)
+		user, err := ds.FindById(ctx, userID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -87,7 +95,7 @@ func findById(t *testing.T, ds interfaces.UserDataSource) {
 	})
 
 	t.Run("missing_user", func(t *testing.T) {
-		user, err := ds.FindById(missingID)
+		user, err := ds.FindById(ctx, missingID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -99,8 +107,11 @@ func findById(t *testing.T, ds interfaces.UserDataSource) {
 }
 
 func findByEmail(t *testing.T, ds interfaces.UserDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_user", func(t *testing.T) {
-		user, err := ds.FindByEmail("user-1")
+		user, err := ds.FindByEmail(ctx, "user-1")
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -111,7 +122,7 @@ func findByEmail(t *testing.T, ds interfaces.UserDataSource) {
 	})
 
 	t.Run("missing_user", func(t *testing.T) {
-		user, err := ds.FindByEmail("missing")
+		user, err := ds.FindByEmail(ctx, "missing")
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -123,17 +134,20 @@ func findByEmail(t *testing.T, ds interfaces.UserDataSource) {
 }
 
 func delete(t *testing.T, ds interfaces.UserDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_user", func(t *testing.T) {
-		user, err := ds.Create("action-delete")
+		user, err := ds.Create(ctx, "action-delete")
 		if err != nil {
 			t.Fatalf("failed to create user: %s", err)
 		}
 
-		if err = ds.Delete(user.ID); err != nil {
+		if err = ds.Delete(ctx, user.ID); err != nil {
 			t.Fatalf("failed to delete user: %s", err)
 		}
 
-		user, err = ds.FindById(user.ID)
+		user, err = ds.FindById(ctx, user.ID)
 		if err != nil {
 			t.Fatalf("failed to find user: %s", err)
 		}
@@ -144,7 +158,7 @@ func delete(t *testing.T, ds interfaces.UserDataSource) {
 	})
 
 	t.Run("missing_user", func(t *testing.T) {
-		if err := ds.Delete(missingID); err != nil {
+		if err := ds.Delete(ctx, missingID); err != nil {
 			t.Fatalf("failed to delete user: %s", err)
 		}
 	})

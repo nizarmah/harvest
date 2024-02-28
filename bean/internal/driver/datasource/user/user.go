@@ -21,12 +21,15 @@ func New(db *postgres.DB) interfaces.UserDataSource {
 	}
 }
 
-func (ds *dataSource) Create(email string) (*model.User, error) {
+func (ds *dataSource) Create(
+	ctx context.Context,
+	email string,
+) (*model.User, error) {
 	user := &model.User{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("INSERT INTO users (email)"+
 				" VALUES ($1)"+
 				" RETURNING *"),
@@ -41,12 +44,15 @@ func (ds *dataSource) Create(email string) (*model.User, error) {
 	return user, nil
 }
 
-func (ds *dataSource) FindById(id string) (*model.User, error) {
+func (ds *dataSource) FindById(
+	ctx context.Context,
+	id string,
+) (*model.User, error) {
 	user := &model.User{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			"SELECT * FROM users WHERE id = $1",
 			id,
 		).
@@ -63,12 +69,15 @@ func (ds *dataSource) FindById(id string) (*model.User, error) {
 	return user, nil
 }
 
-func (ds *dataSource) FindByEmail(email string) (*model.User, error) {
+func (ds *dataSource) FindByEmail(
+	ctx context.Context,
+	email string,
+) (*model.User, error) {
 	user := &model.User{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			"SELECT * FROM users WHERE email = $1",
 			email,
 		).
@@ -85,10 +94,13 @@ func (ds *dataSource) FindByEmail(email string) (*model.User, error) {
 	return user, nil
 }
 
-func (ds *dataSource) Delete(id string) error {
+func (ds *dataSource) Delete(
+	ctx context.Context,
+	id string,
+) error {
 	_, err := ds.db.Pool.
 		Exec(
-			context.Background(),
+			ctx,
 			"DELETE FROM users WHERE id = $1",
 			id,
 		)

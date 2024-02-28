@@ -32,7 +32,7 @@ func (u *UseCase) Login(
 		return fmt.Errorf("failed to validate email: %w", err)
 	}
 
-	user, err := u.Users.FindByEmail(email)
+	user, err := u.Users.FindByEmail(ctx, email)
 	if err != nil {
 		return fmt.Errorf("failed to find user: %w", err)
 	}
@@ -90,7 +90,7 @@ func (u *UseCase) Authorize(
 		return nil, fmt.Errorf("failed to compare password: %w", err)
 	}
 
-	user, err := u.findOrCreateUser(token.Email)
+	user, err := u.findOrCreateUser(ctx, token.Email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find or create user: %w", err)
 	}
@@ -146,8 +146,11 @@ func (u *UseCase) Logout(session *model.Session) error {
 	return nil
 }
 
-func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
-	user, err := u.Users.FindByEmail(email)
+func (u *UseCase) findOrCreateUser(
+	ctx context.Context,
+	email string,
+) (*model.User, error) {
+	user, err := u.Users.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
@@ -156,7 +159,7 @@ func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
 		return user, nil
 	}
 
-	user, err = u.Users.Create(email)
+	user, err = u.Users.Create(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
