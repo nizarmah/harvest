@@ -1,6 +1,7 @@
 package token
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -39,8 +40,11 @@ func TestDataSource(t *testing.T) {
 }
 
 func create(t *testing.T, ds interfaces.LoginTokenDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("new_token", func(t *testing.T) {
-		token, err := ds.Create("action-create", "hashed-token")
+		token, err := ds.Create(ctx, "action-create", "hashed-token")
 		if err != nil {
 			t.Fatalf("failed to create token: %s", err)
 		}
@@ -49,18 +53,18 @@ func create(t *testing.T, ds interfaces.LoginTokenDataSource) {
 			t.Errorf("expected 10 minute expiry, got: %v", expiry)
 		}
 
-		if err = ds.Delete(token.ID); err != nil {
+		if err = ds.Delete(ctx, token.ID); err != nil {
 			t.Fatalf("failed to cleanup token: %s", err)
 		}
 	})
 
 	t.Run("existing_token", func(t *testing.T) {
-		old, err := ds.Create("action-overwrite", "old-hashed-token")
+		old, err := ds.Create(ctx, "action-overwrite", "old-hashed-token")
 		if err != nil {
 			t.Fatalf("failed to create token: %s", err)
 		}
 
-		new, err := ds.Create("action-overwrite", "new-hashed-token")
+		new, err := ds.Create(ctx, "action-overwrite", "new-hashed-token")
 		if err != nil {
 			t.Fatalf("failed to create token: %s", err)
 		}
@@ -81,20 +85,23 @@ func create(t *testing.T, ds interfaces.LoginTokenDataSource) {
 			t.Errorf("expected new hashed token, got: %s", old.HashedToken)
 		}
 
-		if err = ds.Delete(new.ID); err != nil {
+		if err = ds.Delete(ctx, new.ID); err != nil {
 			t.Fatalf("failed to cleanup token: %s", err)
 		}
 	})
 }
 
 func findUnexpiredByEmail(t *testing.T, ds interfaces.LoginTokenDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("valid_token", func(t *testing.T) {
-		token, err := ds.Create("action-find", "hashed-token")
+		token, err := ds.Create(ctx, "action-find", "hashed-token")
 		if err != nil {
 			t.Fatalf("failed to create token: %s", err)
 		}
 
-		token, err = ds.FindUnexpiredByEmail(token.Email)
+		token, err = ds.FindUnexpiredByEmail(ctx, token.Email)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -103,13 +110,13 @@ func findUnexpiredByEmail(t *testing.T, ds interfaces.LoginTokenDataSource) {
 			t.Fatalf("expected token, got nil")
 		}
 
-		if err = ds.Delete(token.ID); err != nil {
+		if err = ds.Delete(ctx, token.ID); err != nil {
 			t.Fatalf("failed to cleanup token: %s", err)
 		}
 	})
 
 	t.Run("expired_token", func(t *testing.T) {
-		token, err := ds.FindUnexpiredByEmail(expiredEmail)
+		token, err := ds.FindUnexpiredByEmail(ctx, expiredEmail)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -120,7 +127,7 @@ func findUnexpiredByEmail(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	})
 
 	t.Run("missing_token", func(t *testing.T) {
-		token, err := ds.FindUnexpiredByEmail(missingEmail)
+		token, err := ds.FindUnexpiredByEmail(ctx, missingEmail)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -132,13 +139,16 @@ func findUnexpiredByEmail(t *testing.T, ds interfaces.LoginTokenDataSource) {
 }
 
 func findUnexpiredByID(t *testing.T, ds interfaces.LoginTokenDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("valid_token", func(t *testing.T) {
-		token, err := ds.Create("action-find", "hashed-token")
+		token, err := ds.Create(ctx, "action-find", "hashed-token")
 		if err != nil {
 			t.Fatalf("failed to create token: %s", err)
 		}
 
-		token, err = ds.FindUnexpiredByID(token.ID)
+		token, err = ds.FindUnexpiredByID(ctx, token.ID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -147,13 +157,13 @@ func findUnexpiredByID(t *testing.T, ds interfaces.LoginTokenDataSource) {
 			t.Fatalf("expected token, got nil")
 		}
 
-		if err = ds.Delete(token.ID); err != nil {
+		if err = ds.Delete(ctx, token.ID); err != nil {
 			t.Fatalf("failed to cleanup token: %s", err)
 		}
 	})
 
 	t.Run("expired_token", func(t *testing.T) {
-		token, err := ds.FindUnexpiredByID(expiredID)
+		token, err := ds.FindUnexpiredByID(ctx, expiredID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -164,7 +174,7 @@ func findUnexpiredByID(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	})
 
 	t.Run("missing_token", func(t *testing.T) {
-		token, err := ds.FindUnexpiredByID(missingID)
+		token, err := ds.FindUnexpiredByID(ctx, missingID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -176,17 +186,20 @@ func findUnexpiredByID(t *testing.T, ds interfaces.LoginTokenDataSource) {
 }
 
 func delete(t *testing.T, ds interfaces.LoginTokenDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_token", func(t *testing.T) {
-		token, err := ds.Create("action-delete", "hashed-token")
+		token, err := ds.Create(ctx, "action-delete", "hashed-token")
 		if err != nil {
 			t.Fatalf("failed to create token: %s", err)
 		}
 
-		if err = ds.Delete(token.ID); err != nil {
+		if err = ds.Delete(ctx, token.ID); err != nil {
 			t.Fatalf("failed to delete token: %s", err)
 		}
 
-		token, err = ds.FindUnexpiredByID(token.ID)
+		token, err = ds.FindUnexpiredByID(ctx, token.ID)
 		if err != nil {
 			t.Fatalf("failed to find token: %s", err)
 		}
@@ -197,7 +210,7 @@ func delete(t *testing.T, ds interfaces.LoginTokenDataSource) {
 	})
 
 	t.Run("missing_token", func(t *testing.T) {
-		if err := ds.Delete(missingID); err != nil {
+		if err := ds.Delete(ctx, missingID); err != nil {
 			t.Fatalf("failed to delete token: %s", err)
 		}
 	})

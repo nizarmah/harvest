@@ -62,7 +62,9 @@ func (c *Controller) Authorize() http.HandlerFunc {
 			return
 		}
 
-		sessionToken, err := c.Passwordless.Authorize(id, password)
+		ctx := r.Context()
+
+		sessionToken, err := c.Passwordless.Authorize(ctx, id, password)
 		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return

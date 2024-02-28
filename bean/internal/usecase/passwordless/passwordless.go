@@ -1,6 +1,7 @@
 package passwordless
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -23,7 +24,10 @@ type UseCase struct {
 	Emailer interfaces.Emailer
 }
 
-func (u *UseCase) Login(email string) error {
+func (u *UseCase) Login(
+	ctx context.Context,
+	email string,
+) error {
 	if err := validateEmail(email); err != nil {
 		return fmt.Errorf("failed to validate email: %w", err)
 	}
@@ -37,7 +41,7 @@ func (u *UseCase) Login(email string) error {
 		return nil
 	}
 
-	token, err := u.Tokens.FindUnexpiredByEmail(email)
+	token, err := u.Tokens.FindUnexpiredByEmail(ctx, email)
 	if err != nil {
 		return fmt.Errorf("failed to find existing token: %w", err)
 	}
@@ -51,7 +55,7 @@ func (u *UseCase) Login(email string) error {
 		return fmt.Errorf("failed to generate password: %w", err)
 	}
 
-	token, err = u.Tokens.Create(email, hash)
+	token, err = u.Tokens.Create(ctx, email, hash)
 	if err != nil {
 		return fmt.Errorf("failed to create token: %w", err)
 	}
@@ -68,8 +72,12 @@ func (u *UseCase) Login(email string) error {
 	return nil
 }
 
-func (u *UseCase) Authorize(id string, password string) (*model.SessionToken, error) {
-	token, err := u.Tokens.FindUnexpiredByID(id)
+func (u *UseCase) Authorize(
+	ctx context.Context,
+	id string,
+	password string,
+) (*model.SessionToken, error) {
+	token, err := u.Tokens.FindUnexpiredByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find token: %w", err)
 	}
@@ -103,7 +111,7 @@ func (u *UseCase) Authorize(id string, password string) (*model.SessionToken, er
 		ExpiresAt: session.ExpiresAt,
 	}
 
-	u.Tokens.Delete(token.ID)
+	u.Tokens.Delete(ctx, token.ID)
 
 	return sessionToken, nil
 }
