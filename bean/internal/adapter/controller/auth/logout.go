@@ -4,9 +4,11 @@ import "net/http"
 
 func (c *Controller) Logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session := SessionFromContext(r.Context())
+		ctx := r.Context()
 
-		c.Passwordless.Logout(session)
+		session := SessionFromContext(ctx)
+
+		c.Passwordless.Logout(ctx, session)
 
 		c.cleanupSessionToken(w)
 

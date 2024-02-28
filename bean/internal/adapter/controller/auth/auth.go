@@ -28,7 +28,9 @@ func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 			return
 		}
 
-		session, err := c.Passwordless.Authenticate(sessionToken)
+		ctx := r.Context()
+
+		session, err := c.Passwordless.Authenticate(ctx, sessionToken)
 		if err != nil || session == nil {
 			c.cleanupSessionToken(w)
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -42,9 +44,9 @@ func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
 			return
 		}
 
-		ctx := NewContextWithSession(r.Context(), session)
+		sessionCtx := NewContextWithSession(ctx, session)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r.WithContext(sessionCtx))
 	}
 }
 

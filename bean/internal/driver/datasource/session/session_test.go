@@ -33,11 +33,11 @@ func TestDataSource(t *testing.T) {
 }
 
 func create(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	t.Run("new_session", func(t *testing.T) {
-		session, err := ds.Create("action-create", "hashed-token", 10*time.Second)
+		session, err := ds.Create(ctx, "action-create", "hashed-token", 10*time.Second)
 		if err != nil {
 			t.Fatalf("failed to create session: %s", err)
 		}
@@ -76,20 +76,23 @@ func create(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) {
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
 		}
 
-		if err = ds.Delete(session.ID); err != nil {
+		if err = ds.Delete(ctx, session.ID); err != nil {
 			t.Fatalf("failed to cleanup session: %s", err)
 		}
 	})
 }
 
 func findById(t *testing.T, ds interfaces.SessionDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_session", func(t *testing.T) {
-		session, err := ds.Create("action-find", "hashed-token", 10*time.Second)
+		session, err := ds.Create(ctx, "action-find", "hashed-token", 10*time.Second)
 		if err != nil {
 			t.Fatalf("failed to create session: %s", err)
 		}
 
-		session, err = ds.FindByID(session.ID)
+		session, err = ds.FindByID(ctx, session.ID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -110,13 +113,13 @@ func findById(t *testing.T, ds interfaces.SessionDataSource) {
 			t.Errorf("expected hashed token: %s, got: %s", "hashed-token", session.HashedToken)
 		}
 
-		if err = ds.Delete(session.ID); err != nil {
+		if err = ds.Delete(ctx, session.ID); err != nil {
 			t.Fatalf("failed to cleanup session: %s", err)
 		}
 	})
 
 	t.Run("missing_session", func(t *testing.T) {
-		session, err := ds.FindByID("missing-id")
+		session, err := ds.FindByID(ctx, "missing-id")
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -128,11 +131,11 @@ func findById(t *testing.T, ds interfaces.SessionDataSource) {
 }
 
 func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	t.Run("existing_session", func(t *testing.T) {
-		session, err := ds.Create("action-refresh", "hashed-token", 10*time.Second)
+		session, err := ds.Create(ctx, "action-refresh", "hashed-token", 10*time.Second)
 		if err != nil {
 			t.Fatalf("failed to create session: %s", err)
 		}
@@ -147,7 +150,7 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
 		}
 
-		err = ds.Refresh(session, 20*time.Second)
+		err = ds.Refresh(ctx, session, 20*time.Second)
 		if err != nil {
 			t.Fatalf("failed to refresh session: %s", err)
 		}
@@ -162,24 +165,27 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 			t.Errorf("expected session to expire in: %s, got: %s", 20*time.Second, ttl)
 		}
 
-		if err = ds.Delete(session.ID); err != nil {
+		if err = ds.Delete(ctx, session.ID); err != nil {
 			t.Fatalf("failed to delete session: %s", err)
 		}
 	})
 }
 
 func delete(t *testing.T, ds interfaces.SessionDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_session", func(t *testing.T) {
-		session, err := ds.Create("action-delete", "hashed-token", 10*time.Second)
+		session, err := ds.Create(ctx, "action-delete", "hashed-token", 10*time.Second)
 		if err != nil {
 			t.Fatalf("failed to create session: %s", err)
 		}
 
-		if err = ds.Delete(session.ID); err != nil {
+		if err = ds.Delete(ctx, session.ID); err != nil {
 			t.Fatalf("failed to delete session: %s", err)
 		}
 
-		session, err = ds.FindByID(session.ID)
+		session, err = ds.FindByID(ctx, session.ID)
 		if err != nil {
 			t.Fatalf("failed to find session: %s", err)
 		}
@@ -190,7 +196,7 @@ func delete(t *testing.T, ds interfaces.SessionDataSource) {
 	})
 
 	t.Run("missing_session", func(t *testing.T) {
-		if err := ds.Delete("missing-id"); err != nil {
+		if err := ds.Delete(ctx, "missing-id"); err != nil {
 			t.Fatalf("failed to delete session: %s", err)
 		}
 	})

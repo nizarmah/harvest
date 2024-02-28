@@ -100,7 +100,7 @@ func (u *UseCase) Authorize(
 		return nil, fmt.Errorf("failed to generate password: %w", err)
 	}
 
-	session, err := u.Sessions.Create(user.ID, csrfHash, 14*24*time.Hour)
+	session, err := u.Sessions.Create(ctx, user.ID, csrfHash, 14*24*time.Hour)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create session: %w", err)
 	}
@@ -116,8 +116,11 @@ func (u *UseCase) Authorize(
 	return sessionToken, nil
 }
 
-func (u *UseCase) Authenticate(sessionToken *model.SessionToken) (*model.Session, error) {
-	session, err := u.Sessions.FindByID(sessionToken.ID)
+func (u *UseCase) Authenticate(
+	ctx context.Context,
+	sessionToken *model.SessionToken,
+) (*model.Session, error) {
+	session, err := u.Sessions.FindByID(ctx, sessionToken.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find session: %w", err)
 	}
@@ -130,7 +133,7 @@ func (u *UseCase) Authenticate(sessionToken *model.SessionToken) (*model.Session
 		return nil, fmt.Errorf("failed to compare session token: %w", err)
 	}
 
-	err = u.Sessions.Refresh(session, 14*24*time.Hour)
+	err = u.Sessions.Refresh(ctx, session, 14*24*time.Hour)
 	if err != nil {
 		return nil, fmt.Errorf("failed to refresh session: %w", err)
 	}
@@ -140,8 +143,11 @@ func (u *UseCase) Authenticate(sessionToken *model.SessionToken) (*model.Session
 	return session, nil
 }
 
-func (u *UseCase) Logout(session *model.Session) error {
-	u.Sessions.Delete(session.ID)
+func (u *UseCase) Logout(
+	ctx context.Context,
+	session *model.Session,
+) error {
+	u.Sessions.Delete(ctx, session.ID)
 
 	return nil
 }

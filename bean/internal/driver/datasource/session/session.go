@@ -25,14 +25,16 @@ func New(cache *redis.Cache) interfaces.SessionDataSource {
 }
 
 func (ds *dataSource) Create(
+	ctx context.Context,
 	userID string,
 	hashedToken string,
 	duration time.Duration,
 ) (*model.Session, error) {
-	return ds.doCreate(userID, hashedToken, duration, 0)
+	return ds.doCreate(ctx, userID, hashedToken, duration, 0)
 }
 
 func (ds *dataSource) doCreate(
+	ctx context.Context,
 	userID string,
 	hashedToken string,
 	duration time.Duration,
@@ -49,13 +51,13 @@ func (ds *dataSource) doCreate(
 
 	id := rand.String()
 
-	existing, err := ds.FindByID(id)
+	existing, err := ds.FindByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find existing session: %w", err)
 	}
 
 	if existing != nil {
-		return ds.doCreate(userID, hashedToken, duration, attempts+1)
+		return ds.doCreate(ctx, userID, hashedToken, duration, attempts+1)
 	}
 
 	createdAt := time.Now()
@@ -71,7 +73,7 @@ func (ds *dataSource) doCreate(
 		ExpiresAt:   expiresAt,
 	}
 
-	err = ds.cache.Client.Set(context.Background(), id, session, duration).Err()
+	err = ds.cache.Client.Set(ctx, id, session, duration).Err()
 	if err != nil {
 		return nil, fmt.Errorf("failed to set session in cache: %w", err)
 	}
@@ -79,10 +81,13 @@ func (ds *dataSource) doCreate(
 	return session, nil
 }
 
-func (ds *dataSource) FindByID(id string) (*model.Session, error) {
+func (ds *dataSource) FindByID(
+	ctx context.Context,
+	id string,
+) (*model.Session, error) {
 	session := &model.Session{}
 
-	err := ds.cache.Client.Get(context.Background(), id).Scan(session)
+	err := ds.cache.Client.Get(ctx, id).Scan(session)
 	if err == redis.ErrNoRows {
 		return nil, nil
 	}
@@ -94,11 +99,15 @@ func (ds *dataSource) FindByID(id string) (*model.Session, error) {
 	return session, nil
 }
 
-func (ds *dataSource) Refresh(session *model.Session, duration time.Duration) error {
+func (ds *dataSource) Refresh(
+	ctx context.Context,
+	session *model.Session,
+	duration time.Duration,
+) error {
 	session.UpdatedAt = time.Now()
 	session.ExpiresAt = session.UpdatedAt.Add(duration)
 
-	err := ds.cache.Client.Set(context.Background(), session.ID, session, duration).Err()
+	err := ds.cache.Client.Set(ctx, session.ID, session, duration).Err()
 	if err != nil {
 		return fmt.Errorf("failed to refresh session in cache: %w", err)
 	}
@@ -106,8 +115,11 @@ func (ds *dataSource) Refresh(session *model.Session, duration time.Duration) er
 	return nil
 }
 
-func (ds *dataSource) Delete(id string) error {
-	err := ds.cache.Client.Del(context.Background(), id).Err()
+func (ds *dataSource) Delete(
+	ctx context.Context,
+	id string,
+) error {
+	err := ds.cache.Client.Del(ctx, id).Err()
 	if err != nil {
 		return fmt.Errorf("failed to delete session from cache: %w", err)
 	}
