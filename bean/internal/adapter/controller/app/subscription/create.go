@@ -27,9 +27,12 @@ func (c *Controller) CreateForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := getCreateFormData(r)
 
-		session := auth.SessionFromContext(r.Context())
+		ctx := r.Context()
+
+		session := auth.SessionFromContext(ctx)
 
 		_, err := c.Subscriptions.Create(
+			ctx,
 			session.UserID,
 			form.PaymentMethodID,
 			form.Label,

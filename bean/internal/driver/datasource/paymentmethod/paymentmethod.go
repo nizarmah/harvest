@@ -20,6 +20,7 @@ func New(db *postgres.DB) interfaces.PaymentMethodDataSource {
 }
 
 func (ds *dataSource) Create(
+	ctx context.Context,
 	userID string,
 	label string,
 	last4 string,
@@ -31,7 +32,7 @@ func (ds *dataSource) Create(
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("INSERT INTO payment_methods (user_id, label, last4, brand, exp_month, exp_year)"+
 				" VALUES ($1, $2, $3, $4, $5, $6)"+
 				" RETURNING *"),
@@ -50,10 +51,14 @@ func (ds *dataSource) Create(
 	return method, nil
 }
 
-func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWithSubscriptions, error) {
+func (ds *dataSource) FindByID(
+	ctx context.Context,
+	userID string,
+	id string,
+) (*model.PaymentMethodWithSubscriptions, error) {
 	rows, err := ds.db.Pool.
 		Query(
-			context.Background(),
+			ctx,
 			("SELECT" +
 				" payment_methods.id, payment_methods.user_id," +
 				" payment_methods.label, payment_methods.last4, payment_methods.brand, payment_methods.exp_month, payment_methods.exp_year," +
@@ -129,10 +134,13 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.PaymentMethodWi
 	}, nil
 }
 
-func (ds *dataSource) FindByUserID(userID string) ([]*model.PaymentMethodWithSubscriptions, error) {
+func (ds *dataSource) FindByUserID(
+	ctx context.Context,
+	userID string,
+) ([]*model.PaymentMethodWithSubscriptions, error) {
 	rows, err := ds.db.Pool.
 		Query(
-			context.Background(),
+			ctx,
 			("SELECT" +
 				" payment_methods.id, payment_methods.user_id," +
 				" payment_methods.label, payment_methods.last4, payment_methods.brand, payment_methods.exp_month, payment_methods.exp_year," +
@@ -222,10 +230,14 @@ func (ds *dataSource) FindByUserID(userID string) ([]*model.PaymentMethodWithSub
 	return methods, nil
 }
 
-func (ds *dataSource) Delete(userID string, id string) error {
+func (ds *dataSource) Delete(
+	ctx context.Context,
+	userID string,
+	id string,
+) error {
 	_, err := ds.db.Pool.
 		Exec(
-			context.Background(),
+			ctx,
 			"DELETE FROM payment_methods WHERE user_id = $1 AND id = $2",
 			userID, id,
 		)

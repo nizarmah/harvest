@@ -30,7 +30,7 @@ func (c *Controller) HomePage() http.HandlerFunc {
 
 		session := auth.SessionFromContext(ctx)
 
-		methods, err := c.PaymentMethods.List(session.UserID)
+		methods, err := c.PaymentMethods.List(ctx, session.UserID)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
