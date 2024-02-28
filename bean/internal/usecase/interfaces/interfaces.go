@@ -130,13 +130,28 @@ type MembershipDataSource interface {
 }
 
 type SessionDataSource interface {
-	Create(userID string, hashedToken string, duration time.Duration) (*model.Session, error)
+	Create(
+		ctx context.Context,
+		userID string,
+		hashedToken string,
+		duration time.Duration,
+	) (*model.Session, error)
 
-	FindByID(id string) (*model.Session, error)
+	FindByID(
+		ctx context.Context,
+		id string,
+	) (*model.Session, error)
 
-	Refresh(session *model.Session, duration time.Duration) error
+	Refresh(
+		ctx context.Context,
+		session *model.Session,
+		duration time.Duration,
+	) error
 
-	Delete(id string) error
+	Delete(
+		ctx context.Context,
+		id string,
+	) error
 }
 
 // --- Misc ---
