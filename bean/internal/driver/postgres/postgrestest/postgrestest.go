@@ -1,8 +1,10 @@
 package postgrestest
 
 import (
+	"context"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/whatis277/harvest/bean/internal/driver/postgres"
 )
@@ -14,7 +16,10 @@ func DBTest(t *testing.T) *postgres.DB {
 		t.Skip("skipping integration test, set env var INTEGRATION=1")
 	}
 
-	db, err := postgres.New(&postgres.DSNBuilder{
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	db, err := postgres.New(ctx, &postgres.DSNBuilder{
 		Host:     "postgres",
 		Port:     "5432",
 		Name:     "bean_test",
