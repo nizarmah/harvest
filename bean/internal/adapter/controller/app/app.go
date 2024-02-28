@@ -26,7 +26,9 @@ type Controller struct {
 
 func (c *Controller) HomePage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session := auth.SessionFromContext(r.Context())
+		ctx := r.Context()
+
+		session := auth.SessionFromContext(ctx)
 
 		methods, err := c.PaymentMethods.List(session.UserID)
 		if err != nil {
@@ -59,9 +61,11 @@ func (c *Controller) HomePage() http.HandlerFunc {
 
 func (c *Controller) RenewPlanPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session := auth.SessionFromContext(r.Context())
+		ctx := r.Context()
 
-		isMember, _ := c.Memberships.CheckByID(session.UserID)
+		session := auth.SessionFromContext(ctx)
+
+		isMember, _ := c.Memberships.CheckByID(ctx, session.UserID)
 		if isMember {
 			http.Redirect(w, r, "/home", http.StatusFound)
 			return

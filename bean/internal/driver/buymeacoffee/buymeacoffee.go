@@ -1,6 +1,7 @@
 package buymeacoffee
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -59,13 +60,15 @@ func (c *Controller) Webhook() http.HandlerFunc {
 			return
 		}
 
+		ctx := r.Context()
+
 		switch event.Type {
 		case "membership.started":
-			c.membershipStarted(w, event)
+			c.membershipStarted(ctx, w, event)
 			return
 
 		case "membership.cancelled":
-			c.membershipCancelled(w, event)
+			c.membershipCancelled(ctx, w, event)
 			return
 		}
 
@@ -86,7 +89,11 @@ func (c *Controller) validateSignature(body []byte, signature string) (bool, err
 	return signatureHex == signature, nil
 }
 
-func (c *Controller) membershipStarted(w http.ResponseWriter, event Event) {
+func (c *Controller) membershipStarted(
+	ctx context.Context,
+	w http.ResponseWriter,
+	event Event,
+) {
 	var data MembershipStartedData
 	err := json.Unmarshal(event.Data, &data)
 	if err != nil {
@@ -97,7 +104,7 @@ func (c *Controller) membershipStarted(w http.ResponseWriter, event Event) {
 	email := data.SupporterEmail
 	createdAt := time.Unix(data.CurrentPeriodStart, 0)
 
-	_, err = c.Memberships.Create(email, createdAt)
+	_, err = c.Memberships.Create(ctx, email, createdAt)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -112,7 +119,11 @@ func (c *Controller) membershipStarted(w http.ResponseWriter, event Event) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (c *Controller) membershipCancelled(w http.ResponseWriter, event Event) {
+func (c *Controller) membershipCancelled(
+	ctx context.Context,
+	w http.ResponseWriter,
+	event Event,
+) {
 	var data MembershipCancelledData
 	err := json.Unmarshal(event.Data, &data)
 	if err != nil {
@@ -123,7 +134,7 @@ func (c *Controller) membershipCancelled(w http.ResponseWriter, event Event) {
 	email := data.SupporterEmail
 	expiresAt := time.Unix(data.CurrentPeriodEnd, 0)
 
-	_, err = c.Memberships.Cancel(email, expiresAt)
+	_, err = c.Memberships.Cancel(ctx, email, expiresAt)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
