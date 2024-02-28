@@ -21,12 +21,16 @@ func New(db *postgres.DB) interfaces.LoginTokenDataSource {
 	}
 }
 
-func (ds *dataSource) Create(email string, hashedToken string) (*model.LoginToken, error) {
+func (ds *dataSource) Create(
+	ctx context.Context,
+	email string,
+	hashedToken string,
+) (*model.LoginToken, error) {
 	token := &model.LoginToken{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("INSERT INTO login_tokens (email, hashed_token)"+
 				" VALUES ($1, $2)"+
 				" ON CONFLICT (email) DO UPDATE"+
@@ -43,12 +47,15 @@ func (ds *dataSource) Create(email string, hashedToken string) (*model.LoginToke
 	return token, nil
 }
 
-func (ds *dataSource) FindUnexpiredByEmail(email string) (*model.LoginToken, error) {
+func (ds *dataSource) FindUnexpiredByEmail(
+	ctx context.Context,
+	email string,
+) (*model.LoginToken, error) {
 	token := &model.LoginToken{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("SELECT * FROM login_tokens"+
 				" WHERE email = $1 AND expires_at > NOW()"),
 			email,
@@ -66,12 +73,15 @@ func (ds *dataSource) FindUnexpiredByEmail(email string) (*model.LoginToken, err
 	return token, nil
 }
 
-func (ds *dataSource) FindUnexpiredByID(id string) (*model.LoginToken, error) {
+func (ds *dataSource) FindUnexpiredByID(
+	ctx context.Context,
+	id string,
+) (*model.LoginToken, error) {
 	token := &model.LoginToken{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("SELECT * FROM login_tokens"+
 				" WHERE id = $1 AND expires_at > NOW()"),
 			id,
@@ -89,10 +99,13 @@ func (ds *dataSource) FindUnexpiredByID(id string) (*model.LoginToken, error) {
 	return token, nil
 }
 
-func (ds *dataSource) Delete(id string) error {
+func (ds *dataSource) Delete(
+	ctx context.Context,
+	id string,
+) error {
 	_, err := ds.db.Pool.
 		Exec(
-			context.Background(),
+			ctx,
 			"DELETE FROM login_tokens WHERE id = $1",
 			id,
 		)

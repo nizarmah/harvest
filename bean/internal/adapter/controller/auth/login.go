@@ -39,7 +39,9 @@ func (c *Controller) LoginForm() http.HandlerFunc {
 			return
 		}
 
-		err := c.Passwordless.Login(email)
+		ctx := r.Context()
+
+		err := c.Passwordless.Login(ctx, email)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return

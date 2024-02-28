@@ -110,7 +110,7 @@ func (c *Controller) membershipStarted(
 		return
 	}
 
-	err = c.Passwordless.Login(email)
+	err = c.Passwordless.Login(ctx, email)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
