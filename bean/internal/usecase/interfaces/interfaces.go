@@ -63,12 +63,24 @@ type PaymentMethodDataSource interface {
 }
 
 type UserDataSource interface {
-	Create(email string) (*model.User, error)
+	Create(
+		ctx context.Context,
+		email string,
+	) (*model.User, error)
 
-	FindById(id string) (*model.User, error)
-	FindByEmail(email string) (*model.User, error)
+	FindById(
+		ctx context.Context,
+		id string,
+	) (*model.User, error)
+	FindByEmail(
+		ctx context.Context,
+		email string,
+	) (*model.User, error)
 
-	Delete(id string) error
+	Delete(
+		ctx context.Context,
+		id string,
+	) error
 }
 
 type LoginTokenDataSource interface {

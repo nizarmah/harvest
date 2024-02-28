@@ -22,7 +22,7 @@ func (u *UseCase) Create(
 	email string,
 	createdAt time.Time,
 ) (*model.Membership, error) {
-	user, err := u.findOrCreateUser(email)
+	user, err := u.findOrCreateUser(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find or create user: %v", err)
 	}
@@ -40,7 +40,7 @@ func (u *UseCase) Cancel(
 	email string,
 	expiresAt time.Time,
 ) (*model.Membership, error) {
-	user, err := u.Users.FindByEmail(email)
+	user, err := u.Users.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %v", err)
 	}
@@ -93,7 +93,7 @@ func (u *UseCase) CheckByEmail(
 		return true, nil
 	}
 
-	user, err := u.Users.FindByEmail(email)
+	user, err := u.Users.FindByEmail(ctx, email)
 	if err != nil {
 		return false, fmt.Errorf("failed to find user: %v", err)
 	}
@@ -105,8 +105,11 @@ func (u *UseCase) CheckByEmail(
 	return u.CheckByID(ctx, user.ID)
 }
 
-func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
-	user, err := u.Users.FindByEmail(email)
+func (u *UseCase) findOrCreateUser(
+	ctx context.Context,
+	email string,
+) (*model.User, error) {
+	user, err := u.Users.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
@@ -115,7 +118,7 @@ func (u *UseCase) findOrCreateUser(email string) (*model.User, error) {
 		return user, nil
 	}
 
-	user, err = u.Users.Create(email)
+	user, err = u.Users.Create(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
