@@ -11,6 +11,7 @@ import (
 
 type SubscriptionDataSource interface {
 	Create(
+		ctx context.Context,
 		userID string,
 		paymentMethodID string,
 		label string,
@@ -20,9 +21,17 @@ type SubscriptionDataSource interface {
 		period model.SubscriptionPeriod,
 	) (*model.Subscription, error)
 
-	FindByID(userID string, id string) (*model.Subscription, error)
+	FindByID(
+		ctx context.Context,
+		userID string,
+		id string,
+	) (*model.Subscription, error)
 
-	Delete(userID string, id string) error
+	Delete(
+		ctx context.Context,
+		userID string,
+		id string,
+	) error
 }
 
 type PaymentMethodDataSource interface {

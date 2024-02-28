@@ -22,6 +22,7 @@ func New(db *postgres.DB) interfaces.SubscriptionDataSource {
 }
 
 func (ds *dataSource) Create(
+	ctx context.Context,
 	userID string,
 	paymentMethodID string,
 	label string,
@@ -34,7 +35,7 @@ func (ds *dataSource) Create(
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("INSERT INTO subscriptions"+
 				" (user_id, payment_method_id, label, provider, amount, interval, period)"+
 				" VALUES ($1, $2, $3, $4, $5, $6, $7)"+
@@ -55,12 +56,16 @@ func (ds *dataSource) Create(
 	return sub, nil
 }
 
-func (ds *dataSource) FindByID(userID string, id string) (*model.Subscription, error) {
+func (ds *dataSource) FindByID(
+	ctx context.Context,
+	userID string,
+	id string,
+) (*model.Subscription, error) {
 	sub := &model.Subscription{}
 
 	err := ds.db.Pool.
 		QueryRow(
-			context.Background(),
+			ctx,
 			("SELECT * FROM subscriptions"+
 				" WHERE"+
 				" subscriptions.user_id = $1"+
@@ -85,10 +90,14 @@ func (ds *dataSource) FindByID(userID string, id string) (*model.Subscription, e
 	return sub, nil
 }
 
-func (ds *dataSource) Delete(userID string, id string) error {
+func (ds *dataSource) Delete(
+	ctx context.Context,
+	userID string,
+	id string,
+) error {
 	_, err := ds.db.Pool.
 		Exec(
-			context.Background(),
+			ctx,
 			"DELETE FROM subscriptions WHERE user_id = $1 AND id = $2",
 			userID, id,
 		)
