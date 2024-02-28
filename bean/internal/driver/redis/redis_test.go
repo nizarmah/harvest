@@ -3,6 +3,7 @@ package redis_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/whatis277/harvest/bean/internal/driver/redis/redistest"
 )
@@ -10,7 +11,10 @@ import (
 func TestCache(t *testing.T) {
 	cache := redistest.CacheTest(t)
 
-	err := cache.Client.Ping(context.TODO()).Err()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	err := cache.Client.Ping(ctx).Err()
 	if err != nil {
 		t.Fatalf("cache error: %s", err)
 	}

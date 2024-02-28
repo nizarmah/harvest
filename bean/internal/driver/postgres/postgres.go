@@ -11,13 +11,13 @@ type DB struct {
 	Pool *pgxpool.Pool
 }
 
-func New(builder *DSNBuilder) (*DB, error) {
-	pool, err := pgxpool.New(context.Background(), dsn(builder))
+func New(ctx context.Context, builder *DSNBuilder) (*DB, error) {
+	pool, err := pgxpool.New(ctx, dsn(builder))
 	if err != nil {
 		return nil, errors.New("error creating pool")
 	}
 
-	err = pool.Ping(context.Background())
+	err = pool.Ping(ctx)
 	if err != nil {
 		return nil, errors.New("error pinging pool")
 	}

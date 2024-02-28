@@ -19,7 +19,7 @@ type Cache struct {
 	Client *redis.Client
 }
 
-func New(cfg *Config) (*Cache, error) {
+func New(ctx context.Context, cfg *Config) (*Cache, error) {
 	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 
 	client := redis.NewClient(
@@ -33,7 +33,7 @@ func New(cfg *Config) (*Cache, error) {
 		return nil, errors.New("error creating redis client")
 	}
 
-	err := client.Ping(context.Background()).Err()
+	err := client.Ping(ctx).Err()
 	if err != nil {
 		return nil, errors.New("error pinging redis: " + err.Error())
 	}

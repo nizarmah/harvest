@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	estimatorUC "github.com/whatis277/harvest/bean/internal/usecase/estimator"
 	membershipUC "github.com/whatis277/harvest/bean/internal/usecase/membership"
@@ -45,7 +47,10 @@ func main() {
 		)
 	}
 
-	db, err := postgres.New(&postgres.DSNBuilder{
+	dbCtx, dbCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer dbCancel()
+
+	db, err := postgres.New(dbCtx, &postgres.DSNBuilder{
 		Host:     env.DB.Host,
 		Port:     env.DB.Port,
 		Name:     env.DB.Name,
@@ -60,7 +65,10 @@ func main() {
 	}
 	defer db.Close()
 
-	cache, err := redis.New(&redis.Config{
+	cacheCtx, cacheCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cacheCancel()
+
+	cache, err := redis.New(cacheCtx, &redis.Config{
 		Host:     env.Cache.Host,
 		Port:     env.Cache.Port,
 		Username: env.Cache.Username,
