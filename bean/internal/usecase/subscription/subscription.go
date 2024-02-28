@@ -54,6 +54,7 @@ func (u *UseCase) Create(
 	}
 
 	subscription, err := u.Subscriptions.Create(
+		ctx,
 		userID,
 		paymentMethodID,
 		label,
@@ -69,8 +70,12 @@ func (u *UseCase) Create(
 	return subscription, nil
 }
 
-func (u *UseCase) Get(userID string, subscriptionID string) (*model.Subscription, error) {
-	subscription, err := u.Subscriptions.FindByID(userID, subscriptionID)
+func (u *UseCase) Get(
+	ctx context.Context,
+	userID string,
+	subscriptionID string,
+) (*model.Subscription, error) {
+	subscription, err := u.Subscriptions.FindByID(ctx, userID, subscriptionID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get subscription: %w", err)
 	}
@@ -78,8 +83,12 @@ func (u *UseCase) Get(userID string, subscriptionID string) (*model.Subscription
 	return subscription, nil
 }
 
-func (u *UseCase) Delete(userID string, subscriptionID string) error {
-	if err := u.Subscriptions.Delete(userID, subscriptionID); err != nil {
+func (u *UseCase) Delete(
+	ctx context.Context,
+	userID string,
+	subscriptionID string,
+) error {
+	if err := u.Subscriptions.Delete(ctx, userID, subscriptionID); err != nil {
 		return fmt.Errorf("failed to delete subscription: %w", err)
 	}
 

@@ -18,9 +18,11 @@ func (c *Controller) DeletePage() http.HandlerFunc {
 			return
 		}
 
-		session := auth.SessionFromContext(r.Context())
+		ctx := r.Context()
 
-		sub, err := c.Subscriptions.Get(session.UserID, subID)
+		session := auth.SessionFromContext(ctx)
+
+		sub, err := c.Subscriptions.Get(ctx, session.UserID, subID)
 		if err != nil || sub == nil {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return
@@ -40,9 +42,11 @@ func (c *Controller) DeleteForm() http.HandlerFunc {
 			return
 		}
 
-		session := auth.SessionFromContext(r.Context())
+		ctx := r.Context()
 
-		c.Subscriptions.Delete(session.UserID, subID)
+		session := auth.SessionFromContext(ctx)
+
+		c.Subscriptions.Delete(ctx, session.UserID, subID)
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}

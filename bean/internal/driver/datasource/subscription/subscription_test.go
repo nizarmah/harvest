@@ -1,7 +1,9 @@
 package subscription
 
 import (
+	"context"
 	"testing"
+	"time"
 
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 
@@ -38,7 +40,10 @@ func TestDataSouce(t *testing.T) {
 }
 
 func create(t *testing.T, ds interfaces.SubscriptionDataSource) {
-	sub, err := ds.Create(userWithSubsID, methodID, "action-create", "bean", 1000, 1, model.SubscriptionPeriodMonthly)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	sub, err := ds.Create(ctx, userWithSubsID, methodID, "action-create", "bean", 1000, 1, model.SubscriptionPeriodMonthly)
 	if err != nil {
 		t.Fatalf("failed to create subscription: %s", err)
 	}
@@ -75,14 +80,17 @@ func create(t *testing.T, ds interfaces.SubscriptionDataSource) {
 		t.Errorf("expected period: %s, got: %s", model.SubscriptionPeriodMonthly, sub.Period)
 	}
 
-	if err := ds.Delete(userWithSubsID, sub.ID); err != nil {
+	if err := ds.Delete(ctx, userWithSubsID, sub.ID); err != nil {
 		t.Fatalf("failed to cleanup subscription: %s", err)
 	}
 }
 
 func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_subscription", func(t *testing.T) {
-		sub, err := ds.FindByID(userWithSubsID, subID)
+		sub, err := ds.FindByID(ctx, userWithSubsID, subID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -93,7 +101,7 @@ func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	})
 
 	t.Run("not_owned_subscription", func(t *testing.T) {
-		sub, err := ds.FindByID(userWithNoSubsID, subID)
+		sub, err := ds.FindByID(ctx, userWithNoSubsID, subID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -104,7 +112,7 @@ func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	})
 
 	t.Run("missing_subscription", func(t *testing.T) {
-		sub, err := ds.FindByID(userWithSubsID, missingID)
+		sub, err := ds.FindByID(ctx, userWithSubsID, missingID)
 		if err != nil {
 			t.Fatalf("expected nil error, got: %s", err)
 		}
@@ -116,17 +124,20 @@ func findByID(t *testing.T, ds interfaces.SubscriptionDataSource) {
 }
 
 func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	t.Run("existing_subscription", func(t *testing.T) {
-		sub, err := ds.Create(userWithSubsID, methodID, "action-delete", "bean", 1000, 1, model.SubscriptionPeriodMonthly)
+		sub, err := ds.Create(ctx, userWithSubsID, methodID, "action-delete", "bean", 1000, 1, model.SubscriptionPeriodMonthly)
 		if err != nil {
 			t.Fatalf("failed to create subscription: %s", err)
 		}
 
-		if err = ds.Delete(userWithSubsID, sub.ID); err != nil {
+		if err = ds.Delete(ctx, userWithSubsID, sub.ID); err != nil {
 			t.Fatalf("failed to delete subscription: %s", err)
 		}
 
-		sub, err = ds.FindByID(userWithSubsID, sub.ID)
+		sub, err = ds.FindByID(ctx, userWithSubsID, sub.ID)
 		if err != nil {
 			t.Fatalf("failed to find subscription: %s", err)
 		}
@@ -137,11 +148,11 @@ func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	})
 
 	t.Run("not_owned_subscription", func(t *testing.T) {
-		if err := ds.Delete(userWithNoSubsID, subID); err != nil {
+		if err := ds.Delete(ctx, userWithNoSubsID, subID); err != nil {
 			t.Errorf("failed to delete subscription: %s", err)
 		}
 
-		sub, err := ds.FindByID(userWithSubsID, subID)
+		sub, err := ds.FindByID(ctx, userWithSubsID, subID)
 		if err != nil {
 			t.Fatalf("failed to find subscription: %s", err)
 		}
@@ -152,7 +163,7 @@ func delete(t *testing.T, ds interfaces.SubscriptionDataSource) {
 	})
 
 	t.Run("missing_subscription", func(t *testing.T) {
-		if err := ds.Delete(userWithSubsID, missingID); err != nil {
+		if err := ds.Delete(ctx, userWithSubsID, missingID); err != nil {
 			t.Errorf("failed to delete subscription: %s", err)
 		}
 	})
