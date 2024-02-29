@@ -16,7 +16,7 @@ func NewContextWithSession(ctx context.Context, session *model.Session) context.
 
 func SessionFromContext(ctx context.Context) *model.Session {
 	session, ok := ctx.Value(sessionContextKey).(*model.Session)
-	if !ok {
+	if !ok || session == nil {
 		return nil
 	}
 

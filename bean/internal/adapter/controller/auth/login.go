@@ -4,58 +4,77 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/whatis277/harvest/bean/internal/entity/model"
+
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 )
 
-func (c *Controller) LoginPage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) LoginPage() model.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		sessionToken, _ := c.getSessionToken(r)
 		if sessionToken != nil {
-			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return
+			return NewAuthorizedError(
+				"auth: login: user already has a session token",
+			)
 		}
 
-		c.renderLogin(w, &viewmodel.LoginViewData{})
+		return c.renderLogin(w, &viewmodel.LoginViewData{})
 	}
 }
 
-func (c *Controller) LoginForm() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) LoginForm() model.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		sessionToken, _ := c.getSessionToken(r)
 		if sessionToken != nil {
-			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return
+			return NewAuthorizedError(
+				"auth: login: user already has a session token",
+			)
 		}
 
 		email := r.FormValue("email")
 		if email == "" {
-			c.LoginView.Render(w, &viewmodel.LoginViewData{})
-			return
+			return c.LoginView.Render(w, &viewmodel.LoginViewData{})
 		}
 
 		password := r.FormValue("password")
 		if password != "" {
-			c.LoginView.Render(w, &viewmodel.LoginViewData{})
-			return
+			return c.LoginView.Render(w, &viewmodel.LoginViewData{})
 		}
 
 		ctx := r.Context()
 
 		err := c.Passwordless.Login(ctx, email)
 		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
+			// FIXME: This should check for a specific error type
+			return NewUnauthorizedError(
+				fmt.Sprintf(
+					"auth: login: error logging in user: %v",
+					err,
+				),
+			)
 		}
 
-		c.renderLogin(w, &viewmodel.LoginViewData{
+		return c.renderLogin(w, &viewmodel.LoginViewData{
 			Email: email,
 		})
 	}
 }
 
-func (c *Controller) renderLogin(w http.ResponseWriter, data *viewmodel.LoginViewData) {
+func (c *Controller) renderLogin(
+	w http.ResponseWriter,
+	data *viewmodel.LoginViewData,
+) error {
 	err := c.LoginView.Render(w, data)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		return &model.HTTPError{
+			Status: http.StatusInternalServerError,
+
+			Message: fmt.Sprintf(
+				"auth: login: error rendering login view: %v",
+				err,
+			),
+		}
 	}
+
+	return nil
 }

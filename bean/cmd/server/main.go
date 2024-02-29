@@ -16,6 +16,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/paymentmethod"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/subscription"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/marketing"
 	envAdapter "github.com/whatis277/harvest/bean/internal/adapter/env"
 
@@ -185,6 +186,8 @@ func main() {
 		)
 	}
 
+	baseController := base.Controller{}
+
 	marketingController := marketing.Controller{
 		LandingView: landingView,
 	}
@@ -231,9 +234,13 @@ func main() {
 		Memberships:  memberships,
 	}
 
-	s := server.New()
+	s := server.New(&server.Config{
+		BaseHandler: baseController.ErrorHandler,
+	})
 
-	s.Route("GET /health", func(w http.ResponseWriter, r *http.Request) {})
+	s.Route("GET /health", func(w http.ResponseWriter, r *http.Request) error {
+		return nil
+	})
 
 	// Unauthenticated routes
 

@@ -11,22 +11,23 @@ import (
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
 )
 
-func (c *Controller) CreatePage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		c.renderCreateView(w, &viewmodel.CreatePaymentMethodViewData{})
+func (c *Controller) CreatePage() model.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		return c.renderCreateView(w, &viewmodel.CreatePaymentMethodViewData{})
 	}
 }
 
-func (c *Controller) CreateForm() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) CreateForm() model.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		form := getCreateFormData(r)
 
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			http.Redirect(w, r, "/logout", http.StatusFound)
-			return
+			return auth.NewUnauthorizedError(
+				"pms: create: user has no session",
+			)
 		}
 
 		_, err := c.PaymentMethods.Create(
@@ -40,23 +41,36 @@ func (c *Controller) CreateForm() http.HandlerFunc {
 		)
 
 		if err != nil {
-			c.renderCreateView(w, &viewmodel.CreatePaymentMethodViewData{
+			// FIXME: This should check for a specific error type
+			return c.renderCreateView(w, &viewmodel.CreatePaymentMethodViewData{
 				Error: err.Error(),
 				Form:  form,
 			})
-			return
 		}
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
+
+		return nil
 	}
 }
 
-func (c *Controller) renderCreateView(w http.ResponseWriter, data *viewmodel.CreatePaymentMethodViewData) {
+func (c *Controller) renderCreateView(
+	w http.ResponseWriter,
+	data *viewmodel.CreatePaymentMethodViewData,
+) error {
 	err := c.CreateView.Render(w, data)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
+		return &model.HTTPError{
+			Status: http.StatusInternalServerError,
+
+			Message: fmt.Sprintf(
+				"pms: create: error rendering create view: %v",
+				err,
+			),
+		}
 	}
+
+	return nil
 }
 
 func getCreateFormData(r *http.Request) viewmodel.CreatePaymentMethodForm {

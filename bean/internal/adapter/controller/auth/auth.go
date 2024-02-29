@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
+
+	"github.com/whatis277/harvest/bean/internal/entity/model"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/membership"
 	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
@@ -19,66 +22,105 @@ type Controller struct {
 	SignUpView interfaces.SignUpView
 }
 
-func (c *Controller) Authenticate(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Authenticate(next model.HTTPHandler) model.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		sessionToken, err := c.getSessionToken(r)
-		if err != nil || sessionToken == nil {
-			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
+		if err != nil {
+			return NewUnauthorizedError(
+				fmt.Sprintf(
+					"auth: authenticate: error getting session token: %v",
+					err,
+				),
+			)
+		}
+
+		if sessionToken == nil {
+			return NewUnauthorizedError(
+				"auth: authenticate: user has no session token",
+			)
 		}
 
 		ctx := r.Context()
 
 		session, err := c.Passwordless.Authenticate(ctx, sessionToken)
-		if err != nil || session == nil {
-			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
+		if err != nil {
+			// FIXME: This should check for a specific error type
+			return NewUnauthorizedError(
+				fmt.Sprintf(
+					"auth: authenticate: error authenticating user: %v",
+					err,
+				),
+			)
+		}
+
+		if session == nil {
+			return NewUnauthorizedError(
+				"auth: authenticate: user has no session",
+			)
 		}
 
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
-			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
+			NewUnauthorizedError(
+				fmt.Sprintf(
+					"auth: authenticate: error creating session token: %v",
+					err,
+				),
+			)
 		}
 
 		sessionCtx := NewContextWithSession(ctx, session)
 
-		next.ServeHTTP(w, r.WithContext(sessionCtx))
+		return next(w, r.WithContext(sessionCtx))
 	}
 }
 
-func (c *Controller) Authorize() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Authorize() model.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		sessionToken, _ := c.getSessionToken(r)
 		if sessionToken != nil {
-			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return
+			return NewAuthorizedError(
+				"auth: authorize: user has a session token",
+			)
 		}
 
 		id, password := r.PathValue("id"), r.PathValue("password")
 		if id == "" || password == "" {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
+			return NewUnauthorizedError(
+				"auth: authorize: id and password are missing",
+			)
 		}
 
 		ctx := r.Context()
 
 		sessionToken, err := c.Passwordless.Authorize(ctx, id, password)
 		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
+			// FIXME: This should check for a specific error type
+			return NewUnauthorizedError(
+				fmt.Sprintf(
+					"auth: authorize: error authorizing user: %v",
+					err,
+				),
+			)
 		}
 
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
-			c.cleanupSessionToken(w)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
+			return NewUnauthorizedError(
+				fmt.Sprintf(
+					"auth: authorize: error creating session token: %v",
+					err,
+				),
+			)
 		}
 
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		http.Redirect(
+			w,
+			r,
+			defaultAuthedRedirectPath,
+			defaultObscureStatus,
+		)
+
+		return nil
 	}
 }

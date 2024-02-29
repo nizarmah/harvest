@@ -1,18 +1,42 @@
 package auth
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
 
-func (c *Controller) Logout() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	"github.com/whatis277/harvest/bean/internal/entity/model"
+)
+
+func (c *Controller) Logout() model.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
-
-		session := SessionFromContext(ctx)
-		if session != nil {
-			c.Passwordless.Logout(ctx, session)
-		}
 
 		c.cleanupSessionToken(w)
 
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		session := SessionFromContext(ctx)
+		if session == nil {
+			return NewUnauthorizedError(
+				"auth: logout: user has no session",
+			)
+		}
+
+		err := c.Passwordless.Logout(ctx, session)
+		if err != nil {
+			return NewUnauthorizedError(
+				fmt.Sprintf(
+					"auth: logout: error logging out user: %v",
+					err,
+				),
+			)
+		}
+
+		http.Redirect(
+			w,
+			r,
+			defaultUnauthedRedirectPath,
+			defaultObscureStatus,
+		)
+
+		return nil
 	}
 }
