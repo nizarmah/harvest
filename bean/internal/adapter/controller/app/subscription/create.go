@@ -17,9 +17,7 @@ func (c *Controller) CreatePage() base.HTTPHandler {
 		pmID := r.PathValue("pm_id")
 		if pmID == "" {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return &base.HTTPError{
-				Message: "subs: create: no payment method id provided",
-			}
+			return nil
 		}
 
 		return c.renderCreateView(w, &viewmodel.CreateSubscriptionViewData{

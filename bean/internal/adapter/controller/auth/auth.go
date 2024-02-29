@@ -43,13 +43,6 @@ func (c *Controller) Authenticate(next base.HTTPHandler) base.HTTPHandler {
 			}
 		}
 
-		if session == nil {
-			UnauthedUserRedirect(w, r)
-			return &base.HTTPError{
-				Message: "auth: authenticate: returned session is nil",
-			}
-		}
-
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
 			UnauthedUserRedirect(w, r)

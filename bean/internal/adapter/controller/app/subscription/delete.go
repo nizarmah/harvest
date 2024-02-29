@@ -16,9 +16,7 @@ func (c *Controller) DeletePage() base.HTTPHandler {
 		subID := r.PathValue("id")
 		if subID == "" {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return &base.HTTPError{
-				Message: "subs: delete: no id provided",
-			}
+			return nil
 		}
 
 		ctx := r.Context()
@@ -30,7 +28,7 @@ func (c *Controller) DeletePage() base.HTTPHandler {
 		}
 
 		sub, err := c.Subscriptions.Get(ctx, session.UserID, subID)
-		if err != nil || sub == nil {
+		if err != nil {
 			// FIXME: This should check for a specific error type
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return &base.HTTPError{
@@ -39,6 +37,11 @@ func (c *Controller) DeletePage() base.HTTPHandler {
 					err,
 				),
 			}
+		}
+
+		if sub == nil {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return nil
 		}
 
 		return c.renderDeleteView(w, &viewmodel.DeleteSubscriptionViewData{
@@ -52,9 +55,7 @@ func (c *Controller) DeleteForm() base.HTTPHandler {
 		subID := r.FormValue("id")
 		if subID == "" {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return &base.HTTPError{
-				Message: "subs: delete: no id provided",
-			}
+			return nil
 		}
 
 		ctx := r.Context()
