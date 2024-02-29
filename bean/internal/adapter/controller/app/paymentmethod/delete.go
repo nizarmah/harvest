@@ -8,64 +8,96 @@ import (
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/shared"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
-func (c *Controller) DeletePage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) DeletePage() base.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		id := r.PathValue("id")
 		if id == "" {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return
+			return nil
 		}
 
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			http.Redirect(w, r, "/logout", http.StatusFound)
-			return
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		pm, err := c.PaymentMethods.Get(ctx, session.UserID, id)
-		if err != nil || pm == nil {
+		if err != nil {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return
+			return &base.HTTPError{
+				Message: fmt.Sprintf(
+					"pms: delete: error getting payment method: %v",
+					err,
+				),
+			}
+		}
+
+		if pm == nil {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return nil
 		}
 
 		estimates := c.Estimator.GetEstimates(pm.Subscriptions)
 
-		c.renderDeleteView(w, &viewmodel.DeletePaymentMethodViewData{
+		return c.renderDeleteView(w, &viewmodel.DeletePaymentMethodViewData{
 			PaymentMethod: shared.ToPaymentMethodViewModel(pm, estimates),
 		})
 	}
 }
 
-func (c *Controller) DeleteForm() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) DeleteForm() base.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		id := r.FormValue("id")
 		if id == "" {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
-			return
+			return nil
 		}
 
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			http.Redirect(w, r, "/logout", http.StatusFound)
-			return
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
-		c.PaymentMethods.Delete(ctx, session.UserID, id)
+		err := c.PaymentMethods.Delete(ctx, session.UserID, id)
+		if err != nil {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return &base.HTTPError{
+				Message: fmt.Sprintf(
+					"pms: delete: error deleting payment method: %v",
+					err,
+				),
+			}
+		}
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		return nil
 	}
 }
 
-func (c *Controller) renderDeleteView(w http.ResponseWriter, data *viewmodel.DeletePaymentMethodViewData) {
+func (c *Controller) renderDeleteView(
+	w http.ResponseWriter,
+	data *viewmodel.DeletePaymentMethodViewData,
+) error {
 	err := c.DeleteView.Render(w, data)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
+		return &base.HTTPError{
+			Status: http.StatusInternalServerError,
+
+			Message: fmt.Sprintf(
+				"pms: delete: error rendering delete view: %v",
+				err,
+			),
+		}
 	}
+
+	return nil
 }

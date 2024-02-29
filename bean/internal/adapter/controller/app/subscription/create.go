@@ -9,13 +9,18 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
-func (c *Controller) CreatePage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) CreatePage() base.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		pmID := r.PathValue("pm_id")
+		if pmID == "" {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return nil
+		}
 
-		c.renderCreateView(w, &viewmodel.CreateSubscriptionViewData{
+		return c.renderCreateView(w, &viewmodel.CreateSubscriptionViewData{
 			Form: viewmodel.CreateSubscriptionForm{
 				PaymentMethodID: pmID,
 			},
@@ -23,16 +28,16 @@ func (c *Controller) CreatePage() http.HandlerFunc {
 	}
 }
 
-func (c *Controller) CreateForm() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) CreateForm() base.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		form := getCreateFormData(r)
 
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			http.Redirect(w, r, "/logout", http.StatusFound)
-			return
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		_, err := c.Subscriptions.Create(
@@ -47,23 +52,36 @@ func (c *Controller) CreateForm() http.HandlerFunc {
 		)
 
 		if err != nil {
-			c.renderCreateView(w, &viewmodel.CreateSubscriptionViewData{
+			// FIXME: This should check for a specific error type
+			return c.renderCreateView(w, &viewmodel.CreateSubscriptionViewData{
 				Error: err.Error(),
 				Form:  form,
 			})
-			return
 		}
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
+
+		return nil
 	}
 }
 
-func (c *Controller) renderCreateView(w http.ResponseWriter, data *viewmodel.CreateSubscriptionViewData) {
+func (c *Controller) renderCreateView(
+	w http.ResponseWriter,
+	data *viewmodel.CreateSubscriptionViewData,
+) error {
 	err := c.CreateView.Render(w, data)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
+		return &base.HTTPError{
+			Status: http.StatusInternalServerError,
+
+			Message: fmt.Sprintf(
+				"subs: create: error rendering create view: %v",
+				err,
+			),
+		}
 	}
+
+	return nil
 }
 
 func getCreateFormData(r *http.Request) viewmodel.CreateSubscriptionForm {
@@ -82,15 +100,17 @@ func getCreateFormData(r *http.Request) viewmodel.CreateSubscriptionForm {
 	}
 
 	if amount := r.FormValue("amount"); amount != "" {
-		amount, _ := strconv.ParseFloat(amount, 32)
-
-		formData.Amount = float32(amount)
+		amount, err := strconv.ParseFloat(amount, 32)
+		if err == nil {
+			formData.Amount = float32(amount)
+		}
 	}
 
 	if interval := r.FormValue("interval"); interval != "" {
-		interval, _ := strconv.Atoi(interval)
-
-		formData.Interval = interval
+		interval, err := strconv.Atoi(interval)
+		if err == nil {
+			formData.Interval = interval
+		}
 	}
 
 	if period := r.FormValue("period"); period != "" {

@@ -12,6 +12,7 @@ import (
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/shared"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
@@ -24,20 +25,27 @@ type Controller struct {
 	RenewPlanView interfaces.RenewPlanView
 }
 
-func (c *Controller) HomePage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) HomePage() base.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			http.Redirect(w, r, "/logout", http.StatusFound)
-			return
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		methods, err := c.PaymentMethods.List(ctx, session.UserID)
 		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
+			// FIXME: This should check for a specific error type
+			return &base.HTTPError{
+				Status: http.StatusInternalServerError,
+
+				Message: fmt.Sprintf(
+					"app: home: error listing payment methods: %v",
+					err,
+				),
+			}
 		}
 
 		methodsVM := make([]viewmodel.PaymentMethod, 0, len(methods))
@@ -57,32 +65,59 @@ func (c *Controller) HomePage() http.HandlerFunc {
 			YearlyEstimate:  shared.ToDollarsString(totalYearly),
 		})
 		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
+			return &base.HTTPError{
+				Status: http.StatusInternalServerError,
+
+				Message: fmt.Sprintf(
+					"app: home: error rendering home view: %v",
+					err,
+				),
+			}
 		}
+
+		return nil
 	}
 }
 
-func (c *Controller) RenewPlanPage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) RenewPlanPage() base.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			http.Redirect(w, r, "/logout", http.StatusFound)
-			return
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
-		isMember, _ := c.Memberships.CheckByID(ctx, session.UserID)
+		isMember, err := c.Memberships.CheckByID(ctx, session.UserID)
+		if err != nil {
+			return &base.HTTPError{
+				Status: http.StatusInternalServerError,
+
+				Message: fmt.Sprintf(
+					"app: renew-plan: error checking membership: %v",
+					err,
+				),
+			}
+		}
+
 		if isMember {
 			http.Redirect(w, r, "/home", http.StatusFound)
-			return
+			return nil
 		}
 
-		err := c.RenewPlanView.Render(w, nil)
+		err = c.RenewPlanView.Render(w, nil)
 		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
+			return &base.HTTPError{
+				Status: http.StatusInternalServerError,
+
+				Message: fmt.Sprintf(
+					"app: renew-plan: error rendering renew plan view: %v",
+					err,
+				),
+			}
 		}
+
+		return nil
 	}
 }
