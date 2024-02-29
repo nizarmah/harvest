@@ -9,15 +9,16 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
-func (c *Controller) CreatePage() model.HTTPHandler {
+func (c *Controller) CreatePage() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		return c.renderCreateView(w, &viewmodel.CreatePaymentMethodViewData{})
 	}
 }
 
-func (c *Controller) CreateForm() model.HTTPHandler {
+func (c *Controller) CreateForm() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		form := getCreateFormData(r)
 
@@ -25,9 +26,8 @@ func (c *Controller) CreateForm() model.HTTPHandler {
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			return auth.NewUnauthorizedError(
-				"pms: create: user has no session",
-			)
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		_, err := c.PaymentMethods.Create(
@@ -60,7 +60,7 @@ func (c *Controller) renderCreateView(
 ) error {
 	err := c.CreateView.Render(w, data)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(

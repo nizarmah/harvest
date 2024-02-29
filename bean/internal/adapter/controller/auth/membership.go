@@ -4,24 +4,23 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/whatis277/harvest/bean/internal/entity/model"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
-func (c *Controller) CheckMembership(next model.HTTPHandler) model.HTTPHandler {
+func (c *Controller) CheckMembership(next base.HTTPHandler) base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
 
 		session := SessionFromContext(ctx)
 		if session == nil {
-			return NewUnauthorizedError(
-				"auth: check-membership: user has no session",
-			)
+			UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		isMember, err := c.Memberships.CheckByID(ctx, session.UserID)
 		if err != nil {
 			// FIXME: This should check for a specific error type
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 
 				Message: fmt.Sprintf(
@@ -32,12 +31,8 @@ func (c *Controller) CheckMembership(next model.HTTPHandler) model.HTTPHandler {
 		}
 
 		if !isMember {
-			return &model.HTTPError{
-				Status:       http.StatusFound,
-				RedirectPath: "/renew-plan",
-
-				Message: "auth: check-membership: user is not a member",
-			}
+			http.Redirect(w, r, "/renew-plan", http.StatusSeeOther)
+			return nil
 		}
 
 		return next(w, r)

@@ -1,4 +1,4 @@
-package model
+package base
 
 import (
 	"encoding/json"
@@ -11,8 +11,7 @@ import (
 // --- HTTP --- Error ---
 
 type HTTPError struct {
-	Status       int    `json:"status"`
-	RedirectPath string `json:"redirect_path"`
+	Status int `json:"status"`
 
 	Message string `json:"message"`
 }

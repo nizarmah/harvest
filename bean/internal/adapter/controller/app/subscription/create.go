@@ -9,16 +9,15 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
-func (c *Controller) CreatePage() model.HTTPHandler {
+func (c *Controller) CreatePage() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		pmID := r.PathValue("pm_id")
 		if pmID == "" {
-			return &model.HTTPError{
-				Status:       http.StatusSeeOther,
-				RedirectPath: "/home",
-
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return &base.HTTPError{
 				Message: "subs: create: no payment method id provided",
 			}
 		}
@@ -31,7 +30,7 @@ func (c *Controller) CreatePage() model.HTTPHandler {
 	}
 }
 
-func (c *Controller) CreateForm() model.HTTPHandler {
+func (c *Controller) CreateForm() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		form := getCreateFormData(r)
 
@@ -39,9 +38,8 @@ func (c *Controller) CreateForm() model.HTTPHandler {
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			return auth.NewUnauthorizedError(
-				"subs: create: user has no session",
-			)
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		_, err := c.Subscriptions.Create(
@@ -75,7 +73,7 @@ func (c *Controller) renderCreateView(
 ) error {
 	err := c.CreateView.Render(w, data)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(

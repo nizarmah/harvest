@@ -3,14 +3,12 @@ package base
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
 type Controller struct{}
 
 func (c *Controller) ErrorHandler(
-	handler model.HTTPHandler,
+	handler HTTPHandler,
 ) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := handler(w, r)
@@ -19,7 +17,7 @@ func (c *Controller) ErrorHandler(
 		}
 
 		switch e := err.(type) {
-		case *model.HTTPError:
+		case *HTTPError:
 			handleHTTPError(w, r, e)
 		default:
 			handleGenericError(w, r, e)
@@ -27,27 +25,21 @@ func (c *Controller) ErrorHandler(
 	}
 }
 
-func handleHTTPError(w http.ResponseWriter, r *http.Request, err *model.HTTPError) {
+func handleHTTPError(w http.ResponseWriter, r *http.Request, err *HTTPError) {
 	if err == nil {
 		return
 	}
 
 	fmt.Println("server: http error:", err)
 
-	if err.Status == 0 || err.Status >= http.StatusInternalServerError {
-		http.Error(
-			w,
-			"Something went wrong",
-			http.StatusInternalServerError,
-		)
+	if err.Status == 0 {
 		return
 	}
 
-	if err.RedirectPath != "" {
-		http.Redirect(
+	if err.Status >= http.StatusInternalServerError {
+		http.Error(
 			w,
-			r,
-			err.RedirectPath,
+			"Something went wrong",
 			err.Status,
 		)
 		return

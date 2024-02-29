@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/whatis277/harvest/bean/internal/entity/model"
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/usecase/estimator"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/shared"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 	"github.com/whatis277/harvest/bean/internal/adapter/interfaces"
 )
 
@@ -25,21 +25,20 @@ type Controller struct {
 	RenewPlanView interfaces.RenewPlanView
 }
 
-func (c *Controller) HomePage() model.HTTPHandler {
+func (c *Controller) HomePage() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			return auth.NewUnauthorizedError(
-				"app: home: user has no session",
-			)
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		methods, err := c.PaymentMethods.List(ctx, session.UserID)
 		if err != nil {
 			// FIXME: This should check for a specific error type
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 
 				Message: fmt.Sprintf(
@@ -66,7 +65,7 @@ func (c *Controller) HomePage() model.HTTPHandler {
 			YearlyEstimate:  shared.ToDollarsString(totalYearly),
 		})
 		if err != nil {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 
 				Message: fmt.Sprintf(
@@ -80,30 +79,36 @@ func (c *Controller) HomePage() model.HTTPHandler {
 	}
 }
 
-func (c *Controller) RenewPlanPage() model.HTTPHandler {
+func (c *Controller) RenewPlanPage() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			return auth.NewUnauthorizedError(
-				"app: renew-plan: user has no session",
-			)
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
-		isMember, _ := c.Memberships.CheckByID(ctx, session.UserID)
-		if isMember {
-			return &model.HTTPError{
-				Status:       http.StatusFound,
-				RedirectPath: "/home",
+		isMember, err := c.Memberships.CheckByID(ctx, session.UserID)
+		if err != nil {
+			return &base.HTTPError{
+				Status: http.StatusInternalServerError,
 
-				Message: "app: renew-plan: user is already a member",
+				Message: fmt.Sprintf(
+					"app: renew-plan: error checking membership: %v",
+					err,
+				),
 			}
 		}
 
-		err := c.RenewPlanView.Render(w, nil)
+		if isMember {
+			http.Redirect(w, r, "/home", http.StatusFound)
+			return nil
+		}
+
+		err = c.RenewPlanView.Render(w, nil)
 		if err != nil {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 
 				Message: fmt.Sprintf(

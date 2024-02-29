@@ -4,31 +4,29 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/whatis277/harvest/bean/internal/entity/model"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 )
 
-func (c *Controller) LoginPage() model.HTTPHandler {
+func (c *Controller) LoginPage() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		sessionToken := c.getSessionToken(r)
 		if sessionToken != nil {
-			return NewAuthorizedError(
-				"auth: login: user already has a session token",
-			)
+			AuthedUserRedirect(w, r)
+			return nil
 		}
 
 		return c.renderLogin(w, &viewmodel.LoginViewData{})
 	}
 }
 
-func (c *Controller) LoginForm() model.HTTPHandler {
+func (c *Controller) LoginForm() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		sessionToken := c.getSessionToken(r)
 		if sessionToken != nil {
-			return NewAuthorizedError(
-				"auth: login: user already has a session token",
-			)
+			AuthedUserRedirect(w, r)
+			return nil
 		}
 
 		email := r.FormValue("email")
@@ -45,13 +43,14 @@ func (c *Controller) LoginForm() model.HTTPHandler {
 
 		err := c.Passwordless.Login(ctx, email)
 		if err != nil {
+			UnauthedUserRedirect(w, r)
 			// FIXME: This should check for a specific error type
-			return NewUnauthorizedError(
-				fmt.Sprintf(
+			return &base.HTTPError{
+				Message: fmt.Sprintf(
 					"auth: login: error logging in user: %v",
 					err,
 				),
-			)
+			}
 		}
 
 		return c.renderLogin(w, &viewmodel.LoginViewData{
@@ -66,7 +65,7 @@ func (c *Controller) renderLogin(
 ) error {
 	err := c.LoginView.Render(w, data)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(

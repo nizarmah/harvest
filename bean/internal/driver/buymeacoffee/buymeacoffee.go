@@ -11,10 +11,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/whatis277/harvest/bean/internal/entity/model"
-
 	"github.com/whatis277/harvest/bean/internal/usecase/membership"
 	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
+
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
 type Controller struct {
@@ -25,11 +25,11 @@ type Controller struct {
 	Memberships  membership.UseCase
 }
 
-func (c *Controller) Webhook() model.HTTPHandler {
+func (c *Controller) Webhook() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		userAgent := r.Header.Get("User-Agent")
 		if userAgent != "BMC-HTTPS-ROBOT" {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusUnauthorized,
 
 				Message: "buymeacoffee: webhook: invalid user agent",
@@ -38,7 +38,7 @@ func (c *Controller) Webhook() model.HTTPHandler {
 
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 
 				Message: fmt.Sprintf(
@@ -51,7 +51,7 @@ func (c *Controller) Webhook() model.HTTPHandler {
 		signature := r.Header.Get("X-Signature-Sha256")
 		ok, err := c.validateSignature(body, signature)
 		if err != nil {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 
 				Message: fmt.Sprintf(
@@ -62,7 +62,7 @@ func (c *Controller) Webhook() model.HTTPHandler {
 		}
 
 		if !ok {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusUnauthorized,
 
 				Message: "buymeacoffee: webhook: invalid signature",
@@ -72,7 +72,7 @@ func (c *Controller) Webhook() model.HTTPHandler {
 		var event Event
 		err = json.Unmarshal(body, &event)
 		if err != nil {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 
 				Message: fmt.Sprintf(
@@ -83,7 +83,7 @@ func (c *Controller) Webhook() model.HTTPHandler {
 		}
 
 		if !event.LiveMode && !c.AcceptTestEvents {
-			return &model.HTTPError{
+			return &base.HTTPError{
 				Status: http.StatusOK,
 
 				Message: "buymeacoffee: webhook: test event not allowed",
@@ -130,7 +130,7 @@ func (c *Controller) membershipStarted(
 	var data MembershipStartedData
 	err := json.Unmarshal(event.Data, &data)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(
@@ -145,7 +145,7 @@ func (c *Controller) membershipStarted(
 
 	_, err = c.Memberships.Create(ctx, email, createdAt)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(
@@ -157,7 +157,7 @@ func (c *Controller) membershipStarted(
 
 	err = c.Passwordless.Login(ctx, email)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(
@@ -180,7 +180,7 @@ func (c *Controller) membershipCancelled(
 	var data MembershipCancelledData
 	err := json.Unmarshal(event.Data, &data)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(
@@ -195,7 +195,7 @@ func (c *Controller) membershipCancelled(
 
 	_, err = c.Memberships.Cancel(ctx, email, expiresAt)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(

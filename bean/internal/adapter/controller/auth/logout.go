@@ -3,10 +3,10 @@ package auth
 import (
 	"net/http"
 
-	"github.com/whatis277/harvest/bean/internal/entity/model"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
-func (c *Controller) Logout() model.HTTPHandler {
+func (c *Controller) Logout() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		sessionToken := c.getSessionToken(r)
 		if sessionToken == nil {
@@ -34,7 +34,6 @@ func (c *Controller) Logout() model.HTTPHandler {
 			"/login",
 			defaultObscureStatus,
 		)
-
 		return nil
 	}
 }

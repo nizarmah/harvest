@@ -4,21 +4,19 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/whatis277/harvest/bean/internal/entity/model"
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/app/shared"
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/auth"
+	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
 
-func (c *Controller) DeletePage() model.HTTPHandler {
+func (c *Controller) DeletePage() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		subID := r.PathValue("id")
 		if subID == "" {
-			return &model.HTTPError{
-				Status:       http.StatusSeeOther,
-				RedirectPath: "/home",
-
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return &base.HTTPError{
 				Message: "subs: delete: no id provided",
 			}
 		}
@@ -27,18 +25,15 @@ func (c *Controller) DeletePage() model.HTTPHandler {
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			return auth.NewUnauthorizedError(
-				"subs: delete: user has no session",
-			)
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		sub, err := c.Subscriptions.Get(ctx, session.UserID, subID)
 		if err != nil || sub == nil {
 			// FIXME: This should check for a specific error type
-			return &model.HTTPError{
-				Status:       http.StatusSeeOther,
-				RedirectPath: "/home",
-
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return &base.HTTPError{
 				Message: fmt.Sprintf(
 					"subs: delete: error getting subscription: %v",
 					err,
@@ -52,14 +47,12 @@ func (c *Controller) DeletePage() model.HTTPHandler {
 	}
 }
 
-func (c *Controller) DeleteForm() model.HTTPHandler {
+func (c *Controller) DeleteForm() base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		subID := r.FormValue("id")
 		if subID == "" {
-			return &model.HTTPError{
-				Status:       http.StatusSeeOther,
-				RedirectPath: "/home",
-
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return &base.HTTPError{
 				Message: "subs: delete: no id provided",
 			}
 		}
@@ -68,17 +61,14 @@ func (c *Controller) DeleteForm() model.HTTPHandler {
 
 		session := auth.SessionFromContext(ctx)
 		if session == nil {
-			return auth.NewUnauthorizedError(
-				"subs: delete: user has no session",
-			)
+			auth.UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		err := c.Subscriptions.Delete(ctx, session.UserID, subID)
 		if err != nil {
-			return &model.HTTPError{
-				Status:       http.StatusSeeOther,
-				RedirectPath: "/home",
-
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			return &base.HTTPError{
 				Message: fmt.Sprintf(
 					"subs: delete: error deleting subscription: %v",
 					err,
@@ -98,7 +88,7 @@ func (c *Controller) renderDeleteView(
 ) error {
 	err := c.DeleteView.Render(w, data)
 	if err != nil {
-		return &model.HTTPError{
+		return &base.HTTPError{
 			Status: http.StatusInternalServerError,
 
 			Message: fmt.Sprintf(
