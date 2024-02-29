@@ -10,7 +10,7 @@ var (
 	defaultObscureStatus = http.StatusFound
 
 	defaultAuthedRedirectPath   = "/home"
-	defaultUnauthedRedirectPath = "/login"
+	defaultUnauthedRedirectPath = "/logout"
 )
 
 func NewUnauthorizedError(msg string) error {

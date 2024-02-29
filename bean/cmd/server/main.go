@@ -251,6 +251,8 @@ func main() {
 	s.Route("GET /login", authController.LoginPage())
 	s.Route("POST /login", authController.LoginForm())
 
+	s.Route("GET /logout", authController.Logout())
+
 	s.Route("GET /signup", authController.SignupPage())
 
 	s.Route("POST /webhooks/buymeacoffee", bmcController.Webhook())
@@ -260,8 +262,6 @@ func main() {
 	s.Use(authController.Authenticate)
 
 	s.Route("GET /renew-plan", appController.RenewPlanPage())
-
-	s.Route("GET /logout", authController.Logout())
 
 	s.Use(authController.CheckMembership)
 

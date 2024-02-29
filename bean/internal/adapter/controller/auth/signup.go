@@ -10,7 +10,7 @@ import (
 
 func (c *Controller) SignupPage() model.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		sessionToken, _ := c.getSessionToken(r)
+		sessionToken := c.getSessionToken(r)
 		if sessionToken != nil {
 			return NewAuthorizedError(
 				"auth: signup: user already has a session token",

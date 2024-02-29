@@ -8,31 +8,31 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
-func (c *Controller) getSessionToken(r *http.Request) (*model.SessionToken, error) {
+func (c *Controller) getSessionToken(r *http.Request) *model.SessionToken {
 	cookie := c.sessionTokenCookie()
 	cookie, err := r.Cookie(cookie.Name)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get session token: %w", err)
+		return nil
 	}
 
 	decoded, err := base64.StdEncoding.DecodeString(cookie.Value)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode session token: %w", err)
+		return nil
 	}
 
 	token := model.SessionToken{}
 	err = token.UnmarshalBinary(decoded)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal session token: %w", err)
+		return nil
 	}
 
-	return &token, nil
+	return &token
 }
 
 func (c *Controller) createSessionToken(w http.ResponseWriter, token *model.SessionToken) error {
 	json, err := token.MarshalBinary()
 	if err != nil {
-		return fmt.Errorf("failed to marshal session token: %w", err)
+		return fmt.Errorf("create session token: marshal binary: %w", err)
 	}
 
 	encoded := base64.StdEncoding.EncodeToString([]byte(json))

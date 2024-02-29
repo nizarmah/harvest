@@ -24,16 +24,7 @@ type Controller struct {
 
 func (c *Controller) Authenticate(next model.HTTPHandler) model.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		sessionToken, err := c.getSessionToken(r)
-		if err != nil {
-			return NewUnauthorizedError(
-				fmt.Sprintf(
-					"auth: authenticate: error getting session token: %v",
-					err,
-				),
-			)
-		}
-
+		sessionToken := c.getSessionToken(r)
 		if sessionToken == nil {
 			return NewUnauthorizedError(
 				"auth: authenticate: user has no session token",
@@ -77,7 +68,7 @@ func (c *Controller) Authenticate(next model.HTTPHandler) model.HTTPHandler {
 
 func (c *Controller) Authorize() model.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		sessionToken, _ := c.getSessionToken(r)
+		sessionToken := c.getSessionToken(r)
 		if sessionToken != nil {
 			return NewAuthorizedError(
 				"auth: authorize: user has a session token",

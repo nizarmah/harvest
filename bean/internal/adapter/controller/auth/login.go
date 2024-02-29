@@ -11,7 +11,7 @@ import (
 
 func (c *Controller) LoginPage() model.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		sessionToken, _ := c.getSessionToken(r)
+		sessionToken := c.getSessionToken(r)
 		if sessionToken != nil {
 			return NewAuthorizedError(
 				"auth: login: user already has a session token",
@@ -24,7 +24,7 @@ func (c *Controller) LoginPage() model.HTTPHandler {
 
 func (c *Controller) LoginForm() model.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		sessionToken, _ := c.getSessionToken(r)
+		sessionToken := c.getSessionToken(r)
 		if sessionToken != nil {
 			return NewAuthorizedError(
 				"auth: login: user already has a session token",
