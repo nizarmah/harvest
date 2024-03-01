@@ -44,7 +44,7 @@ func main() {
 	env, err := envAdapter.New()
 	if err != nil {
 		panic(
-			fmt.Errorf("error reading env: %v", err),
+			fmt.Errorf("error reading env: %w", err),
 		)
 	}
 
@@ -61,7 +61,7 @@ func main() {
 	})
 	if err != nil {
 		panic(
-			fmt.Errorf("error connecting db: %v", err),
+			fmt.Errorf("error connecting db: %w", err),
 		)
 	}
 	defer db.Close()
@@ -77,7 +77,7 @@ func main() {
 	})
 	if err != nil {
 		panic(
-			fmt.Errorf("error connecting cache: %v", err),
+			fmt.Errorf("error connecting cache: %w", err),
 		)
 	}
 	defer cache.Close()
@@ -126,63 +126,63 @@ func main() {
 	landingView, err := landingVD.New(template.FS, template.LandingTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating landing view: %v", err),
+			fmt.Errorf("error creating landing view: %w", err),
 		)
 	}
 
 	loginView, err := authVD.NewLogin(template.FS, template.LoginTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating login view: %v", err),
+			fmt.Errorf("error creating login view: %w", err),
 		)
 	}
 
 	signUpView, err := authVD.NewSignup(template.FS, template.SignUpTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating signup view: %v", err),
+			fmt.Errorf("error creating signup view: %w", err),
 		)
 	}
 
 	homeView, err := appVD.NewHome(template.FS, template.HomeTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating home view: %v", err),
+			fmt.Errorf("error creating home view: %w", err),
 		)
 	}
 
 	renewPlanView, err := appVD.NewRenewPlan(template.FS, template.RenewPlanTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating renew plan view: %v", err),
+			fmt.Errorf("error creating renew plan view: %w", err),
 		)
 	}
 
 	createPaymentMethodView, err := paymentMethodVD.NewCreate(template.FS, template.CreatePaymentMethodTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating create payment method view: %v", err),
+			fmt.Errorf("error creating create payment method view: %w", err),
 		)
 	}
 
 	deletePaymentMethodView, err := paymentMethodVD.NewDelete(template.FS, template.DeletePaymentMethodTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating delete payment method view: %v", err),
+			fmt.Errorf("error creating delete payment method view: %w", err),
 		)
 	}
 
 	createSubscriptionView, err := subscriptionVD.NewCreate(template.FS, template.CreateSubscriptionTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating create subscription view: %v", err),
+			fmt.Errorf("error creating create subscription view: %w", err),
 		)
 	}
 
 	deleteSubscriptionView, err := subscriptionVD.NewDelete(template.FS, template.DeleteSubscriptionTemplate)
 	if err != nil {
 		panic(
-			fmt.Errorf("error creating delete subscription view: %v", err),
+			fmt.Errorf("error creating delete subscription view: %w", err),
 		)
 	}
 

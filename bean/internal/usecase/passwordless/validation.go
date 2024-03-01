@@ -3,9 +3,11 @@ package passwordless
 import (
 	"fmt"
 	"net/mail"
+
+	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
-func validateEmail(email string) error {
+func validateEmail(email string) model.UserInputError {
 	if len(email) < 3 {
 		return fmt.Errorf("email must be greater than 2 chars")
 	}

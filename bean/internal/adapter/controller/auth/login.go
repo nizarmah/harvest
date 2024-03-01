@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/whatis277/harvest/bean/internal/entity/model"
 	"github.com/whatis277/harvest/bean/internal/entity/viewmodel"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
@@ -42,20 +43,25 @@ func (c *Controller) LoginForm() base.HTTPHandler {
 		ctx := r.Context()
 
 		err := c.Passwordless.Login(ctx, email)
-		if err != nil {
-			UnauthedUserRedirect(w, r)
-			// FIXME: This should check for a specific error type
+		switch err.(type) {
+		case nil, model.UserInputError:
+			return c.renderLogin(w, &viewmodel.LoginViewData{
+				Email: email,
+			})
+
+		default:
+			renderErr := c.renderLogin(w, &viewmodel.LoginViewData{
+				Email: email,
+			})
 			return &base.HTTPError{
 				Message: fmt.Sprintf(
-					"auth: login: error logging in user: %v",
+					("auth: login: error logging in user: %v |" +
+						" auth: login: error rendering view: %v"),
 					err,
+					renderErr,
 				),
 			}
 		}
-
-		return c.renderLogin(w, &viewmodel.LoginViewData{
-			Email: email,
-		})
 	}
 }
 

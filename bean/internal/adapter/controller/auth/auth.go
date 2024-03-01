@@ -34,7 +34,6 @@ func (c *Controller) Authenticate(next base.HTTPHandler) base.HTTPHandler {
 		session, err := c.Passwordless.Authenticate(ctx, sessionToken)
 		if err != nil {
 			UnauthedUserRedirect(w, r)
-			// FIXME: This should check for a specific error type
 			return &base.HTTPError{
 				Message: fmt.Sprintf(
 					"auth: authenticate: error authenticating user: %v",
@@ -79,7 +78,6 @@ func (c *Controller) Authorize() base.HTTPHandler {
 		sessionToken, err := c.Passwordless.Authorize(ctx, id, password)
 		if err != nil {
 			UnauthedUserRedirect(w, r)
-			// FIXME: This should check for a specific error type
 			return &base.HTTPError{
 				Message: fmt.Sprintf(
 					"auth: authorize: error authorizing user: %v",

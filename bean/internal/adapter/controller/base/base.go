@@ -19,6 +19,7 @@ func (c *Controller) ErrorHandler(
 		switch e := err.(type) {
 		case *HTTPError:
 			handleHTTPError(w, r, e)
+
 		default:
 			handleGenericError(w, r, e)
 		}

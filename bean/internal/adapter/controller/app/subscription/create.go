@@ -51,12 +51,28 @@ func (c *Controller) CreateForm() base.HTTPHandler {
 			model.SubscriptionPeriod(form.Period),
 		)
 
-		if err != nil {
-			// FIXME: This should check for a specific error type
+		switch err.(type) {
+		case nil:
+			break
+
+		case model.UserInputError:
 			return c.renderCreateView(w, &viewmodel.CreateSubscriptionViewData{
 				Error: err.Error(),
 				Form:  form,
 			})
+
+		default:
+			renderErr := c.renderCreateView(w, &viewmodel.CreateSubscriptionViewData{
+				Error: "Something went wrong",
+				Form:  form,
+			})
+			return &base.HTTPError{
+				Message: fmt.Sprintf(
+					("subs: create: error creating subscription: %v |" +
+						" subs: create: error rendering view: %v"),
+					err, renderErr,
+				),
+			}
 		}
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)

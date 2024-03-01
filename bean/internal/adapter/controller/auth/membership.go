@@ -19,7 +19,6 @@ func (c *Controller) CheckMembership(next base.HTTPHandler) base.HTTPHandler {
 
 		isMember, err := c.Memberships.CheckByID(ctx, session.UserID)
 		if err != nil {
-			// FIXME: This should check for a specific error type
 			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 

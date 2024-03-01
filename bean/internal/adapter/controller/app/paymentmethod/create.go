@@ -40,12 +40,28 @@ func (c *Controller) CreateForm() base.HTTPHandler {
 			form.ExpYear,
 		)
 
-		if err != nil {
-			// FIXME: This should check for a specific error type
+		switch err.(type) {
+		case nil:
+			break
+
+		case model.UserInputError:
 			return c.renderCreateView(w, &viewmodel.CreatePaymentMethodViewData{
 				Error: err.Error(),
 				Form:  form,
 			})
+
+		default:
+			renderErr := c.renderCreateView(w, &viewmodel.CreatePaymentMethodViewData{
+				Error: "Something went wrong",
+				Form:  form,
+			})
+			return &base.HTTPError{
+				Message: fmt.Sprintf(
+					("pms: create: error creating payment method: %v |" +
+						" pms: create: error rendering view: %v"),
+					err, renderErr,
+				),
+			}
 		}
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
