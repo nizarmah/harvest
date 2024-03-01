@@ -105,7 +105,7 @@ func main() {
 
 	tokenRepo := tokenDS.New(db)
 	userRepo := userDS.New(db)
-	sessionRepo := sessionDS.New(cache)
+	sessionRepo := sessionDS.New(cache, "session")
 	passwordlessAuth := passwordlessUC.UseCase{
 		Sender:   "Bean <support@whatisbean.com>",
 		BaseURL:  env.BaseURL,

@@ -14,17 +14,17 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	key = "session"
-)
-
 type dataSource struct {
 	cache *redis.Cache
+
+	ns string
 }
 
-func New(cache *redis.Cache) interfaces.SessionDataSource {
+func New(cache *redis.Cache, namespace string) interfaces.SessionDataSource {
 	return &dataSource{
 		cache: cache,
+
+		ns: namespace,
 	}
 }
 
@@ -77,7 +77,7 @@ func (ds *dataSource) doCreate(
 		ExpiresAt:   expiresAt,
 	}
 
-	err = ds.cache.Client.Set(ctx, wrap(id), session, duration).Err()
+	err = ds.cache.Set(ctx, ds.ns, id, session, duration).Err()
 	if err != nil {
 		return nil, fmt.Errorf("failed to set session in cache: %w", err)
 	}
@@ -91,7 +91,7 @@ func (ds *dataSource) FindByID(
 ) (*model.Session, error) {
 	session := &model.Session{}
 
-	err := ds.cache.Client.Get(ctx, wrap(id)).Scan(session)
+	err := ds.cache.Get(ctx, ds.ns, id).Scan(session)
 	if err == redis.ErrNoRows {
 		return nil, nil
 	}
@@ -111,7 +111,7 @@ func (ds *dataSource) Refresh(
 	session.UpdatedAt = time.Now()
 	session.ExpiresAt = session.UpdatedAt.Add(duration)
 
-	err := ds.cache.Client.Set(ctx, wrap(session.ID), session, duration).Err()
+	err := ds.cache.Set(ctx, ds.ns, session.ID, session, duration).Err()
 	if err != nil {
 		return fmt.Errorf("failed to refresh session in cache: %w", err)
 	}
@@ -123,14 +123,10 @@ func (ds *dataSource) Delete(
 	ctx context.Context,
 	id string,
 ) error {
-	err := ds.cache.Client.Del(ctx, wrap(id)).Err()
+	err := ds.cache.Del(ctx, ds.ns, id).Err()
 	if err != nil {
 		return fmt.Errorf("failed to delete session from cache: %w", err)
 	}
 
 	return nil
-}
-
-func wrap(id string) string {
-	return fmt.Sprintf("%s:%s", key, id)
 }
