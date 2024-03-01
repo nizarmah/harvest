@@ -50,7 +50,7 @@ func (u *UseCase) Create(
 	}
 
 	if method == nil {
-		return nil, fmt.Errorf("payment method not found")
+		return nil, nil
 	}
 
 	subscription, err := u.Subscriptions.Create(

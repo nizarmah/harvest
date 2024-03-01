@@ -83,7 +83,7 @@ func (u *UseCase) Authorize(
 	}
 
 	if token == nil {
-		return nil, fmt.Errorf("token not found")
+		return nil, nil
 	}
 
 	if err := u.Hasher.Compare(password, token.HashedToken); err != nil {
@@ -126,7 +126,7 @@ func (u *UseCase) Authenticate(
 	}
 
 	if session == nil {
-		return nil, fmt.Errorf("session not found")
+		return nil, nil
 	}
 
 	if err := u.Hasher.Compare(sessionToken.Token, session.HashedToken); err != nil {
@@ -147,7 +147,10 @@ func (u *UseCase) Logout(
 	ctx context.Context,
 	session *model.Session,
 ) error {
-	u.Sessions.Delete(ctx, session.ID)
+	err := u.Sessions.Delete(ctx, session.ID)
+	if err != nil {
+		return fmt.Errorf("failed to delete session: %w", err)
+	}
 
 	return nil
 }
