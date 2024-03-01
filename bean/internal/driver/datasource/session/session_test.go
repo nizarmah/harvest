@@ -71,7 +71,7 @@ func create(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) {
 			t.Errorf("expected expires at to be 10 seconds after created at, got: %s", duration)
 		}
 
-		ttl := cache.Client.TTL(ctx, session.ID).Val()
+		ttl := cache.Client.TTL(ctx, wrap(session.ID)).Val()
 		if ttl != 10*time.Second {
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
 		}
@@ -145,7 +145,7 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 			t.Errorf("expected expires at to be 10 seconds after updated at, got: %s", duration)
 		}
 
-		ttl := cache.Client.TTL(ctx, session.ID).Val()
+		ttl := cache.Client.TTL(ctx, wrap(session.ID)).Val()
 		if ttl != 10*time.Second {
 			t.Errorf("expected session to expire in: %s, got: %s", 10*time.Second, ttl)
 		}
@@ -160,7 +160,7 @@ func refresh(t *testing.T, ds interfaces.SessionDataSource, cache *redis.Cache) 
 			t.Errorf("expected expires at to be 20 seconds after updated at, got: %s", duration)
 		}
 
-		ttl = cache.Client.TTL(ctx, session.ID).Val()
+		ttl = cache.Client.TTL(ctx, wrap(session.ID)).Val()
 		if ttl != 20*time.Second {
 			t.Errorf("expected session to expire in: %s, got: %s", 20*time.Second, ttl)
 		}
