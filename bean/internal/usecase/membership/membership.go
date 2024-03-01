@@ -24,12 +24,12 @@ func (u *UseCase) Create(
 ) (*model.Membership, error) {
 	user, err := u.findOrCreateUser(ctx, email)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find or create user: %v", err)
+		return nil, fmt.Errorf("failed to find or create user: %w", err)
 	}
 
 	membership, err := u.Memberships.Create(ctx, user.ID, createdAt)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create membership: %v", err)
+		return nil, fmt.Errorf("failed to create membership: %w", err)
 	}
 
 	return membership, nil
@@ -42,7 +42,7 @@ func (u *UseCase) Cancel(
 ) (*model.Membership, error) {
 	user, err := u.Users.FindByEmail(ctx, email)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user: %v", err)
+		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
 
 	if user == nil {
@@ -51,7 +51,7 @@ func (u *UseCase) Cancel(
 
 	membership, err := u.Memberships.Update(ctx, user.ID, expiresAt)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update membership: %v", err)
+		return nil, fmt.Errorf("failed to update membership: %w", err)
 	}
 
 	if membership == nil {
@@ -71,7 +71,7 @@ func (u *UseCase) CheckByID(
 
 	membership, err := u.Memberships.Find(ctx, userID)
 	if err != nil {
-		return false, fmt.Errorf("failed to find membership: %v", err)
+		return false, fmt.Errorf("failed to find membership: %w", err)
 	}
 
 	if membership == nil {
@@ -95,7 +95,7 @@ func (u *UseCase) CheckByEmail(
 
 	user, err := u.Users.FindByEmail(ctx, email)
 	if err != nil {
-		return false, fmt.Errorf("failed to find user: %v", err)
+		return false, fmt.Errorf("failed to find user: %w", err)
 	}
 
 	if user == nil {
