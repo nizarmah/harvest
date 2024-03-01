@@ -14,17 +14,12 @@ func TestCache(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	err := cache.Client.Ping(ctx).Err()
+	err := cache.Set(ctx, "test", "key", "value", 0).Err()
 	if err != nil {
 		t.Fatalf("cache error: %s", err)
 	}
 
-	err = cache.Client.Set(context.Background(), "key", "value", 0).Err()
-	if err != nil {
-		t.Fatalf("cache error: %s", err)
-	}
-
-	val, err := cache.Client.Get(context.Background(), "key").Result()
+	val, err := cache.Get(ctx, "test", "key").Result()
 	if err != nil {
 		t.Fatalf("cache error: %s", err)
 	}
