@@ -29,7 +29,6 @@ func (c *Controller) DeletePage() base.HTTPHandler {
 
 		sub, err := c.Subscriptions.Get(ctx, session.UserID, subID)
 		if err != nil {
-			// FIXME: This should check for a specific error type
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 			return &base.HTTPError{
 				Message: fmt.Sprintf(

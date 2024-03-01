@@ -37,7 +37,6 @@ func (c *Controller) HomePage() base.HTTPHandler {
 
 		methods, err := c.PaymentMethods.List(ctx, session.UserID)
 		if err != nil {
-			// FIXME: This should check for a specific error type
 			return &base.HTTPError{
 				Status: http.StatusInternalServerError,
 

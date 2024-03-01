@@ -6,7 +6,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
-func validateLabel(label string) error {
+func validateLabel(label string) model.UserInputError {
 	if len(label) > 255 {
 		return fmt.Errorf("label must be less than 255 chars")
 	}
@@ -14,7 +14,7 @@ func validateLabel(label string) error {
 	return nil
 }
 
-func validateProvider(provider string) error {
+func validateProvider(provider string) model.UserInputError {
 	if len(provider) > 255 {
 		return fmt.Errorf("provider must be less than 255 chars")
 	}
@@ -22,7 +22,7 @@ func validateProvider(provider string) error {
 	return nil
 }
 
-func validateAmount(amount int) error {
+func validateAmount(amount int) model.UserInputError {
 	if amount <= 0 {
 		return fmt.Errorf("amount must be greater than 0")
 	}
@@ -30,7 +30,7 @@ func validateAmount(amount int) error {
 	return nil
 }
 
-func validateInterval(interval int) error {
+func validateInterval(interval int) model.UserInputError {
 	if interval <= 0 {
 		return fmt.Errorf("interval must be greater than 0")
 	}
@@ -42,7 +42,7 @@ func validateInterval(interval int) error {
 	return nil
 }
 
-func validatePeriod(period model.SubscriptionPeriod) error {
+func validatePeriod(period model.SubscriptionPeriod) model.UserInputError {
 	switch period {
 	case model.SubscriptionPeriodDaily,
 		model.SubscriptionPeriodWeekly,

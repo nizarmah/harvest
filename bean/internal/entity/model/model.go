@@ -137,6 +137,12 @@ func (s *SessionToken) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, s)
 }
 
+// --- Error ---
+
+// --- Error --- User Input ---
+
+type UserInputError error
+
 // --- Misc ---
 
 type Estimates struct {

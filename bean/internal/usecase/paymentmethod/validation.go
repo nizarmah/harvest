@@ -7,7 +7,7 @@ import (
 	"github.com/whatis277/harvest/bean/internal/entity/model"
 )
 
-func validateLabel(label string) error {
+func validateLabel(label string) model.UserInputError {
 	if len(label) > 255 {
 		return fmt.Errorf("label must be less than 255 chars")
 	}
@@ -15,7 +15,7 @@ func validateLabel(label string) error {
 	return nil
 }
 
-func validateLast4(last4 string) error {
+func validateLast4(last4 string) model.UserInputError {
 	pattern, err := regexp.Compile(`^\d{4}$`)
 	if err != nil {
 		return fmt.Errorf("failed to compile regex: %w", err)
@@ -28,7 +28,7 @@ func validateLast4(last4 string) error {
 	return nil
 }
 
-func validateBrand(brand model.PaymentMethodBrand) error {
+func validateBrand(brand model.PaymentMethodBrand) model.UserInputError {
 	switch brand {
 	case model.PaymentMethodBrandAmex,
 		model.PaymentMethodBrandMastercard,
@@ -44,7 +44,7 @@ func validateBrand(brand model.PaymentMethodBrand) error {
 	}
 }
 
-func validateExpMonth(expMonth int) error {
+func validateExpMonth(expMonth int) model.UserInputError {
 	if expMonth < 1 {
 		return fmt.Errorf("exp month must be greater than 0")
 	}
@@ -56,7 +56,7 @@ func validateExpMonth(expMonth int) error {
 	return nil
 }
 
-func validateExpYear(expYear int) error {
+func validateExpYear(expYear int) model.UserInputError {
 	if expYear < 2000 {
 		return fmt.Errorf("exp year must be greater than 2000")
 	}
