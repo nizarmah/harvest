@@ -17,7 +17,7 @@ type Config struct {
 }
 
 type Cache struct {
-	Client *redis.Client
+	client *redis.Client
 }
 
 func New(ctx context.Context, cfg *Config) (*Cache, error) {
@@ -40,12 +40,12 @@ func New(ctx context.Context, cfg *Config) (*Cache, error) {
 	}
 
 	return &Cache{
-		Client: client,
+		client: client,
 	}, nil
 }
 
 func (c *Cache) Close() {
-	c.Client.Close()
+	c.client.Close()
 }
 
 func (c *Cache) Set(
@@ -55,7 +55,7 @@ func (c *Cache) Set(
 	value interface{},
 	expiration time.Duration,
 ) *redis.StatusCmd {
-	return c.Client.Set(ctx, prefix(ns, key), value, expiration)
+	return c.client.Set(ctx, prefix(ns, key), value, expiration)
 }
 
 func (c *Cache) Get(
@@ -63,7 +63,7 @@ func (c *Cache) Get(
 	ns string,
 	key string,
 ) *redis.StringCmd {
-	return c.Client.Get(ctx, prefix(ns, key))
+	return c.client.Get(ctx, prefix(ns, key))
 }
 
 func (c *Cache) Del(
@@ -71,7 +71,15 @@ func (c *Cache) Del(
 	ns string,
 	key string,
 ) *redis.IntCmd {
-	return c.Client.Del(ctx, prefix(ns, key))
+	return c.client.Del(ctx, prefix(ns, key))
+}
+
+func (c *Cache) TTL(
+	ctx context.Context,
+	ns string,
+	key string,
+) *redis.DurationCmd {
+	return c.client.TTL(ctx, prefix(ns, key))
 }
 
 func prefix(namespace, key string) string {
