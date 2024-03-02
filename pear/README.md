@@ -13,14 +13,23 @@ An open-source guide for your benefit.
 
 ### Development
 
-* Pear: http://localhost:8081
+* Pear: http://whatipear.local
 
 ## Guide
+
+### Setup
+
+1. Add `whatispear.local` to `/etc/hosts`
+
+    ```bash
+    # whatispear.com local
+    127.0.0.1 whatispear.local
+    ```
 
 ### Run
 
 ```bash
-> docker compose up pear
+> docker compose up trellis pear
 ```
 
 ### Deploy
@@ -30,5 +39,3 @@ An open-source guide for your benefit.
 2. Test the deployment
 
 3. Publish the deployment
-
-
