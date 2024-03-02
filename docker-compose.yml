@@ -1,100 +1,20 @@
-x-common: &common
-  tty: true
-  stdin_open: true
-
 services:
   bean:
-    <<: *common
-    build:
-      context: .
-      dockerfile: ./bean/docker/Dockerfile.dev
-    env_file:
-      - ./bean/config/.env.example
-      - ./bean/config/.env
+    restart: always
     networks:
       - harvest
-    volumes:
-      - ./bean:/go/src/bean
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      smtp:
-        condition: service_started
     healthcheck:
       test: ["CMD", "curl -f http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  pear:
-    <<: *common
-    image: nginx:1.25-alpine
-    networks:
-      - harvest
-    volumes:
-      - ./pear/html:/usr/share/nginx/html
-      - ./pear/config/nginx.conf:/etc/nginx/conf.d/default.conf
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8081"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  smtp:
-    <<: *common
-    image: mailhog/mailhog:v1.0.1
-    restart: always
-    ports:
-      - "8025:8025"
-    networks:
-      - harvest
-    volumes:
-      - mailhog-data:/var/lib/mailhog
-
-  redis:
-    <<: *common
-    image: redis:7.2-alpine
-    restart: always
-    networks:
-      - harvest
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  postgres:
-    <<: *common
-    image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: bean_test
-    networks:
-      - harvest
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
   trellis:
-    <<: *common
-    build:
-      context: trellis
-      dockerfile: docker/Dockerfile.dev
     restart: always
+    networks:
+      - harvest
     ports:
       - "80:80"
-    networks:
-      - harvest
     healthcheck:
       test: ["CMD-SHELL", "service nginx status || exit 1"]
       interval: 10s
@@ -104,8 +24,3 @@ services:
 networks:
   harvest:
     driver: bridge
-
-volumes:
-  mailhog-data:
-  redis-data:
-  postgres-data:
