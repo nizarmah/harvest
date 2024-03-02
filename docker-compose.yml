@@ -7,7 +7,7 @@ services:
     <<: *common
     build:
       context: .
-      dockerfile: ./bean/Dockerfile
+      dockerfile: ./bean/docker/Dockerfile.dev
     env_file:
       - ./bean/config/.env.example
       - ./bean/config/.env
@@ -30,18 +30,21 @@ services:
 
   pear:
     <<: *common
-    image: nginx:alpine
-    ports:
-      - "8081:80"
+    image: nginx:1.25-alpine
     networks:
       - harvest
     volumes:
       - ./pear/html:/usr/share/nginx/html
       - ./pear/config/nginx.conf:/etc/nginx/conf.d/default.conf
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   smtp:
     <<: *common
-    image: mailhog/mailhog:latest
+    image: mailhog/mailhog:v1.0.1
     restart: always
     ports:
       - "8025:8025"
@@ -52,7 +55,7 @@ services:
 
   redis:
     <<: *common
-    image: redis:latest
+    image: redis:7.2-alpine
     restart: always
     networks:
       - harvest
@@ -66,7 +69,7 @@ services:
 
   postgres:
     <<: *common
-    image: postgres:latest
+    image: postgres:16-alpine
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -82,17 +85,16 @@ services:
       timeout: 5s
       retries: 3
 
-  nginx:
+  trellis:
     <<: *common
-    image: nginx:latest
+    build:
+      context: trellis
+      dockerfile: docker/Dockerfile.dev
     restart: always
     ports:
       - "80:80"
     networks:
       - harvest
-    volumes:
-      - ./shared/config/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./bean/config/nginx.conf:/etc/nginx/conf.d/bean.conf
     healthcheck:
       test: ["CMD-SHELL", "service nginx status || exit 1"]
       interval: 10s
