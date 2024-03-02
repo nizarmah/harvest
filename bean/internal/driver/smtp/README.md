@@ -10,7 +10,7 @@ SMTP client for email sending.
 You need to setup these env variables
 
 ```sh
-SMTP_HOST=smtp
+SMTP_HOST=mailhog
 SMTP_PORT=1025
 SMTP_USERNAME=
 SMTP_PASSWORD=

@@ -36,6 +36,7 @@
 
 # docker files
 !/docker-compose.yml
+!/docker-compose.override.yml
 !*/docker/Dockerfile.dev
 
 # tern migration files
