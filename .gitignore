@@ -7,7 +7,7 @@
 !*/
 
 # git ignore
-!**/.gitignore
+!/.gitignore
 
 # read me
 !**/README.md
