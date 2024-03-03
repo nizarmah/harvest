@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+function main() {
+  service="$1"
+  shift
+
+  versions="$@"
+
+  trap "exit" INT
+
+  if ! valid_input $service $versions; then
+    echo "Usage: $0 <bean|trellis> <versions>"
+    echo "Example: $0 trellis 1.0.0 1 latest"
+    return 1
+  fi
+
+  if ! confirm_build $service $versions; then
+    echo "Aborted"
+    return 1
+  fi
+
+  init_build $service $versions
+}
+
+function valid_input() {
+  service=$1
+  shift
+
+  versions="$@"
+
+  case $service in
+    "bean" | "trellis")
+      return 0
+      ;;
+  esac
+
+  if [ -n "$versions" ]; then
+    return 0
+  fi
+
+  return 1
+}
+
+function confirm_build() {
+  service="$1"
+  shift
+
+  versions="$@"
+
+  tags=$(get_tags $service $versions)
+  echo "Building: "
+  printf "  - %s\n" ${tags//-t /}
+  echo ""
+
+  echo "Continue? (y/n)"
+  read confirm
+  if [[ $confirm =~ ^[Yy]$ ]]; then
+    return 0
+  fi
+
+  return 1
+}
+
+function init_build() {
+  service="$1"
+  shift
+
+  versions="$@"
+
+  tags=$(get_tags $service $versions)
+
+  docker buildx build \
+    --platform linux/amd64 \
+    -f $service/docker/Dockerfile.prod \
+    $tags \
+    --push \
+    .
+}
+
+function get_tags() {
+  service=$1
+  shift
+
+  versions="$@"
+
+  tags=""
+  for version in $versions; do
+    tags="$tags -t whatis277/$service:$version"
+  done
+
+  echo $tags
+}
+
+main "$@"

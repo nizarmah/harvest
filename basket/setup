@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+function main() {
+  server=$1
+  if [ -z $server ]; then
+    echo "Usage: $0 <server-ip>"
+    return 1
+  fi
+
+  trap "exit" INT
+
+  ssh -o "StrictHostKeyChecking no" \
+    root@$server "$(typeset -f); setup_remote"
+
+  setup_local $server
+}
+
+function setup_remote() {
+  if id -u "basket" >/dev/null 2>&1; then
+    echo "Basket user is already setup"
+    return 0
+  fi
+
+  add_basket_user
+
+  setup_ports
+
+  setup_docker
+}
+
+function setup_local() {
+  server=$1
+
+  docker context create \
+    --docker "host=ssh://basket@$server" \
+    --description "Harvest production context" \
+    basket
+}
+
+function add_basket_user() {
+  adduser basket \
+    --gecos "" \
+    --disabled-password
+
+  passwd -d basket
+
+  usermod -aG sudo basket
+
+  rsync --archive --chown=basket:basket ~/.ssh /home/basket
+}
+
+function setup_ports() {
+  ufw allow OpenSSH
+  ufw allow http
+  ufw allow https
+
+  ufw --force enable
+}
+
+function setup_docker() {
+  # ref: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+  # ref: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04
+
+  apt update -y
+  apt install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+    https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" \
+    | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  apt update -y
+  apt install -y docker-ce
+
+  usermod -aG docker basket
+
+  systemctl enable docker
+  systemctl start docker
+}
+
+main $1

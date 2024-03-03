@@ -14,7 +14,8 @@ A subscription tracker for the rest of us.
 
 ### Production
 
-TODO
+* Bean: https://whatisbean.com
+* SMTP: https://app.postmarkapp.com
 
 ### Documentation
 
@@ -67,6 +68,35 @@ There are other documentations under `<dir>/README.md` where relevant.
 
 ```bash
 > docker compose exec -e INTEGRATION=1 bean go test ./... -v
+```
+
+### Deploy
+
+#### Database
+
+On the first run, you need to create the user, database, and schema.
+
+```sql
+CREATE USER bean WITH PASSWORD 'secret-password';
+CREATE DATABASE bean;
+GRANT CONNECT ON DATABASE bean TO bean;
+
+\c bean
+CREATE SCHEMA bean AUTHORIZATION bean;
+GRANT ALL ON SCHEMA bean TO bean;
+```
+
+#### Server
+
+```bash
+> basket/compose pull bean
+> basket/compose up -d --no-deps --force-recreate bean
+```
+
+#### Migrations
+
+```bash
+> basket/compose exec bean tern migrate
 ```
 
 ## Testing

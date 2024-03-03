@@ -47,6 +47,11 @@
 # air live reload files
 !*/config/.air.toml
 
+# basket files
+!/basket/setup
+!/basket/build
+!/basket/compose
+
 # trellis files
 !/trellis/nginx.conf
 !/trellis/services.dev/*.conf
