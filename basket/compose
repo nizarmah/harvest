@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+function main() {
+  args="$@"
+
+  docker -c basket compose \
+    -f docker-compose.yml \
+    -f docker-compose.prod.yml \
+    $args
+}
+
+main "$@"
