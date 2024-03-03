@@ -57,7 +57,7 @@ func main() {
 		Name:     env.DB.Name,
 		Username: env.DB.Username,
 		Password: env.DB.Password,
-		SSLMode:  "disable",
+		SSLMode:  env.DB.SSLMode,
 	})
 	if err != nil {
 		panic(
@@ -66,14 +66,17 @@ func main() {
 	}
 	defer db.Close()
 
+	fmt.Println("connected to db")
+
 	cacheCtx, cacheCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cacheCancel()
 
 	cache, err := redis.New(cacheCtx, &redis.Config{
-		Host:     env.Cache.Host,
-		Port:     env.Cache.Port,
-		Username: env.Cache.Username,
-		Password: env.Cache.Password,
+		Host:        env.Cache.Host,
+		Port:        env.Cache.Port,
+		Username:    env.Cache.Username,
+		Password:    env.Cache.Password,
+		TLSDisabled: env.Cache.TLSDisabled,
 	})
 	if err != nil {
 		panic(
@@ -81,6 +84,8 @@ func main() {
 		)
 	}
 	defer cache.Close()
+
+	fmt.Println("connected to cache")
 
 	hasher := bcrypt.New()
 	emailer := smtp.New(&smtp.Config{
@@ -279,5 +284,6 @@ func main() {
 	s.Route("GET /cards/{pm_id}/subs/{id}/del", subsController.DeletePage())
 	s.Route("POST /cards/{pm_id}/subs/{id}/del", subsController.DeleteForm())
 
+	fmt.Println("listening on :8080")
 	s.Listen(":8080")
 }

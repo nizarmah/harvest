@@ -20,10 +20,11 @@ func CacheTest(t *testing.T) *redis.Cache {
 	defer cancel()
 
 	cache, err := redis.New(ctx, &redis.Config{
-		Host:     "redis",
-		Port:     "6379",
-		Username: "default",
-		Password: "",
+		Host:        "redis",
+		Port:        "6379",
+		Username:    "default",
+		Password:    "",
+		TLSDisabled: true,
 	})
 
 	if err != nil {

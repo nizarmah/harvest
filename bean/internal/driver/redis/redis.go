@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"time"
@@ -10,10 +11,11 @@ import (
 )
 
 type Config struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
+	Host        string
+	Port        string
+	Username    string
+	Password    string
+	TLSDisabled bool
 }
 
 type Cache struct {
@@ -23,13 +25,20 @@ type Cache struct {
 func New(ctx context.Context, cfg *Config) (*Cache, error) {
 	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 
-	client := redis.NewClient(
-		&redis.Options{
-			Addr:     addr,
-			Username: cfg.Username,
-			Password: cfg.Password,
+	opts := &redis.Options{
+		Addr:             addr,
+		Username:         cfg.Username,
+		Password:         cfg.Password,
+		DisableIndentity: true,
+		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
 		},
-	)
+	}
+	if cfg.TLSDisabled {
+		opts.TLSConfig = nil
+	}
+
+	client := redis.NewClient(opts)
 	if client == nil {
 		return nil, errors.New("error creating redis client")
 	}

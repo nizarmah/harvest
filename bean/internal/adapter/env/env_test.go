@@ -16,11 +16,13 @@ func TestEnv(t *testing.T) {
 	os.Setenv("DB_PORT", "db_port")
 	os.Setenv("DB_USERNAME", "db_username")
 	os.Setenv("DB_PASSWORD", "db_password")
+	os.Setenv("DB_SSL_MODE", "db_ssl_mode")
 
 	os.Setenv("CACHE_HOST", "cache_host")
 	os.Setenv("CACHE_PORT", "cache_port")
 	os.Setenv("CACHE_USERNAME", "cache_username")
 	os.Setenv("CACHE_PASSWORD", "cache_password")
+	os.Setenv("CACHE_TLS_DISABLED", "false")
 
 	os.Setenv("SMTP_HOST", "smtp_host")
 	os.Setenv("SMTP_PORT", "smtp_port")
@@ -68,6 +70,10 @@ func TestEnv(t *testing.T) {
 		t.Errorf("expected: %s, got: %s", "db_password", env.DB.Password)
 	}
 
+	if env.DB.SSLMode != "db_ssl_mode" {
+		t.Errorf("expected: %s, got: %s", "db_ssl_mode", env.DB.SSLMode)
+	}
+
 	if env.Cache.Host != "cache_host" {
 		t.Errorf("expected: %s, got: %s", "cache_host", env.Cache.Host)
 	}
@@ -82,6 +88,10 @@ func TestEnv(t *testing.T) {
 
 	if env.Cache.Password != "cache_password" {
 		t.Errorf("expected: %s, got: %s", "cache_password", env.Cache.Password)
+	}
+
+	if env.Cache.TLSDisabled != false {
+		t.Errorf("tls disabled: expected: %t, got: %t", false, env.Cache.TLSDisabled)
 	}
 
 	if env.SMTP.Host != "smtp_host" {
