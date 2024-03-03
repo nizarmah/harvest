@@ -1,0 +1,35 @@
+services:
+  bean:
+    image: whatis277/bean:1.0.0
+    build:
+      dockerfile: ./bean/docker/Dockerfile.prod
+    env_file:
+      - ./bean/config/.env.prod
+
+  trellis:
+    image: whatis277/trellis:1.0.0
+    build:
+      dockerfile: ./trellis/docker/Dockerfile.prod
+    volumes:
+      - certbot_etc:/etc/letsencrypt:ro
+
+  certbot:
+    image: certbot/certbot:v2.9.0
+    volumes:
+      - certbot_etc:/etc/letsencrypt:rw
+    env_file:
+      - ./trellis/config/.certbot.prod
+    entrypoint:
+      /bin/sh -c \
+        "certbot certonly \
+        --manual \
+        --preferred-challenges dns \
+        --keep-until-expiring \
+        --agree-tos \
+        --no-eff-email \
+        --email $$CERTBOT_EMAIL \
+        --domains $$CERTBOT_DOMAINS \
+        "
+
+volumes:
+  certbot_etc:
