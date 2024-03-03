@@ -15,7 +15,7 @@ function main() {
   fi
 
   if ! confirm_build $service $versions; then
-  echo "Aborted"
+    echo "Aborted"
     return 1
   fi
 
