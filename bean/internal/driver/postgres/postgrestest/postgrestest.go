@@ -22,7 +22,7 @@ func DBTest(t *testing.T) *postgres.DB {
 	db, err := postgres.New(ctx, &postgres.DSNBuilder{
 		Host:     "postgres",
 		Port:     "5432",
-		Name:     "bean_test",
+		Name:     "bean_dev",
 		Username: "postgres",
 		Password: "postgres",
 		SSLMode:  "disable",
