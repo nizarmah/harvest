@@ -31,8 +31,7 @@ services:
   
   trellis:
     build:
-      context: ./trellis
-      dockerfile: ./docker/Dockerfile.dev
+      dockerfile: ./trellis/docker/Dockerfile.dev
 
   postgres:
     image: postgres:16-alpine

@@ -19,8 +19,8 @@
 !/go.sum
 !/go.mod
 
-# env example
-!**/.env.example
+# example files
+!**/*.example
 
 # go files
 !**/*.go
@@ -37,7 +37,9 @@
 # docker files
 !/docker-compose.yml
 !/docker-compose.override.yml
+!/docker-compose.prod.yml
 !*/docker/Dockerfile.dev
+!*/docker/Dockerfile.prod
 
 # tern migration files
 !*/config/*.tern.conf
@@ -46,5 +48,6 @@
 !*/config/.air.toml
 
 # trellis files
-!trellis/nginx.conf
-!trellis/services.dev/*.conf
+!/trellis/nginx.conf
+!/trellis/services.dev/*.conf
+!/trellis/services.prod/*.conf

@@ -4,8 +4,10 @@ FROM nginx:1.25-alpine
 # copy nginx config
 COPY ./trellis/nginx.conf /etc/nginx/nginx.conf
 
-# copy dev services 
-COPY ./trellis/services.dev /etc/nginx/services
+# copy prod services 
+COPY ./trellis/services.prod /etc/nginx/services
 
 # expose port 80
 EXPOSE 80
+# expose port 443
+EXPOSE 443
