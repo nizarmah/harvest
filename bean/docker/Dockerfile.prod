@@ -1,0 +1,40 @@
+# builder: use official go image
+FROM golang:1.22.0-alpine AS builder
+
+# builder: set working dir
+WORKDIR /go/src
+
+# builder: copy monorepo deps
+COPY go.mod go.sum ./
+# builder: deps: go.mod
+RUN go mod download
+
+# builder: bean: copy code
+COPY bean/ ./bean/
+# builder: bean: compile server
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./bean/server ./bean/cmd/server/main.go
+
+# builder: deps: tern: executable
+RUN go install github.com/jackc/tern/v2@v2.1.1
+
+# runner: use official alpine image
+FROM alpine:3 AS runner
+
+# runner: set working dir
+WORKDIR /bean
+
+# runner: bean: copy migrations
+COPY --from=builder /go/src/bean/internal/driver/migration ./migration
+# runner: bean: copy server
+COPY --from=builder /go/src/bean/server ./
+
+# runner: deps: tern: config
+COPY --from=builder /go/src/bean/config/migration.tern.conf ./config/migration.tern.conf
+# runner: deps: tern: executable
+COPY --from=builder /go/bin/tern /go/bin/tern
+
+# runner: deps: add go bin to path
+ENV PATH="/go/bin:${PATH}"
+
+# runner: run server
+CMD ["./server"]

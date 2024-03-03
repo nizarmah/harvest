@@ -9,7 +9,7 @@ On development, they are run on startup.
 
 ### Config
 
-* [`.migration.tern.conf`](../../../config/.migration.tern.conf)
+* [`migration.tern.conf`](../../../config/migration.tern.conf)
 
 ### Third parties
 

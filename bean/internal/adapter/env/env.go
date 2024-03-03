@@ -41,6 +41,11 @@ func New() (*Env, error) {
 		return nil, err
 	}
 
+	dbSSLMode, err := lookup("DB_SSL_MODE")
+	if err != nil {
+		return nil, err
+	}
+
 	cacheHost, err := lookup("CACHE_HOST")
 	if err != nil {
 		return nil, err
@@ -57,6 +62,11 @@ func New() (*Env, error) {
 	}
 
 	cachePassword, err := lookup("CACHE_PASSWORD")
+	if err != nil {
+		return nil, err
+	}
+
+	cacheTLSDisabled, err := lookupBool("CACHE_TLS_DISABLED")
 	if err != nil {
 		return nil, err
 	}
@@ -103,12 +113,14 @@ func New() (*Env, error) {
 			Port:     dbPort,
 			Username: dbUsername,
 			Password: dbPassword,
+			SSLMode:  dbSSLMode,
 		},
 		Cache: &Cache{
-			Host:     cacheHost,
-			Port:     cachePort,
-			Username: cacheUsername,
-			Password: cachePassword,
+			Host:        cacheHost,
+			Port:        cachePort,
+			Username:    cacheUsername,
+			Password:    cachePassword,
+			TLSDisabled: cacheTLSDisabled,
 		},
 		SMTP: &SMTP{
 			Host:     smtpHost,
