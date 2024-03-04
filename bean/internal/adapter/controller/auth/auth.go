@@ -114,6 +114,10 @@ func (c *Controller) Authorize() base.HTTPHandler {
 
 func (c *Controller) AuthorizeIntermediary(authRoute string) base.HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
+		if r.Method == http.MethodHead {
+			return nil
+		}
+
 		id, password := r.PathValue("id"), r.PathValue("password")
 		if id == "" || password == "" {
 			UnauthedUserRedirect(w, r)
