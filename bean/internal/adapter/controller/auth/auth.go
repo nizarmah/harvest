@@ -111,3 +111,21 @@ func (c *Controller) Authorize() base.HTTPHandler {
 		return nil
 	}
 }
+
+func (c *Controller) AuthorizeIntermediary(authRoute string) base.HTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		id, password := r.PathValue("id"), r.PathValue("password")
+		if id == "" || password == "" {
+			UnauthedUserRedirect(w, r)
+			return nil
+		}
+
+		http.Redirect(
+			w,
+			r,
+			fmt.Sprintf("%s/%s/%s", authRoute, id, password),
+			http.StatusSeeOther,
+		)
+		return nil
+	}
+}
