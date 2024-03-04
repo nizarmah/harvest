@@ -42,6 +42,11 @@ func (c *Controller) Authenticate(next base.HTTPHandler) base.HTTPHandler {
 			}
 		}
 
+		if session == nil {
+			UnauthedUserRedirect(w, r)
+			return nil
+		}
+
 		err = c.createSessionToken(w, sessionToken)
 		if err != nil {
 			UnauthedUserRedirect(w, r)
@@ -84,6 +89,11 @@ func (c *Controller) Authorize() base.HTTPHandler {
 					err,
 				),
 			}
+		}
+
+		if sessionToken == nil {
+			UnauthedUserRedirect(w, r)
+			return nil
 		}
 
 		err = c.createSessionToken(w, sessionToken)
