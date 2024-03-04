@@ -251,7 +251,8 @@ func main() {
 
 	s.Route("GET /{$}", marketingController.LandingPage())
 
-	s.Route("GET /auth/{id}/{password}", authController.Authorize())
+	s.Route("GET /auth/{id}/{password}", authController.AuthorizeIntermediary("/x/auth"))
+	s.Route("GET /x/auth/{id}/{password}", authController.Authorize())
 
 	s.Route("GET /login", authController.LoginPage())
 	s.Route("POST /login", authController.LoginForm())
