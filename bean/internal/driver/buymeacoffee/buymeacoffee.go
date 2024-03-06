@@ -11,10 +11,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/whatis277/harvest/bean/internal/entity/model"
-
 	"github.com/whatis277/harvest/bean/internal/usecase/membership"
-	"github.com/whatis277/harvest/bean/internal/usecase/passwordless"
 
 	"github.com/whatis277/harvest/bean/internal/adapter/controller/base"
 )
@@ -23,8 +20,7 @@ type Controller struct {
 	AcceptTestEvents bool
 	WebhookSecret    string
 
-	Passwordless passwordless.UseCase
-	Memberships  membership.UseCase
+	Memberships membership.UseCase
 }
 
 func (c *Controller) Webhook() base.HTTPHandler {
@@ -152,32 +148,6 @@ func (c *Controller) membershipStarted(
 
 			Message: fmt.Sprintf(
 				"buymeacoffee: webhook: error creating membership: %v",
-				err,
-			),
-		}
-	}
-
-	err = c.Passwordless.Login(ctx, email)
-	switch err.(type) {
-	case nil:
-		break
-
-	case model.UserInputError:
-		return &base.HTTPError{
-			Status: http.StatusBadRequest,
-
-			Message: fmt.Sprintf(
-				"buymeacoffee: webhook: error logging in user: %v",
-				err,
-			),
-		}
-
-	default:
-		return &base.HTTPError{
-			Status: http.StatusInternalServerError,
-
-			Message: fmt.Sprintf(
-				"buymeacoffee: webhook: error logging in user: %v",
 				err,
 			),
 		}
