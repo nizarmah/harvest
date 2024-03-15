@@ -2,11 +2,11 @@ module github.com/whatis277/harvest
 
 go 1.22.0
 
-require github.com/jackc/pgx/v5 v5.5.3 // direct [bean,]
+require github.com/jackc/pgx/v5 v5.5.5 // direct [bean,]
 
-require github.com/redis/go-redis/v9 v9.5.0 // direct [bean,]
+require github.com/redis/go-redis/v9 v9.5.1 // direct [bean,]
 
-require golang.org/x/crypto v0.19.0 // direct [bean,]
+require golang.org/x/crypto v0.21.0 // direct [bean,]
 
 require github.com/google/uuid v1.6.0 // direct [bean,]
 
