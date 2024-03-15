@@ -1,6 +1,6 @@
 services:
   bean:
-    image: whatis277/bean:1.0.1
+    image: whatis277/bean:1.0.2
     build:
       dockerfile: ./bean/docker/Dockerfile.prod
     env_file:
