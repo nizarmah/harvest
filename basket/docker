@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+function main() {
+  args="$@"
+
+  docker -c basket \
+    $args
+}
+
+main "$@"

@@ -51,6 +51,7 @@
 !/basket/setup
 !/basket/build
 !/basket/compose
+!/basket/docker
 
 # trellis files
 !/trellis/nginx.conf
